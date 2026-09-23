@@ -1,0 +1,267 @@
+<h2 class="sr-only">Lit 3D render of the gym bathroom with separate Views and Options controls, opening on the view from the vanity toward the shower</h2>
+<div id="wrap" style="position:relative;width:100%;height:480px;border-radius:12px;overflow:hidden;background:#1c1c1c;touch-action:none;cursor:grab"></div>
+<div style="margin-top:12px;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-secondary)">Views</div>
+<div id="views" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px"></div>
+<div style="margin-top:14px;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-secondary)">Options</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;align-items:center">
+<button id="gb" onclick="cycleBars()" class="opt">Grab bars</button>
+<button id="cu" onclick="cycleCubby()" class="opt">Shaver niche</button>
+<button id="mr" onclick="cycleMirror()" class="opt">Mirror</button>
+<button id="nc" onclick="toggleNiche()" class="opt">Niche + cleat</button>
+<button id="cw" onclick="toggleCW()" class="opt">Control wall joint</button>
+<button id="tl" onclick="cycleTile()" class="opt">Tile colour</button>
+<button id="lg" onclick="cycleLedge()" class="opt">Shower ledge</button>
+<button id="sk" onclick="toggleSink()" class="opt">Sink</button>
+<button id="bx" onclick="toggleBox()" class="opt">Toilet box</button>
+<button id="qz" onclick="toggleQuartz()" class="opt">Quartz</button>
+<button id="cd" onclick="toggleCabDoors()" class="opt">Cabinet doors</button>
+<button id="rd" onclick="toggleRoomDoor()" class="opt">Bathroom door</button>
+<button id="sd" onclick="toggleStuds()" class="opt">Stud lines</button>
+<button id="fin" onclick="toggleFinish()" class="opt">Finish</button>
+<label style="font-size:13px;color:var(--text-secondary);display:flex;align-items:center;gap:8px">Light level <input id="lv" type="range" min="30" max="140" value="75" step="5" style="width:140px"><span id="lvo">75%</span></label>
+</div>
+<p style="font-size:13px;color:var(--text-secondary);margin:10px 0 0">Drag to look around, scroll to change lens width.</p>
+<style>
+button.opt,button.vw{padding:6px 12px;border:0.5px solid var(--border-strong);border-radius:var(--radius);background:transparent;color:var(--text-primary);font-size:13px;cursor:pointer}
+button.vw.on{border:1.5px solid var(--text-primary)}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const wrap=document.getElementById('wrap');
+const W=()=>wrap.clientWidth,H=()=>wrap.clientHeight;
+const scene=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(70,W()/H(),0.5,2000);
+const ren=new THREE.WebGLRenderer({antialias:true,logarithmicDepthBuffer:true});
+ren.setPixelRatio(Math.min(devicePixelRatio,2));ren.setSize(W(),H());
+ren.shadowMap.enabled=true;ren.shadowMap.type=THREE.PCFSoftShadowMap;
+wrap.appendChild(ren.domElement);
+scene.background=new THREE.Color(0x1c1c1c);
+const lights=[];
+const hemi=new THREE.HemisphereLight(0xfffaf2,0x6d6a66,0.5);scene.add(hemi);lights.push([hemi,0.5]);
+function pl(c,i,x,y,z,sh){const l=new THREE.PointLight(c,i,280,1);l.position.set(x,y,z);if(sh){l.castShadow=true;l.shadow.mapSize.set(1024,1024);l.shadow.bias=-0.003;}scene.add(l);lights.push([l,i]);return l;}
+pl(0xfff4e6,0.42,43,104,30,true);
+pl(0xfff4e6,0.3,9,105,20,true);
+pl(0xfff4e6,0.3,9,105,46,false);
+pl(0xdfeaff,0.16,63,68,52,false);
+const sp=new THREE.SpotLight(0xfff2dc,0.5,120,1.15,0.6,1);sp.position.set(96,79,30);sp.target.position.set(96,20,30);scene.add(sp);scene.add(sp.target);lights.push([sp,0.5]);
+const S=(c,r,m,o={})=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:r,metalness:m||0},o));
+function box(x0,x1,y0,y1,z0,z1,mat,parent){const m=new THREE.Mesh(new THREE.BoxGeometry(x1-x0,y1-y0,z1-z0),mat);m.position.set((x0+x1)/2,(y0+y1)/2,(z0+z1)/2);m.castShadow=m.receiveShadow=true;(parent||scene).add(m);return m;}
+function cyl(r,h,mat,x,y,z,rx,rz,parent){const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,32),mat);m.position.set(x,y,z);m.rotation.x=rx||0;m.rotation.z=rz||0;m.castShadow=m.receiveShadow=true;(parent||scene).add(m);return m;}
+function cone(rt,rb,h,mat,x,y,z,parent){const m=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,48,1,true),mat);m.position.set(x,y,z);m.castShadow=m.receiveShadow=true;(parent||scene).add(m);return m;}
+function sph(r,mat,x,y,z,parent){const m=new THREE.Mesh(new THREE.SphereGeometry(r,24,16),mat);m.scale.y=0.85;m.position.set(x,y,z);m.castShadow=true;(parent||scene).add(m);return m;}
+const wall=S(0xe8e6e1,0.9),black=S(0x1a1a1a,0.4,0.45),matteBlack=S(0x232323,0.75,0.05,{side:THREE.DoubleSide}),white=S(0xf8f8f6,0.25),graphite=S(0x44484d,0.55),graphiteIn=S(0x3a3d42,0.8),quartzM=S(0xdedcd6,0.3),glow=S(0xffffff,1,0,{emissive:0xfff1d6,emissiveIntensity:1}),cab=S(0xd9d8d3,0.65),cabIn=S(0xeeede9,0.8);
+const stone=S(0xf0eee9,0.28),lidM=S(0xf6f6f4,0.25),seatM=S(0xededea,0.25),speaker=S(0x3b3d40,0.85),brush=S(0xf0f0ee,0.35),outletM=S(0xf4f4f2,0.4),silver=S(0xa7a9ac,0.3,0.6),sinkM=S(0xfcfcfb,0.15),drainM=S(0x1e1e1e,0.4,0.5),pipeM=S(0xbfc2c5,0.35,0.4),recessM=S(0xb6b5b0,0.75),studM=S(0xc8a46a,0.9);
+const itemA=S(0x6f7f8c,0.9),itemB=S(0x3d5a73,0.9),itemC=S(0xf2f2ef,0.8),itemD=S(0x8f9aa3,0.7),itemE=S(0xc9c4ba,0.9),itemF=S(0x9fb3c2,0.8);
+const mirrorM=S(0xa3adb3,0.3,0.4);
+const wallTile=S(0xf7f7f5,0.25),floorTile=S(0x9d9c97,0.45),groutM=S(0xb9b8b3,0.9),ledgeM=S(0xf7f7f5,0.3);
+const ce=new THREE.Mesh(new THREE.PlaneGeometry(110,60),S(0xf2f1ed,0.95));ce.rotation.x=Math.PI/2;ce.position.set(55,110,30);scene.add(ce);
+box(-1,36,0,110,-1,0,wall);box(63,111,0,110,-1,0,wall);box(36,63,83,110,-1,0,wall);
+box(-1,111,0,110,60,61,wall);box(-1,0,0,110,-1,61,wall);box(110,111,0,110,-1,61,wall);
+box(33,36,0,83,-0.5,0.8,white);box(63,66,0,83,-0.5,0.8,white);box(33,66,80,83,-0.5,0.8,white);
+const gTile=new THREE.Group();scene.add(gTile);
+let cwCentered=true,gray=false;
+const e=0.07;
+function rebuildTile(){
+ while(gTile.children.length)gTile.remove(gTile.children[0]);
+ wallTile.color.setHex(gray?0xa9a8a3:0xf7f7f5);
+ floorTile.color.setHex(gray?0x8e8d88:0x9d9c97);
+ box(0,110,-0.04,0.02,0,60,groutM,gTile);
+ const F=(x0,x1,z0,z1)=>box(x0+e,x1-e,0.02,0.07,z0+e,z1-e,floorTile,gTile);
+ F(0,16.5,0,12);F(16.5,33,0,12);F(0,33,12,36);F(0,33,36,60);
+ [[0,12],[12,36],[36,60]].forEach(([z0,z1])=>{F(36.5,84.5,z0,z1);F(84.5,110,z0,z1);});
+ const rows=[[0,48],[48,96],[96,110]];
+ box(0.18,0.26,0,110,0,60,groutM,gTile);
+ [[36,60],[12,36],[0,12]].forEach(([z0,z1])=>rows.forEach(([y0,y1])=>box(0.26,0.33,y0+e,y1-e,z0+e,z1-e,wallTile,gTile)));
+ const cols=cwCentered?[[0,16.5],[16.5,33]]:[[0,24],[24,33]];
+ box(0,33,0,110,59.74,59.82,groutM,gTile);
+ rows.forEach(([y0,y1])=>cols.forEach(([x0,x1])=>box(x0+e,x1-e,y0+e,y1-e,59.67,59.74,wallTile,gTile)));
+ box(0,33,0,110,0.18,0.26,groutM,gTile);
+ rows.forEach(([y0,y1])=>cols.forEach(([x0,x1])=>box(x0+e,x1-e,y0+e,y1-e,0.26,0.33,wallTile,gTile)));
+ document.getElementById('tl').textContent='Tile colour: '+(gray?'concrete gray':'white');
+ document.getElementById('cw').textContent='Control wall joint: '+(cwCentered?'centered (16.5 + 16.5)':'full tile + 9 in cut');
+}
+rebuildTile();
+[[9,20],[9,46]].forEach(([x,z])=>{const d=new THREE.Mesh(new THREE.CircleGeometry(2,24),glow);d.rotation.x=Math.PI/2;d.position.set(x,109.9,z);scene.add(d);});
+box(38,48,109.5,110,25,35,S(0xf5f5f3,0.6));
+box(40.5,45.5,109.45,109.55,27.5,32.5,glow);
+box(33,36.5,0,2.5,0,60,quartzM);
+box(10.5,22.5,0.06,0.3,1.4,4.15,drainM);
+const gl=box(34.5,35,2.5,80,0.5,30,new THREE.MeshStandardMaterial({color:0xbad6e6,roughness:0.05,metalness:0.1,transparent:true,opacity:0.18,depthWrite:false}));gl.castShadow=false;
+box(15.2,16.8,83.5,84.5,0,8,black);
+cyl(0.55,14,black,16,78,8);
+cyl(4.6,0.9,black,16,84.6,8);
+cyl(1.5,5.5,black,17.6,72.5,8);box(16.6,17.2,70,76,7.4,8.6,black);
+cyl(3.62,0.65,black,16.5,55.5,59.38,Math.PI/2,0);
+cyl(1.05,1.5,black,16.5,58.2,58.9,Math.PI/2,0);
+cyl(1.05,1.5,black,16.5,52.8,58.9,Math.PI/2,0);
+box(16.2,16.8,50.1,60.9,58.2,58.8,black);
+function hook(x,y){cyl(1.0,0.45,black,x,y,59.45,Math.PI/2,0);cyl(0.34,1.2,black,x,y,58.75,Math.PI/2,0);cyl(0.82,0.5,black,x,y,58.1,Math.PI/2,0);}
+const ledgeT=new THREE.Group(),ledgeQ=new THREE.Group();scene.add(ledgeT);scene.add(ledgeQ);
+box(0,33,0,24,57,60,ledgeM,ledgeT);
+box(0,33,0,22.5,57,60,ledgeM,ledgeQ);box(-0.2,33,22.5,24,56.8,60,stone,ledgeQ);
+const gStuds=new THREE.Group();scene.add(gStuds);
+[12,28,44,60].forEach(z=>{box(0.34,0.4,47,100,z-0.4,z+0.4,studM,gStuds);});
+const gNiche=new THREE.Group();scene.add(gNiche);
+box(0.34,0.9,50,70,30,42,recessM,gNiche);
+box(0.34,1.5,70,71.6,29.6,42.4,silver,gNiche);
+cyl(1.1,6,S(0x2b2b2b,0.5),2,53,33,0,0,gNiche);cyl(1.1,5,brush,2,52.5,36.5,0,0,gNiche);
+const mirL=new THREE.Group(),mirS=new THREE.Group();gNiche.add(mirL);gNiche.add(mirS);
+box(1.5,2,51,71,28,44,mirrorM,mirL);box(1.4,1.5,50.6,71.4,27.6,44.4,S(0x8e9295,0.4,0.5),mirL);
+box(1.5,2,55,71,30,42,mirrorM,mirS);box(1.4,1.5,54.6,71.4,29.6,42.4,S(0x8e9295,0.4,0.5),mirS);
+const cubbyB=new THREE.Group(),cubbyA=new THREE.Group();scene.add(cubbyB);scene.add(cubbyA);
+box(11,21,88,96,0.33,0.75,recessM,cubbyB);
+box(14,18,88.4,91,0.75,1.05,S(0x2f3336,0.5),cubbyB);
+box(11,21,86,94,59.2,59.6,recessM,cubbyA);
+box(14,18,86.4,89,58.9,59.2,S(0x2f3336,0.5),cubbyA);
+const gBack=new THREE.Group(),gVert=new THREE.Group();scene.add(gBack);scene.add(gVert);
+cyl(0.625,36,black,2.8,36,36,Math.PI/2,0,gBack);
+[18,54].forEach(z=>{cyl(1.2,2.4,black,1.4,36,z,0,Math.PI/2,gBack);});
+cyl(0.625,24,black,29,48,57.1,0,0,gVert);
+[36,60].forEach(y=>{cyl(1.2,2.4,black,29,y,58.5,Math.PI/2,0,gVert);});
+const wf=new THREE.CircleGeometry(21,8);wf.rotateZ(Math.PI/8);const wfm=new THREE.Mesh(wf,S(0xffffff,0.4,0,{side:THREE.DoubleSide}));wfm.position.set(63,68,59.6);wfm.rotation.y=Math.PI;wfm.scale.x=38/40;scene.add(wfm);
+const wg=new THREE.CircleGeometry(17,8);wg.rotateZ(Math.PI/8);const wgm=new THREE.Mesh(wg,S(0xcfe2f0,0.2,0,{side:THREE.DoubleSide,emissive:0x8fb6d6,emissiveIntensity:0.6}));wgm.position.set(63,68,59.4);wgm.rotation.y=Math.PI;wgm.scale.x=38/40;scene.add(wgm);
+cyl(0.6,24,black,68.5,56,2.5);cyl(0.6,24,black,85.5,56,2.5);
+[45,50,55,60,65,68].forEach(y=>cyl(0.4,17,black,77,y,2.5,0,Math.PI/2));
+box(70,84,48,64.5,3.3,4.6,itemA);
+box(68,78,1,5,0,0.3,S(0x777777,0.5,0.5));
+box(76.5,83.5,23,29,0,0.5,S(0x2a2a2a,0.45,0.3));cyl(2.2,5.5,white,80,26,1.6,0,Math.PI/2);
+hook(40.2,64);hook(86,64);hook(90,64);
+box(83,89,48,63,56,57.4,itemB);
+const gVan=new THREE.Group();scene.add(gVan);
+const VF=91;
+box(VF,93,32.5,34,36,60,stone,gVan);box(106,110,32.5,34,36,60,stone,gVan);
+box(93,106,32.5,34,36,40,stone,gVan);box(93,106,32.5,34,56,60,stone,gVan);
+box(VF,VF+0.8,10,32.5,36,60,graphite,gVan);
+box(VF+0.8,110,10,32.5,36,36.8,graphite,gVan);box(VF+0.8,110,10,32.5,59.2,60,graphite,gVan);
+box(VF+0.8,110,10,10.8,36.8,59.2,graphiteIn,gVan);box(109.2,110,10.8,32.5,36.8,59.2,graphiteIn,gVan);
+box(VF-0.4,VF,25.5,27.5,42,54,black,gVan);
+box(92.6,106.4,32.3,32.5,39.6,56.4,sinkM,gVan);
+box(93,106,26.6,27,40,56,sinkM,gVan);
+box(92.8,93,27,32.3,39.8,56.2,sinkM,gVan);box(106,106.2,27,32.3,39.8,56.2,sinkM,gVan);
+box(92.8,106.2,27,32.3,39.8,40,sinkM,gVan);box(92.8,106.2,27,32.3,56,56.2,sinkM,gVan);
+cyl(0.85,0.25,drainM,99.5,27.05,48,0,0,gVan);
+cyl(0.7,5,pipeM,99.5,24,48,0,0,gVan);cyl(0.7,8,pipeM,103.5,21.6,48,0,Math.PI/2,gVan);
+cyl(1.3,0.6,black,109.7,41.5,48,0,Math.PI/2,gVan);
+box(100.6,109.4,41.1,41.9,47.4,48.6,black,gVan);box(100.6,101.3,38.3,41.9,47.4,48.6,black,gVan);
+[44,52].forEach(z=>{cyl(1,0.5,black,109.75,41.5,z,0,Math.PI/2,gVan);box(107,109.5,41.1,41.9,z-0.35,z+0.35,black,gVan);});
+box(109.2,110,34,38,36,60,stone,gVan);box(VF,110,34,38,59.2,60,stone,gVan);
+const gPed=new THREE.Group();scene.add(gPed);
+cone(8.6,6.2,33,matteBlack,101,16.5,48,gPed);
+cyl(8.6,1.2,matteBlack,101,32.6,48,0,0,gPed);
+cyl(7.6,0.4,S(0x1b1b1b,0.6),101,31.9,48,0,0,gPed);
+cyl(6.2,0.6,matteBlack,101,0.3,48,0,0,gPed);
+cyl(0.65,11,black,106.4,38,48,0,0,gPed);
+box(102.6,106.4,42.4,43.6,47.4,48.6,black,gPed);
+const bt=cyl(8.2,16,white,90.6,8,16);bt.scale.x=1.22;
+const st=cyl(8.5,1.4,seatM,90.8,16.9,16);st.scale.x=1.2;
+box(96.5,100,16.2,19.6,8.4,23.6,seatM);
+const ltC=cyl(8.4,1,lidM,90.8,18.1,16);ltC.scale.x=1.18;
+box(96.5,109.5,0,20,8.2,23.8,white);
+box(85.5,87.5,34,41,0,0.9,silver);box(85.3,87.7,35.5,37,0,1.2,S(0x9a9ca0,0.4,0.5));
+const gBox=new THREE.Group();scene.add(gBox);
+box(100.5,110,32.5,34,0,36,stone,gBox);
+box(109.2,110,34,38,0,36,stone,gBox);box(100.5,110,34,38,0,0.8,stone,gBox);
+box(100.2,101,20,32.5,0,36,graphite,gBox);
+box(100.2,101,0,20,0,6.6,graphite,gBox);box(100.2,101,0,20,25.4,36,graphite,gBox);
+box(101,110,0,20,5.8,6.6,graphite,gBox);box(101,110,0,20,25.4,26.2,graphite,gBox);
+box(100.1,100.2,24.5,26,8.5,12,S(0x1a1c1f,0.6),gBox);
+box(108.9,109.2,40,43.5,26,30.5,outletM,gBox);
+cyl(1.3,1,brush,105.8,34.5,29,0,0,gBox);cyl(0.5,7,brush,105.8,38.5,29,0,0,gBox);
+sph(1.95,speaker,105.8,35.7,8,gBox);
+const gOpen=new THREE.Group();scene.add(gOpen);
+box(101,109.5,20,28,8.5,23.5,white,gOpen);
+box(101,109.5,28,28.9,8.3,23.7,white,gOpen);
+box(100.4,101.6,25.4,26.4,9,11.4,black,gOpen);
+box(109.2,109.9,16,19.5,3,7.2,outletM,gOpen);
+box(109.3,109.8,43.6,80,35.6,58.4,glow);
+box(108.9,109.3,44,80,36,58,mirrorM);
+box(108.7,108.9,44,45.5,36,58,glow);box(108.7,108.9,78.5,80,36,58,glow);
+box(108.7,108.9,44,80,36,37.5,glow);box(108.7,108.9,44,80,56.5,58,glow);
+const cabG=new THREE.Group();scene.add(cabG);let cabDoors=[],cabOpen=false;
+(function(){const f=91;
+box(f+0.8,110,79.4,80.2,0,60,cab,cabG);box(f+0.8,110,109.2,110,0,60,cab,cabG);box(109.2,110,80.2,109.2,0,60,cabIn,cabG);
+box(f+0.8,109.2,80.2,109.2,0,0.75,cab,cabG);box(f+0.8,109.2,80.2,109.2,59.25,60,cab,cabG);
+box(f+0.8,109.2,80.2,109.2,19.6,20.4,cab,cabG);box(f+0.8,109.2,80.2,109.2,39.6,40.4,cab,cabG);
+[90,99.5].forEach(y=>box(f+1.5,109.2,y,y+0.75,0.75,59.25,cabIn,cabG));
+box(f+3,108,80.2,86,3,17,itemA,cabG);box(f+3,108,86,89.5,3,17,itemB,cabG);box(f+4,108,90.75,96,23,30,itemC,cabG);
+box(f+5,108,80.2,85,43,56,itemD,cabG);box(f+4,108,100.25,106,5,16,itemE,cabG);box(f+4,108,100.25,105,44,56,itemF,cabG);
+box(f+1.4,f+2.6,79.1,79.4,1,59,glow,cabG);
+[[0.3,19.8],[20.2,39.8],[40.2,59.7]].forEach(([a,b])=>{const g=new THREE.Group();g.position.set(f,0,a);cabG.add(g);const w=b-a;box(0,0.8,79.4,109.7,0,w,cab,g);box(-0.5,0,81.5,82.2,w-7,w-1,black,g);cabDoors.push(g);});})();
+const dp=new THREE.Group();dp.position.set(36.5,0,0.5);dp.rotation.y=0;scene.add(dp);
+box(0,27,0,80,0,1.5,white,dp);box(23,25,35,37,1.5,4,black,dp);box(23,25,35,37,-2.5,0,black,dp);
+const mats=new Set();scene.traverse(o=>{if(o.isMesh)mats.add(o.material);});
+mats.forEach(m=>{m.userData.r=m.roughness;m.userData.m=m.metalness;m.userData.e=m.emissiveIntensity;});
+let matte=false,level=0.75;
+function applyFinish(){mats.forEach(m=>{if(m.transparent)return;if(matte){m.roughness=Math.max(m.userData.r,0.92);m.metalness=0;m.emissiveIntensity=m.userData.e*0.5;}else{m.roughness=m.userData.r;m.metalness=m.userData.m;m.emissiveIntensity=m.userData.e;}m.needsUpdate=true;});}
+function applyLevel(){lights.forEach(([l,b])=>l.intensity=b*level);}
+const VIEWS=[
+ ['s','From vanity, toward shower',[88,62,34],[0,58,26],76],
+ ['c','Control wall',[22,54,24],[18,54,60],78],
+ ['h','Back wall',[30,54,30],[0,52,34],80],
+ ['g','In the shower',[18,62,20],[10,56,56],84],
+ ['d','Head wall and niche',[26,66,40],[14,88,2],80],
+ ['win','Window wall',[62,60,16],[64,62,60],80],
+ ['fl','Floor from above',[55,96,30],[55,0,30],80],
+ ['v','From shower, toward vanity',[18,62,44],[110,56,28],76],
+ ['t','Vanity and toilet',[64,58,40],[110,32,18],72],
+ ['w','From the doorway',[46,66,4],[80,32,58],80]];
+const vbar=document.getElementById('views');
+VIEWS.forEach(([k,label])=>{const b=document.createElement('button');b.className='vw';b.dataset.k=k;b.textContent=label;b.onclick=()=>view(k);vbar.appendChild(b);});
+const lnames=['none','tiled, 24 in high x 3 in deep','quartz-capped, 24 in high'];
+const bnames=['36 in horizontal only','both (adds 24 in vertical at entry)','none'];
+const cnames=['door wall, above the head','control wall','none'];
+const mnames=['16 × 20 hung','12 × 16 hung','none (stored outside)'];
+let li=0,bi=0,ci=0,mi=0,nicheOn=true,studsOn=false,boxOn=true,pedestal=false,grayQ=false,roomOpen=false;
+function update(){
+ ledgeT.visible=li===1;ledgeQ.visible=li===2;
+ gBack.visible=bi<2;gVert.visible=bi===1;
+ cubbyB.visible=ci===0;cubbyA.visible=ci===1;
+ gNiche.visible=nicheOn;mirL.visible=mi===0;mirS.visible=mi===1;
+ gStuds.visible=studsOn;gBox.visible=boxOn;gOpen.visible=!boxOn;
+ gVan.visible=!pedestal;gPed.visible=pedestal;
+ document.getElementById('lg').textContent='Shower ledge: '+lnames[li];
+ document.getElementById('gb').textContent='Grab bars: '+bnames[bi];
+ document.getElementById('cu').textContent='Shaver niche: '+cnames[ci];
+ document.getElementById('mr').textContent='Mirror: '+mnames[mi];
+ document.getElementById('nc').textContent='Niche + cleat: '+(nicheOn?'on':'off');
+ document.getElementById('sd').textContent='Stud lines: '+(studsOn?'on':'off');
+ document.getElementById('bx').textContent='Toilet box + ledge: '+(boxOn?'on':'off');
+ document.getElementById('sk').textContent='Sink: '+(pedestal?'33 in black pedestal':'built-in vanity');
+ document.getElementById('qz').textContent='Quartz: '+(grayQ?'light concrete gray':'soft white');
+ document.getElementById('cd').textContent='Cabinet doors: '+(cabOpen?'open':'closed');
+ document.getElementById('rd').textContent='Bathroom door: '+(roomOpen?'open':'closed');
+ document.getElementById('fin').textContent='Finish: '+(matte?'matte':'realistic sheen');
+ render();}
+const look={yaw:0,pitch:0};const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function render(){ren.render(scene,cam);}
+function applyLook(){look.pitch=clamp(look.pitch,-1.35,1.35);const d=new THREE.Vector3(Math.cos(look.pitch)*Math.sin(look.yaw),Math.sin(look.pitch),Math.cos(look.pitch)*Math.cos(look.yaw));cam.lookAt(cam.position.clone().add(d));render();}
+function view(k){const v=VIEWS.find(a=>a[0]===k);if(!v)return;
+ cam.fov=v[4];cam.updateProjectionMatrix();cam.position.set(...v[2]);
+ const d=new THREE.Vector3(...v[3]).sub(cam.position).normalize();
+ look.yaw=Math.atan2(d.x,d.z);look.pitch=Math.asin(d.y);applyLook();
+ document.querySelectorAll('button.vw').forEach(b=>b.classList.toggle('on',b.dataset.k===k));}
+function toggleCW(){cwCentered=!cwCentered;rebuildTile();applyFinish();update();}
+function cycleTile(){gray=!gray;rebuildTile();applyFinish();update();}
+function cycleLedge(){li=(li+1)%3;update();}
+function cycleBars(){bi=(bi+1)%3;update();}
+function cycleCubby(){ci=(ci+1)%3;update();}
+function cycleMirror(){mi=(mi+1)%3;update();}
+function toggleNiche(){nicheOn=!nicheOn;update();}
+function toggleStuds(){studsOn=!studsOn;update();}
+function toggleBox(){boxOn=!boxOn;update();}
+function toggleSink(){pedestal=!pedestal;update();}
+function toggleQuartz(){grayQ=!grayQ;stone.color.setHex(grayQ?0xb8b6b0:0xf0eee9);update();}
+function toggleCabDoors(){cabOpen=!cabOpen;cabDoors.forEach(g=>g.rotation.y=cabOpen?-100*Math.PI/180:0);update();}
+function toggleRoomDoor(){roomOpen=!roomOpen;dp.rotation.y=roomOpen?-80*Math.PI/180:0;update();}
+function toggleFinish(){matte=!matte;applyFinish();update();}
+const lv=document.getElementById('lv'),lvo=document.getElementById('lvo');
+lv.addEventListener('input',()=>{level=lv.value/100;lvo.textContent=lv.value+'%';applyLevel();render();});
+let drag=null;
+wrap.addEventListener('pointerdown',ev=>{drag={x:ev.clientX,y:ev.clientY};wrap.setPointerCapture(ev.pointerId);wrap.style.cursor='grabbing';});
+wrap.addEventListener('pointermove',ev=>{if(!drag)return;const dx=ev.clientX-drag.x,dy=ev.clientY-drag.y;drag={x:ev.clientX,y:ev.clientY};look.yaw-=dx*0.004;look.pitch+=dy*0.004;applyLook();});
+const up=()=>{drag=null;wrap.style.cursor='grab';};
+wrap.addEventListener('pointerup',up);wrap.addEventListener('pointercancel',up);
+wrap.addEventListener('wheel',ev=>{ev.preventDefault();cam.fov=clamp(cam.fov+ev.deltaY*0.03,35,95);cam.updateProjectionMatrix();render();},{passive:false});
+new ResizeObserver(()=>{ren.setSize(W(),H());cam.aspect=W()/H();cam.updateProjectionMatrix();render();}).observe(wrap);
+applyFinish();applyLevel();update();view('s');
+</script>
