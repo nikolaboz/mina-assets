@@ -1,15 +1,18 @@
-<h2 class="sr-only">Lit 3D model of the home gym with rubber floor, three-panel white hallway and bath doors, dark gray Viper and leg machine, silver rack, plate stacks, squat bar, TV, window with daylight and linear lighting</h2>
+<h2 class="sr-only">Lit 3D model of the home gym with a second Viper cable tower on the window wall between the notch and the window, a Sorinex chest-supported row mountable on the second Viper or the rack, cabinets, ball and bench storage, rack, plates, squat bar, TV, leg machine, bench, doors, window and lighting</h2>
 <div id="wrap" style="position:relative;width:100%;height:480px;border-radius:12px;overflow:hidden;background:#1c1c1c;touch-action:none;cursor:grab"><div id="lbl" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div></div>
 <div class="hd">Views</div>
 <div id="views" class="row"></div>
 <div class="hd" style="margin-top:14px">Options</div>
 <div class="grid">
+<button id="o_v2" class="opt" onclick="cyc('v2')">Viper 2</button>
+<button id="o_cr" class="opt" onclick="cyc('cr')">Chest row</button>
+<button id="o_cb" class="opt" onclick="cyc('cb')">Cabinets</button>
+<button id="o_bs" class="opt" onclick="cyc('bs')">Ball + bench</button>
 <button id="o_ps" class="opt" onclick="cyc('ps')">Plates</button>
 <button id="o_wp" class="opt" onclick="cyc('wp')">Walls</button>
 <button id="o_lt" class="opt" onclick="cyc('lt')">Lighting</button>
 <button id="o_tv" class="opt" onclick="cyc('tv')">TV</button>
 <button id="o_ts" class="opt" onclick="cyc('ts')">TV size</button>
-<button id="o_cr" class="opt" onclick="cyc('cr')">Chest row</button>
 <button id="o_wn" class="opt" onclick="cyc('wn')">Window</button>
 <button id="o_rk" class="opt" onclick="cyc('rk')">Rack</button>
 <button id="o_lm" class="opt" onclick="cyc('lm')">Leg machine</button>
@@ -21,7 +24,7 @@
 <label style="font-size:13px;color:var(--text-secondary);display:flex;align-items:center;gap:8px">Room lights <input id="lv" type="range" min="0" max="140" value="75" step="5" style="width:120px"><span id="lvo" style="width:36px">75%</span></label>
 <label style="font-size:13px;color:var(--text-secondary);display:flex;align-items:center;gap:8px">Daylight <input id="dl" type="range" min="0" max="150" value="150" step="5" style="width:120px"><span id="dlo" style="width:36px">150%</span></label>
 </div>
-<p style="font-size:13px;color:var(--text-secondary);margin:10px 0 0">Drag to look around, scroll to change lens width.</p>
+<p style="font-size:13px;color:var(--text-secondary);margin:10px 0 0">Drag to look around, scroll to change lens width. Viper 2: post next to the window, stack toward the notch corner. Chest row on Viper 2 points straight out from the window wall.</p>
 <style>
 .hd{margin-top:12px;font-size:13px;color:var(--text-secondary)}
 .row{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
@@ -40,14 +43,15 @@ const ren=new THREE.WebGLRenderer({antialias:true});
 ren.setPixelRatio(Math.min(window.devicePixelRatio,2));ren.setSize(W(),H());
 ren.shadowMap.enabled=true;ren.shadowMap.type=THREE.PCFSoftShadowMap;
 wrap.insertBefore(ren.domElement,LB);
-const hexL=[],perL=[],mirL=[],day=[];
+const hexL=[],perL=[],mirL=[],cabL=[],day=[];
 const hemi=new THREE.HemisphereLight(0xfffaf2,0x6d6a66,0.42);scene.add(hemi);
 function pl(arr,c,i,x,y,z,sh,d){const l=new THREE.PointLight(c,i,d||420,1);l.position.set(x,y,z);if(sh){l.castShadow=true;l.shadow.mapSize.set(1024,1024);l.shadow.bias=-0.003;}scene.add(l);arr.push([l,i]);return l;}
 pl(hexL,0xfff4e6,0.45,72,104,62,true);pl(hexL,0xfff4e6,0.3,40,104,145);pl(hexL,0xfff4e6,0.3,110,104,145);pl(hexL,0xfff4e6,0.18,40,104,20);
 pl(perL,0xfff1e0,0.3,68,100,92,true);
-[[60,102,9],[100,102,9],[9,102,70],[9,102,150],[127,102,40],[127,102,140],[40,102,175],[100,102,175]].forEach(p=>pl(perL,0xffe8cc,0.14,p[0],p[1],p[2],false,200));
+[[60,102,9],[100,102,9],[9,102,70],[9,102,150],[114,100,40],[114,100,140],[40,102,175],[100,102,175]].forEach(p=>pl(perL,0xffe8cc,0.14,p[0],p[1],p[2],false,200));
 pl(mirL,0xfff1e0,0.14,68,100,92,false);
 [[130,82,105],[130,82,155],[82,82,178],[118,82,178]].forEach(p=>pl(mirL,0xffe8cc,0.2,p[0],p[1],p[2],false,180));
+[[124,84,30],[124,84,92],[124,84,154]].forEach(p=>pl(cabL,0xffe8cc,0.11,p[0],p[1],p[2],false,160));
 const sun=new THREE.DirectionalLight(0xfff0d8,1.1);sun.position.set(-230,165,95);sun.target.position.set(70,0,110);scene.add(sun);scene.add(sun.target);
 sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);const sc=sun.shadow.camera;sc.left=-230;sc.right=230;sc.top=230;sc.bottom=-230;sc.near=1;sc.far=800;sun.shadow.bias=-0.0015;
 const skyFill=new THREE.PointLight(0xe8f0ff,0.35,260,1.2);skyFill.position.set(18,78,112);scene.add(skyFill);
@@ -61,7 +65,8 @@ const wallM=SM(0xeeece6,0.92),trimM=SM(0xfafaf7,0.6),glassM=SM(0xdcebf5,0.05,0,0
 const vipM=SM(0x46494e,0.55,0.25),vipFr=SM(0x505358,0.5,0.35),vipPad=SM(0x3a3d41,0.65);
 const pRed=SM(0xb8413a,0.6),pBlue=SM(0x2f62ad,0.6),pGreen=SM(0x3f8a4a,0.6),pGray=SM(0x6f7277,0.5,0.4);
 const lmFrame=SM(0x55585d,0.5,0.35),lmPad=SM(0x484b50,0.62),lmStack=SM(0x42454a,0.55,0.25);
-const charM=SM(0x62656a,0.6,0.05),capM=SM(0x44474b,0.4,0.4),crM=SM(0x1f2022,0.6,0.3);
+const charM=SM(0x62656a,0.6,0.05),capM=SM(0x44474b,0.4,0.4),crM=SM(0x2a2c2f,0.6,0.3);
+const cabWhite=SM(0xf1f0eb,0.5),cabGray=SM(0x5b5e63,0.5,0.05),cabIn=SM(0x8b8a86,0.9);
 const glowM=new THREE.MeshStandardMaterial({color:0xffffff,emissive:0xffffff,emissiveIntensity:0.7});
 const linM=new THREE.MeshStandardMaterial({color:0xfff8ee,emissive:0xffe9cf,emissiveIntensity:1});
 const ghostM=new THREE.MeshBasicMaterial({colorWrite:false,depthWrite:false});
@@ -79,7 +84,8 @@ const ceil=box(0,136,110,111,0,184,SM(0xf4f3ef,0.95),null);
 const hexG=new THREE.Group();scene.add(hexG);
 (function(){const c=[72,56],r=22;for(let i=0;i<6;i++){const a1=i*Math.PI/3,a2=(i+1)*Math.PI/3;const x1=c[0]+r*Math.cos(a1),z1=c[1]+r*Math.sin(a1),x2=c[0]+r*Math.cos(a2),z2=c[1]+r*Math.sin(a2);const g=new THREE.Group();g.position.set((x1+x2)/2,108.8,(z1+z2)/2);g.rotation.y=Math.atan2(-(z2-z1),x2-x1);const m=new THREE.Mesh(new THREE.CylinderGeometry(0.9,0.9,r,12),glowM);m.rotation.z=Math.PI/2;g.add(m);hexG.add(g);}})();
 const perG=new THREE.Group();scene.add(perG);
-box(40,130,109.3,110,5.5,6.5,linM,perG,false);box(5.5,6.5,109.3,110,49,178,linM,perG,false);box(129.5,130.5,109.3,110,6,178,linM,perG,false);box(6,130,109.3,110,177.5,178.5,linM,perG,false);
+box(40,114,109.3,110,5.5,6.5,linM,perG,false);box(5.5,6.5,109.3,110,49,178,linM,perG,false);box(6,114,109.3,110,177.5,178.5,linM,perG,false);
+const perDoor=box(129.5,130.5,109.3,110,6,178,linM,perG,false);const perExt=[box(114,130,109.3,110,5.5,6.5,linM,perG,false),box(114,130,109.3,110,177.5,178.5,linM,perG,false)];
 const mirG=new THREE.Group();scene.add(mirG);
 box(134.4,136,83.6,84.8,81.5,183.5,alM,mirG,false);box(134.4,134.7,83.6,84.8,81.5,183.5,linM,mirG,false);
 box(61,135.5,83.6,84.8,182.4,184,alM,mirG,false);box(61,135.5,83.6,84.8,182.4,182.7,linM,mirG,false);
@@ -115,6 +121,22 @@ function buildPanels(h){const out=[];PSEG.forEach(([g,x0,x1,z0,z1,uw])=>{const g
  box(a0,a1,top,top+0.8,b0,b1,capM,grp,false);});return out;}
 const pan40=buildPanels(40),pan44=buildPanels(44);
 box(11,36,90,110,0,25,soffM);
+const cabG=new THREE.Group();scene.add(cabG);
+box(121,136,86,110,0.5,183.5,cabIn,cabG);
+const flaps=[];const DW=183/6;
+for(let i=0;i<6;i++){const z0=0.5+i*DW+0.15,z1=0.5+(i+1)*DW-0.15;const piv=new THREE.Group();piv.position.set(121,109.8,(z0+z1)/2);cabG.add(piv);
+ const d=box(-0.8,0,-23.6,0,-(z1-z0)/2,(z1-z0)/2,cabWhite,piv);flaps.push({piv,d});}
+box(121,121.3,87,109,0.5+2*DW+1,0.5+3*DW-1,SM(0x6e6d69,0.95),cabG,false);box(121,135,97.5,98.2,0.5+2*DW+0.5,0.5+3*DW-0.5,cabWhite,cabG,false);
+const bag=new THREE.Mesh(new THREE.TorusGeometry(6,2.2,12,24,Math.PI*1.3),SM(0x2e2f31,0.8));bag.rotation.set(Math.PI/2,0,0.4);bag.position.set(128,100.3,0.5+2.5*DW);cabG.add(bag);
+box(121.4,123,85.5,86,0.5,183.5,linM,cabG,false);
+const bsG=new THREE.Group();scene.add(bsG);
+const ring=new THREE.Mesh(new THREE.TorusGeometry(7,0.6,12,40),chromeM);ring.rotation.x=Math.PI/2;ring.position.set(50,86,14);ring.castShadow=true;bsG.add(ring);
+box(47,53,84.5,86,0.6,7.5,chromeM,bsG);box(46,54,80,90,0.6,1.2,steelM,bsG);
+const ball=new THREE.Mesh(new THREE.SphereGeometry(12.8,40,28),SM(0x4d7fbf,0.45));ball.position.set(50,96.7,14);ball.castShadow=true;ball.receiveShadow=true;bsG.add(ball);
+box(62,100,85,86.5,0.6,19,SM(0x3e4145,0.5,0.3),bsG);box(62,100,86.5,88,18,19,SM(0x3e4145,0.5,0.3),bsG);
+[66,96].forEach(x=>{box(x-1,x+1,78,85,0.6,1.4,steelM,bsG);const b=new THREE.Mesh(new THREE.BoxGeometry(1.2,1.2,Math.hypot(16,7)),steelM);b.position.set(x,81.5,9);b.rotation.x=Math.atan2(7,16);bsG.add(b);});
+box(64,98,86.5,88,3,17,SM(0x3a3c40,0.5,0.3),bsG);box(70,72,88,99,6,14,SM(0x3a3c40,0.5,0.3),bsG);box(90,92,88,99,6,14,SM(0x3a3c40,0.5,0.3),bsG);
+box(64,98,99,103,3,15,lmPad,bsG);box(64,70,88,93,4,16,lmPad,bsG);
 const ST=6.5;
 function makeTV(w,h){const g=new THREE.Group();box(-w/2,w/2,-h/2,h/2,ST,ST+1.6,SM(0x121314,0.5,0.2),g);box(-w/2+0.5,w/2-0.5,-h/2+0.5,h/2-0.5,ST+1.6,ST+1.7,SM(0x1b2430,0.25,0.3),g);
  box(-8,8,-6,6,0,0.8,steelM,g);box(-1.5,1.5,-1.5,1.5,0.8,ST,steelM,g);box(-10,10,-7,7,ST-0.8,ST,steelM,g);scene.add(g);return g;}
@@ -140,10 +162,12 @@ cyl(0.55,44,'x',23,57.6,44.3,chromeM,rack);cyl(1,8,'x',-3,57.6,44.3,chromeM,rack
 cyl(8.85,2.2,'x',-3.5,57.6,44.3,pBlue,rack);cyl(8.85,2.2,'x',49.5,57.6,44.3,pBlue,rack);
 [[11,pBlue],[30,pRed]].forEach(([y,m])=>{box(-3,0,y-3,y+3,7,10,rackLt,rack);cyl(1,9,'x',-7,y,8.5,chromeM,rack);cyl(8.85,2.2,'x',-4,y,8.5,m,rack);cyl(8.85,2.2,'x',-6.3,y,8.5,m,rack);
  box(46,49,y-3,y+3,7,10,rackLt,rack);cyl(1,9,'x',53,y,8.5,chromeM,rack);cyl(8.85,2.2,'x',50,y,8.5,m,rack);cyl(8.85,2.2,'x',52.3,y,8.5,m,rack);});
-const crow=new THREE.Group();rack.add(crow);crow.position.set(0,-12,-7.5);
-[[46.6,47.1],[50.9,51.4]].forEach(([z0,z1])=>{box(44,50,31,43,z0,z1,crM,crow);beam(47,36,55.5,44.5,z0,z1,5,crM,crow);beam(54,45.5,73,48.5,z0,z1,3.2,crM,crow);});
-cyl(0.9,6.5,'z',47.2,39.5,49,SM(0x111111,0.5),crow);cyl(0.9,6.5,'z',47.2,34.2,49,SM(0x111111,0.5),crow);
-box(61,73.5,50.2,50.8,44,54,crM,crow);box(61,73.5,50.8,53.6,43,55,lmPad,crow);
+function makeCrow(){const g=new THREE.Group();
+ [[46.6,47.1],[50.9,51.4]].forEach(([z0,z1])=>{box(44,50,31,43,z0,z1,crM,g);beam(47,36,55.5,44.5,z0,z1,5,crM,g);beam(54,45.5,73,48.5,z0,z1,3.2,crM,g);});
+ cyl(0.9,6.5,'z',47.2,39.5,49,SM(0x111111,0.5),g);cyl(0.9,6.5,'z',47.2,34.2,49,SM(0x111111,0.5),g);
+ box(61,73.5,50.2,50.8,44,54,crM,g);box(61,73.5,50.8,53.6,43,55,lmPad,g);return g;}
+const crowRack=makeCrow();rack.add(crowRack);crowRack.position.set(0,-12,-7.5);
+const crowV=makeCrow();scene.add(crowV);crowV.position.set(-39.9,-12,30);
 function hornStack(wall,u){const g=new THREE.Group();scene.add(g);
  [[14,6.4,3,pGreen],[31,4.6,3,pRed],[45,4,3,pBlue],[56,3.2,4,pGray]].forEach(([y,r,n,m])=>{
   if(wall==='T'){box(u-2,u+2,y-3,y+3,0.6,1.4,steelM,g);cyl(0.9,8,'z',u,y,5,chromeM,g);for(let i=0;i<n;i++)cyl(r,1.1,'z',u,y,2.2+i*1.25,m,g);}
@@ -162,6 +186,7 @@ function buildViper(flip){const g=new THREE.Group();const X=(a,b)=>flip?[35-b,35
  const hx=X(31,35);box(hx[0],hx[1],42,44,11,12.5,vipPad,g);
  return g;}
 const viper=buildViper(true);viper.position.set(0.6,0,180);viper.rotation.y=Math.PI/2;scene.add(viper);
+const viper2=buildViper(false);viper2.position.set(0.6,0,81.5);viper2.rotation.y=Math.PI/2;scene.add(viper2);
 const lmBase=new THREE.Group(),lmExt=new THREE.Group(),lmCurl=new THREE.Group();[lmBase,lmExt,lmCurl].forEach(g=>scene.add(g));
 box(63,65.5,0,56,170,183,lmFrame,lmBase);box(77.5,80,0,56,170,183,lmFrame,lmBase);box(63,80,53,56,170,183,lmFrame,lmBase);box(63,80,0,2.5,170,183,lmFrame,lmBase);
 box(66.5,76.5,2.5,32,172.5,180.5,lmStack,lmBase);cyl(0.4,50,'y',68,28,176.5,chromeM,lmBase);cyl(0.4,50,'y',75,28,176.5,chromeM,lmBase);
@@ -181,47 +206,53 @@ box(118,130,15,17.5,88,136,bPad);box(122,126,0,15,92,96,bLeg);box(122,126,0,15,1
 const dpiv=new THREE.Group();scene.add(dpiv);dpiv.position.set(136,0,46);
 box(-1.5,0,0,80,0,32,doorM,dpiv);moldX(dpiv,-1.85,-1.5,4.5,27.5);moldX(dpiv,0,0.35,4.5,27.5);cyl(1.1,4,'x',-0.75,36,28,brassM,dpiv);
 const RK=[{n:'15 in toward window',x:35.5},{n:'centered on rack wall',x:50.5}];
-const S={ps:0,wp:0,lt:0,tv:0,ts:0,cr:0,wn:0,rk:0,lm:0,dr:0,fl:1,lb:0};
+const S={v2:1,cr:1,cb:0,bs:1,ps:0,wp:0,lt:0,tv:0,ts:0,wn:0,rk:0,lm:0,dr:0,fl:1,lb:0};
 let tvLab=[88.6,110,175];
-const LABS=[['TV',()=>tvLab,()=>1],['Safety squat bar',()=>[103,96,6],()=>1],['Power cage',()=>[RK[S.rk].x+23,90,45],()=>1],['Rack plates',()=>[RK[S.rk].x-6,44,10],()=>1],['Rack plates',()=>[RK[S.rk].x+52,44,10],()=>1],['Chest-supported row',()=>[RK[S.rk].x+67,46,43],()=>S.cr],['Wall plates',()=>[19,66,3],()=>S.ps===0],['Wall plates',()=>[121,66,3],()=>S.ps===0],['Wall plates',()=>[3,66,62],()=>S.ps===1],['Wall plates',()=>[133,66,30],()=>S.ps===1],['Soffit',()=>[24,100,12],()=>1],['Viper cable tower',()=>[6,90,162],()=>1],['Hallway door',()=>[132,86,62],()=>1],['Leg extension / prone curl',()=>[92,62,165],()=>1],['Bench',()=>[124,24,112],()=>1],['Window',()=>[2,76,112],()=>1],['Bath door',()=>[47,88,184],()=>1]].map(a=>{const e=document.createElement('div');e.textContent=a[0];e.style.cssText='position:absolute;font-size:11px;color:#fff;background:rgba(0,0,0,0.6);padding:2px 6px;border-radius:4px;white-space:nowrap;transform:translate(-50%,-100%)';LB.appendChild(e);return {e,p:a[1],v:a[2]};});
+const LABS=[['Viper 2',()=>[6,90,64],()=>S.v2],['Chest-supported row',()=>S.cr===1?[27,48,79]:[RK[S.rk].x+67,46,43],()=>S.cr&&(S.cr===2||S.v2)],['Flap cabinets',()=>[121,112,92],()=>S.cb<3],['Yoga ball hoop',()=>[50,111,14],()=>S.bs],['Glute bench shelf',()=>[81,106,10],()=>S.bs],['TV',()=>tvLab,()=>1],['Safety squat bar',()=>[103,96,6],()=>1],['Power cage',()=>[RK[S.rk].x+23,78,45],()=>1],['Wall plates',()=>[19,66,3],()=>S.ps===0],['Wall plates',()=>[121,66,3],()=>S.ps===0],['Wall plates',()=>[3,66,62],()=>S.ps===1],['Wall plates',()=>[133,66,30],()=>S.ps===1],['Viper 1',()=>[6,90,162],()=>1],['Hallway door',()=>[132,82,62],()=>1],['Leg extension / prone curl',()=>[92,62,165],()=>1],['Bench',()=>[124,24,112],()=>1],['Window',()=>[2,76,112],()=>1],['Bath door',()=>[47,88,184],()=>1]].map(a=>{const e=document.createElement('div');e.textContent=a[0];e.style.cssText='position:absolute;font-size:11px;color:#fff;background:rgba(0,0,0,0.6);padding:2px 6px;border-radius:4px;white-space:nowrap;transform:translate(-50%,-100%)';LB.appendChild(e);return {e,p:a[1],v:a[2]};});
 let dayLevel=1.5,roomLevel=0.75;
 function applyLights(){hemi.intensity=0.4*roomLevel+0.08;
  hexL.forEach(([l,b])=>l.intensity=S.lt===2?b*roomLevel:0);perL.forEach(([l,b])=>l.intensity=S.lt===0?b*roomLevel*1.15:0);mirL.forEach(([l,b])=>l.intensity=S.lt===1?b*roomLevel*1.15:0);
+ cabL.forEach(([l,b])=>l.intensity=S.cb<3?b*roomLevel*1.15:0);
  glowM.emissiveIntensity=0.7*Math.min(1,roomLevel+0.2);linM.emissiveIntensity=Math.min(1.3,roomLevel+0.3);
  const k=S.wn===0?1:0.82;day.forEach(([l,b])=>l.intensity=b*dayLevel*k);}
-const PS=['A: both stacks on rack wall','B: window wall + door wall'],WP=['dark gray to 40 in','dark gray to 44 in (sill)','painted, no panels'],LT=['linear, ceiling perimeter','linear, top of mirrors','hex (current)'],TVW=['leg machine wall','door wall (current)'];
+const CR=['off','on Viper 2 (3×3 post)','on rack (toward door)'],CB=['white, closed','white, one flap open','dark gray, closed','hidden'],PS=['A: both stacks on rack wall','B: window wall + door wall'],WP=['dark gray to 40 in','dark gray to 44 in (sill)','painted, no panels'],LT=['linear, ceiling perimeter','linear, top of mirrors','hex (current)'],TVW=['leg machine wall','door wall (current)'];
 function update(){
  tvs.forEach((g,i)=>g.visible=i===S.ts);const t=TVS[S.ts],g=tvs[S.ts],cy=t.top-t.h/2;
  if(S.tv===1){g.position.set(136,cy,111);g.rotation.y=-Math.PI/2;tvLab=[136-ST-2,t.top+1,111];}else{const xc=63+7+t.w/2;g.position.set(xc,cy,184);g.rotation.y=Math.PI;tvLab=[xc,t.top+1,184-ST-2];}
  const a=S.wn===0?1.25:0;sashL.rotation.y=-a;sashR.rotation.y=a;
  rack.position.set(RK[S.rk].x,0,1);
- stA.forEach(s=>s.visible=S.ps===0);stB.forEach(s=>s.visible=S.ps===1);crow.visible=!!S.cr;
+ viper2.visible=!!S.v2;crowV.visible=S.cr===1&&!!S.v2;crowRack.visible=S.cr===2;
+ cabG.visible=S.cb<3;flaps.forEach((f,i)=>{f.d.material=S.cb===2?cabGray:cabWhite;f.d.userData.m=f.d.material;f.piv.rotation.z=(S.cb===1&&i===2)?-1.35:0;});
+ perDoor.visible=S.cb===3;perExt.forEach(m=>m.visible=S.cb===3);
+ bsG.visible=!!S.bs;
+ stA.forEach(s=>s.visible=S.ps===0);stB[0].visible=S.ps===1&&!S.v2;stB[1].visible=S.ps===1;
  pan40.forEach(p=>p.visible=S.wp===0);pan44.forEach(p=>p.visible=S.wp===1);
  perG.visible=S.lt===0;mirG.visible=S.lt===1;
  lmExt.visible=S.lm===0;lmCurl.visible=S.lm===1;
  dpiv.rotation.y=S.dr?-Math.PI/2:0;
  floor.material=S.fl?floorRub:floorLight;
  const T=(id,s)=>document.getElementById(id).textContent=s;
- T('o_ps','Plates: '+PS[S.ps]);T('o_wp','Walls: '+WP[S.wp]);T('o_lt','Lighting: '+LT[S.lt]);T('o_tv','TV: '+TVW[S.tv]);T('o_ts','TV size: '+t.n);
- T('o_cr','Chest row: '+(S.cr?'on':'off'));T('o_wn','Window: '+(S.wn?'closed':'open'));T('o_rk','Rack: '+RK[S.rk].n);T('o_lm','Leg machine: '+(S.lm?'prone curl':'extension'));
+ T('o_v2','Viper 2: '+(S.v2?'shown':'hidden'));T('o_cr','Chest row: '+(S.cr===1&&!S.v2?'on Viper 2 (Viper 2 hidden)':CR[S.cr]));
+ T('o_cb','Cabinets: '+CB[S.cb]);T('o_bs','Ball + bench: '+(S.bs?'shown':'hidden'));
+ T('o_ps','Plates: '+PS[S.ps]+(S.ps===1&&S.v2?' (window stack blocked)':''));T('o_wp','Walls: '+WP[S.wp]);T('o_lt','Lighting: '+LT[S.lt]);T('o_tv','TV: '+TVW[S.tv]);T('o_ts','TV size: '+t.n);
+ T('o_wn','Window: '+(S.wn?'closed':'open'));T('o_rk','Rack: '+RK[S.rk].n);T('o_lm','Leg machine: '+(S.lm?'prone curl':'extension'));
  T('o_dr','Hallway door: '+(S.dr?'open':'closed'));T('o_fl','Floor: '+(S.fl?'black rubber':'light (planning)'));T('o_lb','Labels: '+(S.lb?'on':'off'));
  applyLights();render();}
-const NUM={ps:2,wp:3,lt:3,tv:2,ts:3,cr:2,wn:2,rk:2,lm:2,dr:2,fl:2,lb:2};
+const NUM={v2:2,cr:3,cb:4,bs:2,ps:2,wp:3,lt:3,tv:2,ts:3,wn:2,rk:2,lm:2,dr:2,fl:2,lb:2};
 function cyc(k){S[k]=(S[k]+1)%NUM[k];update();}
 const VIEWS=[
  ['door','From hallway door',[126,64,64],[10,48,130],74],
+ ['v2v','Viper 2 and chest row',[110,62,95],[0,42,66],70],
+ ['v2row','Low row space, Viper 2',[3,44,64],[136,34,64],80],
  ['iso','Overhead corner, window / bath',[-70,230,270],[70,20,90],45],
  ['iso2','Overhead corner, rack / door',[215,230,-85],[66,20,95],45],
  ['top','Overhead plan',[68,300,93],[68,0,92],45],
+ ['cabv','Hallway wall cabinets',[30,60,95],[136,92,92],74],
+ ['hiv','Rack wall, high storage',[70,64,120],[72,94,0],70],
  ['bath','From bath door',[47,64,172],[60,52,0],74],
- ['win','From window',[10,64,112],[136,60,90],74],
  ['rack','Rack wall',[68,62,150],[68,50,0],70],
- ['ssbv','Rack wall, squat bar side',[70,60,95],[108,48,0],70],
- ['rowv','Rack and chest row',[118,54,120],[80,30,30],70],
- ['wopen','Window wall, from inside',[100,62,105],[0,60,92],70],
  ['tvl','Toward TV and bath door',[70,62,60],[80,70,184],70],
- ['tvd','Toward hallway door',[40,62,110],[136,55,70],70],
- ['wwall','Window wall and Viper',[100,62,110],[0,50,150],70],
+ ['wwall','Window wall, both Vipers',[110,62,115],[0,50,112],74],
  ['legc','Leg machine close-up',[92,58,118],[92,24,170],70]];
 const vbar=document.getElementById('views');
 VIEWS.forEach(([k,label])=>{const b=document.createElement('button');b.className='vw';b.dataset.k=k;b.textContent=label;b.onclick=()=>view(k);vbar.appendChild(b);});
