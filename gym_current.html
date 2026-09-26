@@ -1,20 +1,23 @@
-<h2 class="sr-only">Lit 3D model of the home gym with a second Viper cable tower on the window wall between the notch and the window, a Sorinex chest-supported row mountable on the second Viper or the rack, cabinets, ball and bench storage, rack, plates, squat bar, TV, leg machine, bench, doors, window and lighting</h2>
+<h2 class="sr-only">Lit 3D model of the home gym with eight room-level views, floating ceiling panel with accent reveal and perimeter training slots, rack, cabinets, Vipers, TV, leg machine and bench</h2>
 <div id="wrap" style="position:relative;width:100%;height:480px;border-radius:12px;overflow:hidden;background:#1c1c1c;touch-action:none;cursor:grab"><div id="lbl" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div></div>
 <div class="hd">Views</div>
 <div id="views" class="row"></div>
 <div class="hd" style="margin-top:14px">Options</div>
 <div class="grid">
-<button id="o_v2" class="opt" onclick="cyc('v2')">Viper 2</button>
+<button id="o_tm" class="opt" onclick="cyc('tm')">Time</button>
+<button id="o_ac" class="opt" onclick="cyc('ac')">Accent</button>
+<button id="o_sl" class="opt" onclick="cyc('sl')">Training slots</button>
+<button id="o_lt" class="opt" onclick="cyc('lt')">Lighting</button>
+<button id="o_rt" class="opt" onclick="cyc('rt')">Rack</button>
+<button id="o_rk" class="opt" onclick="cyc('rk')">Rack position</button>
 <button id="o_cr" class="opt" onclick="cyc('cr')">Chest row</button>
 <button id="o_cb" class="opt" onclick="cyc('cb')">Cabinets</button>
-<button id="o_bs" class="opt" onclick="cyc('bs')">Ball + bench</button>
-<button id="o_ps" class="opt" onclick="cyc('ps')">Plates</button>
+<button id="o_bs" class="opt" onclick="cyc('bs')">Ball + glute bench</button>
+<button id="o_v2" class="opt" onclick="cyc('v2')">Viper 2</button>
 <button id="o_wp" class="opt" onclick="cyc('wp')">Walls</button>
-<button id="o_lt" class="opt" onclick="cyc('lt')">Lighting</button>
 <button id="o_tv" class="opt" onclick="cyc('tv')">TV</button>
 <button id="o_ts" class="opt" onclick="cyc('ts')">TV size</button>
 <button id="o_wn" class="opt" onclick="cyc('wn')">Window</button>
-<button id="o_rk" class="opt" onclick="cyc('rk')">Rack</button>
 <button id="o_lm" class="opt" onclick="cyc('lm')">Leg machine</button>
 <button id="o_dr" class="opt" onclick="cyc('dr')">Hallway door</button>
 <button id="o_fl" class="opt" onclick="cyc('fl')">Floor</button>
@@ -24,7 +27,7 @@
 <label style="font-size:13px;color:var(--text-secondary);display:flex;align-items:center;gap:8px">Room lights <input id="lv" type="range" min="0" max="140" value="75" step="5" style="width:120px"><span id="lvo" style="width:36px">75%</span></label>
 <label style="font-size:13px;color:var(--text-secondary);display:flex;align-items:center;gap:8px">Daylight <input id="dl" type="range" min="0" max="150" value="150" step="5" style="width:120px"><span id="dlo" style="width:36px">150%</span></label>
 </div>
-<p style="font-size:13px;color:var(--text-secondary);margin:10px 0 0">Drag to look around, scroll to change lens width. Viper 2: post next to the window, stack toward the notch corner. Chest row on Viper 2 points straight out from the window wall.</p>
+<p style="font-size:13px;color:var(--text-secondary);margin:10px 0 0">Drag to look around, scroll to change lens width.</p>
 <style>
 .hd{margin-top:12px;font-size:13px;color:var(--text-secondary)}
 .row{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
@@ -43,15 +46,19 @@ const ren=new THREE.WebGLRenderer({antialias:true});
 ren.setPixelRatio(Math.min(window.devicePixelRatio,2));ren.setSize(W(),H());
 ren.shadowMap.enabled=true;ren.shadowMap.type=THREE.PCFSoftShadowMap;
 wrap.insertBefore(ren.domElement,LB);
-const hexL=[],perL=[],mirL=[],cabL=[],day=[];
+const hexL=[],coveL=[],mirL=[],cabL=[],raftL=[],slotL=[],winL=[],day=[];
 const hemi=new THREE.HemisphereLight(0xfffaf2,0x6d6a66,0.42);scene.add(hemi);
 function pl(arr,c,i,x,y,z,sh,d){const l=new THREE.PointLight(c,i,d||420,1);l.position.set(x,y,z);if(sh){l.castShadow=true;l.shadow.mapSize.set(1024,1024);l.shadow.bias=-0.003;}scene.add(l);arr.push([l,i]);return l;}
-pl(hexL,0xfff4e6,0.45,72,104,62,true);pl(hexL,0xfff4e6,0.3,40,104,145);pl(hexL,0xfff4e6,0.3,110,104,145);pl(hexL,0xfff4e6,0.18,40,104,20);
-pl(perL,0xfff1e0,0.3,68,100,92,true);
-[[60,102,9],[100,102,9],[9,102,70],[9,102,150],[114,100,40],[114,100,140],[40,102,175],[100,102,175]].forEach(p=>pl(perL,0xffe8cc,0.14,p[0],p[1],p[2],false,200));
+pl(hexL,0xfff4e6,0.45,72,104,62,true);pl(hexL,0xfff4e6,0.3,40,104,145);pl(hexL,0xfff4e6,0.3,110,104,145);pl(hexL,0xfff4e6,0.18,40,104,24);
+pl(coveL,0xfff1e0,0.26,68,100,92,true);
+[[131,105,40],[131,105,90],[131,105,140],[20,105,181],[60,105,181],[110,105,181],[4,105,62],[4,105,160]].forEach(p=>pl(coveL,0xffdcae,0.15,p[0],p[1],p[2],false,200));
+[[3,106,110],[133,106,100],[68,106,178],[68,106,23],[20,106,34]].forEach(p=>pl(raftL,0xffd9a8,0.1,p[0],p[1],p[2],false,140));
+pl(slotL,0xfff3e4,0.2,68,102,100,true);
+[[72,103,34],[126,103,102],[68,103,170],[10,103,112]].forEach(p=>pl(slotL,0xfff3e4,0.2,p[0],p[1],p[2],false,260));
+pl(winL,0xffe2b8,0.16,3,100,112,false,120);
 pl(mirL,0xfff1e0,0.14,68,100,92,false);
 [[130,82,105],[130,82,155],[82,82,178],[118,82,178]].forEach(p=>pl(mirL,0xffe8cc,0.2,p[0],p[1],p[2],false,180));
-[[124,84,30],[124,84,92],[124,84,154]].forEach(p=>pl(cabL,0xffe8cc,0.11,p[0],p[1],p[2],false,160));
+[[35,84,19],[75,84,19],[115,84,19]].forEach(p=>pl(cabL,0xffe8cc,0.11,p[0],p[1],p[2],false,160));
 const sun=new THREE.DirectionalLight(0xfff0d8,1.1);sun.position.set(-230,165,95);sun.target.position.set(70,0,110);scene.add(sun);scene.add(sun.target);
 sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);const sc=sun.shadow.camera;sc.left=-230;sc.right=230;sc.top=230;sc.bottom=-230;sc.near=1;sc.far=800;sun.shadow.bias=-0.0015;
 const skyFill=new THREE.PointLight(0xe8f0ff,0.35,260,1.2);skyFill.position.set(18,78,112);scene.add(skyFill);
@@ -61,7 +68,7 @@ function SM(c,r,m,o){const p={color:c,roughness:r===undefined?0.8:r,metalness:m|
 function box(x0,x1,y0,y1,z0,z1,mat,par,cs){const m=new THREE.Mesh(new THREE.BoxGeometry(x1-x0,y1-y0,z1-z0),mat);m.position.set((x0+x1)/2,(y0+y1)/2,(z0+z1)/2);m.castShadow=cs!==false&&!mat.transparent;m.receiveShadow=!mat.transparent;(par||scene).add(m);return m;}
 function cyl(r,len,ax,x,y,z,mat,par){const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,len,32),mat);if(ax==='x')m.rotation.z=Math.PI/2;if(ax==='z')m.rotation.x=Math.PI/2;m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;(par||scene).add(m);return m;}
 function beam(ax,ay,bx,by,z0,z1,th,mat,par){const len=Math.hypot(bx-ax,by-ay);const m=new THREE.Mesh(new THREE.BoxGeometry(len,th,z1-z0),mat);m.position.set((ax+bx)/2,(ay+by)/2,(z0+z1)/2);m.rotation.z=Math.atan2(by-ay,bx-ax);m.castShadow=true;m.receiveShadow=true;(par||scene).add(m);return m;}
-const wallM=SM(0xeeece6,0.92),trimM=SM(0xfafaf7,0.6),glassM=SM(0xdcebf5,0.05,0,0.22),mirrorM=SM(0xc9cbce,0.45,0.05),mframeM=SM(0xa9abae,0.5,0.1),steelM=SM(0x2f3236,0.5,0.4),rackM=SM(0xa3a6ab,0.4,0.6),rackLt=SM(0xc4c7cb,0.35,0.6),chromeM=SM(0xdadbe0,0.3,0.6),padM=SM(0x1d1d1d,0.7),doorM=SM(0xf3f2ec,0.7),doorMold=SM(0xfbfbf8,0.55),soffM=SM(0xEF9F27,0.8,0,0.55),darkM=SM(0x55524d,0.95),brassM=SM(0xb08d57,0.35,0.6),postM=SM(0xd2d4d8,0.35,0.5),alM=SM(0x9fa2a6,0.35,0.7);
+const wallM=SM(0xeeece6,0.92),trimM=SM(0xfafaf7,0.6),glassM=SM(0xdcebf5,0.05,0,0.22),mirrorM=SM(0xc9cbce,0.45,0.05),mframeM=SM(0xa9abae,0.5,0.1),steelM=SM(0x2f3236,0.5,0.4),rackM=SM(0xa3a6ab,0.4,0.6),rackLt=SM(0xc4c7cb,0.35,0.6),rackDk=SM(0x6b6e73,0.45,0.5),chromeM=SM(0xdadbe0,0.3,0.6),padM=SM(0x1d1d1d,0.7),doorM=SM(0xf3f2ec,0.7),doorMold=SM(0xfbfbf8,0.55),darkM=SM(0x55524d,0.95),brassM=SM(0xb08d57,0.35,0.6),postM=SM(0xd2d4d8,0.35,0.5),alM=SM(0x9fa2a6,0.35,0.7),plateM=SM(0xf7f6f2,0.4);
 const vipM=SM(0x46494e,0.55,0.25),vipFr=SM(0x505358,0.5,0.35),vipPad=SM(0x3a3d41,0.65);
 const pRed=SM(0xb8413a,0.6),pBlue=SM(0x2f62ad,0.6),pGreen=SM(0x3f8a4a,0.6),pGray=SM(0x6f7277,0.5,0.4);
 const lmFrame=SM(0x55585d,0.5,0.35),lmPad=SM(0x484b50,0.62),lmStack=SM(0x42454a,0.55,0.25);
@@ -69,6 +76,8 @@ const charM=SM(0x62656a,0.6,0.05),capM=SM(0x44474b,0.4,0.4),crM=SM(0x2a2c2f,0.6,
 const cabWhite=SM(0xf1f0eb,0.5),cabGray=SM(0x5b5e63,0.5,0.05),cabIn=SM(0x8b8a86,0.9);
 const glowM=new THREE.MeshStandardMaterial({color:0xffffff,emissive:0xffffff,emissiveIntensity:0.7});
 const linM=new THREE.MeshStandardMaterial({color:0xfff8ee,emissive:0xffe9cf,emissiveIntensity:1});
+const coveLed=new THREE.MeshStandardMaterial({color:0xfff2e0,emissive:0xffd9a8,emissiveIntensity:1});
+const slotM=new THREE.MeshStandardMaterial({color:0xf2f2f0,emissive:0xfff4e6,emissiveIntensity:1});
 const ghostM=new THREE.MeshBasicMaterial({colorWrite:false,depthWrite:false});
 function ghost(g,on){g.traverse(o=>{if(o.isMesh){if(o.userData.m===undefined)o.userData.m=o.material;o.material=on?ghostM:o.userData.m;}});}
 const cv=document.createElement('canvas');cv.width=cv.height=256;const cx=cv.getContext('2d');cx.fillStyle='#16181c';cx.fillRect(0,0,256,256);
@@ -78,14 +87,30 @@ const floorLight=SM(0xd9d5cb,0.92),floorRub=new THREE.MeshStandardMaterial({map:
 const fv=document.createElement('canvas');fv.width=512;fv.height=256;const fx=fv.getContext('2d');
 const gr=fx.createLinearGradient(0,0,0,256);gr.addColorStop(0,'#cfe3f2');gr.addColorStop(0.35,'#a9c98f');gr.addColorStop(1,'#4d6b3a');fx.fillStyle=gr;fx.fillRect(0,0,512,256);
 for(let i=0;i<900;i++){const g=90+Math.random()*90;fx.fillStyle='rgba('+Math.round(g*0.55)+','+Math.round(g)+','+Math.round(g*0.45)+','+(0.35+Math.random()*0.4)+')';fx.beginPath();fx.arc(Math.random()*512,40+Math.random()*216,3+Math.random()*12,0,Math.PI*2);fx.fill();}
-const outside=new THREE.Mesh(new THREE.PlaneGeometry(420,260),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(fv)}));outside.rotation.y=Math.PI/2;outside.position.set(-110,70,110);scene.add(outside);
+const outsideMat=new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(fv)});
+const outside=new THREE.Mesh(new THREE.PlaneGeometry(420,260),outsideMat);outside.rotation.y=Math.PI/2;outside.position.set(-110,70,110);scene.add(outside);
 const floor=box(0,136,-1,0,0,184,floorLight,null,false);
 const ceil=box(0,136,110,111,0,184,SM(0xf4f3ef,0.95),null);
 const hexG=new THREE.Group();scene.add(hexG);
-(function(){const c=[72,56],r=22;for(let i=0;i<6;i++){const a1=i*Math.PI/3,a2=(i+1)*Math.PI/3;const x1=c[0]+r*Math.cos(a1),z1=c[1]+r*Math.sin(a1),x2=c[0]+r*Math.cos(a2),z2=c[1]+r*Math.sin(a2);const g=new THREE.Group();g.position.set((x1+x2)/2,108.8,(z1+z2)/2);g.rotation.y=Math.atan2(-(z2-z1),x2-x1);const m=new THREE.Mesh(new THREE.CylinderGeometry(0.9,0.9,r,12),glowM);m.rotation.z=Math.PI/2;g.add(m);hexG.add(g);}})();
-const perG=new THREE.Group();scene.add(perG);
-box(40,114,109.3,110,5.5,6.5,linM,perG,false);box(5.5,6.5,109.3,110,49,178,linM,perG,false);box(6,114,109.3,110,177.5,178.5,linM,perG,false);
-const perDoor=box(129.5,130.5,109.3,110,6,178,linM,perG,false);const perExt=[box(114,130,109.3,110,5.5,6.5,linM,perG,false),box(114,130,109.3,110,177.5,178.5,linM,perG,false)];
+(function(){const c=[72,62],r=22;for(let i=0;i<6;i++){const a1=i*Math.PI/3,a2=(i+1)*Math.PI/3;const x1=c[0]+r*Math.cos(a1),z1=c[1]+r*Math.sin(a1),x2=c[0]+r*Math.cos(a2),z2=c[1]+r*Math.sin(a2);const g=new THREE.Group();g.position.set((x1+x2)/2,108.8,(z1+z2)/2);g.rotation.y=Math.atan2(-(z2-z1),x2-x1);const m=new THREE.Mesh(new THREE.CylinderGeometry(0.9,0.9,r,12),glowM);m.rotation.z=Math.PI/2;g.add(m);hexG.add(g);}})();
+function gradTex(dir){const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');let lg;
+ if(dir==='x+')lg=g.createLinearGradient(64,0,0,0);else if(dir==='x-')lg=g.createLinearGradient(0,0,64,0);else if(dir==='z+')lg=g.createLinearGradient(0,0,0,64);else lg=g.createLinearGradient(0,64,0,0);
+ lg.addColorStop(0,'rgba(255,214,160,0.95)');lg.addColorStop(0.35,'rgba(255,214,160,0.45)');lg.addColorStop(1,'rgba(255,214,160,0)');g.fillStyle=lg;g.fillRect(0,0,64,64);return new THREE.CanvasTexture(c);}
+const glowMats=[];
+function band(par,x0,x1,z0,z1,dir,y){const m=new THREE.MeshBasicMaterial({map:gradTex(dir),transparent:true,depthWrite:false,opacity:0.6});glowMats.push(m);const p=new THREE.Mesh(new THREE.PlaneGeometry(x1-x0,z1-z0),m);p.rotation.x=Math.PI/2;p.position.set((x0+x1)/2,y||109.85,(z0+z1)/2);par.add(p);}
+const glowCove=new THREE.Group(),glowRaft=new THREE.Group(),glowWin=new THREE.Group();[glowCove,glowRaft,glowWin].forEach(g=>scene.add(g));
+band(glowCove,100,136,16,184,'x+');band(glowCove,0,136,150,184,'z+');band(glowCove,0,34,43.6,82.5,'x-');band(glowCove,0,34,141,184,'x-');
+band(glowRaft,11,136,16,30,'z+');band(glowRaft,0,130,174,184,'z-');band(glowRaft,130,136,16,184,'x-');band(glowRaft,0,6,49,184,'x+');band(glowRaft,11,17,30,49,'x+');
+const whead=new THREE.MeshBasicMaterial({map:gradTex('z+'),transparent:true,depthWrite:false,opacity:0.5});glowMats.push(whead);
+const wh=new THREE.Mesh(new THREE.PlaneGeometry(55,60),whead);wh.rotation.set(0,Math.PI/2,Math.PI/2);wh.position.set(-1.2,76,111.75);glowWin.add(wh);
+const raftG=new THREE.Group();scene.add(raftG);
+const rs=new THREE.Shape();rs.moveTo(17,30);rs.lineTo(130,30);rs.lineTo(130,174);rs.lineTo(6,174);rs.lineTo(6,49);rs.lineTo(17,49);rs.lineTo(17,30);
+const raftMesh=new THREE.Mesh(new THREE.ExtrudeGeometry(rs,{depth:2,bevelEnabled:false}),SM(0xf6f5f1,0.95));raftMesh.rotation.x=Math.PI/2;raftMesh.position.y=109;raftMesh.receiveShadow=true;raftG.add(raftMesh);
+const slotG=new THREE.Group();raftG.add(slotG);
+box(23,124,106.7,107,33.4,34.6,slotM,slotG,false);
+box(125.4,126.6,106.7,107,36,168,slotM,slotG,false);
+box(12,124,106.7,107,169.4,170.6,slotM,slotG,false);
+box(9.4,10.6,106.7,107,55,168,slotM,slotG,false);
 const mirG=new THREE.Group();scene.add(mirG);
 box(134.4,136,83.6,84.8,81.5,183.5,alM,mirG,false);box(134.4,134.7,83.6,84.8,81.5,183.5,linM,mirG,false);
 box(61,135.5,83.6,84.8,182.4,184,alM,mirG,false);box(61,135.5,83.6,84.8,182.4,182.7,linM,mirG,false);
@@ -93,6 +118,8 @@ const gL=new THREE.Group(),gT=new THREE.Group(),gR=new THREE.Group(),gB=new THRE
 box(0,11,0,110,0,43,wallM,gL);
 box(-4,0,0,110,43,84,wallM,gL);box(-4,0,0,110,139.5,184,wallM,gL);box(-4,0,0,44,84,139.5,wallM,gL);box(-4,0,106,110,84,139.5,wallM,gL);
 box(-1,0.8,42.5,44,82.5,141,trimM,gL);box(-1,0.8,106,107.5,82.5,141,trimM,gL);box(-1,0.8,44,106,82.5,84,trimM,gL);box(-1,0.8,44,106,139.5,141,trimM,gL);
+box(-2,-0.4,105.2,106,85,138.5,coveLed,gL,false);
+box(0.6,0.95,34,39,109,113,plateM,gL,false);box(0.9,1.15,35.5,37.5,110.2,111.8,SM(0xd8d6d0,0.4),gL,false);
 const L=27.75;
 function sash(dir){const g=new THREE.Group();const z0=dir>0?0:-L,z1=dir>0?L:0;
  box(-1.6,0,44,46,z0,z1,trimM,g);box(-1.6,0,104,106,z0,z1,trimM,g);box(-1.6,0,44,106,dir>0?0:-2,dir>0?2:0,trimM,g);box(-1.6,0,44,106,dir>0?L-2:-L,dir>0?L:-L+2,trimM,g);
@@ -103,11 +130,18 @@ box(136,140,0,110,0,43,wallM,gR);box(136,140,0,110,81,184,wallM,gR);box(136,140,
 box(135.2,136,0,83,43,46,trimM,gR);box(135.2,136,0,83,78,81,trimM,gR);box(135.2,136,80,83,43,81,trimM,gR);
 box(135.4,136,0,83,81,184,mirrorM,gR);box(135.2,136,82.5,83.5,81,184,mframeM,gR);
 [98,116,133,150,167].forEach(z=>box(135.3,135.5,0,83,z-0.15,z+0.15,mframeM,gR));
+box(135.05,135.4,45,50,36.5,39.5,plateM,gR,false);cyl(0.9,0.6,'x',134.9,47.5,38,SM(0xc9c7c1,0.3,0.5),gR);
 box(0,33.5,0,110,184,188,wallM,gB);box(60.5,136,0,110,184,188,wallM,gB);box(33.5,60.5,83,110,184,188,wallM,gB);
 box(33.5,60.5,0,83,196,197,darkM,gB);box(33.5,60.5,-1,0,184,196,SM(0x2c2c2a,0.9),gB,false);
 box(60.5,136,0,83,183.4,184,mirrorM,gB);box(60.5,136,82.5,83.5,183.2,184,mframeM,gB);
 [79,98,117].forEach(x=>box(x-0.15,x+0.15,0,83,183.3,183.5,mframeM,gB));
 box(31,33.5,0,85,183,184.5,trimM,gB);box(60.5,63,0,85,183,184.5,trimM,gB);box(31,63,83,85.5,183,184.5,trimM,gB);
+const coveGs=[];
+function cove(side,d,a0,a1,par){const g=new THREE.Group();par.add(g);coveGs.push(g);
+ if(side==='x+'){box(136-d,136,100,100.75,a0,a1,wallM,g);box(136-d,136-d+0.75,100.75,103,a0,a1,wallM,g);box(134.4,135.4,100.75,101.4,a0,a1,coveLed,g,false);}
+ else if(side==='x-'){box(0,d,100,100.75,a0,a1,wallM,g);box(d-0.75,d,100.75,103,a0,a1,wallM,g);box(0.6,1.6,100.75,101.4,a0,a1,coveLed,g,false);}
+ else{box(a0,a1,100,100.75,184-d,184,wallM,g);box(a0,a1,100.75,103,184-d,184-d+0.75,wallM,g);box(a0,a1,100.75,101.4,182.6,183.6,coveLed,g,false);}}
+cove('x+',6,16,184,gR);cove('z+',4,0,130,gB);cove('x-',6,43.6,82.5,gL);cove('x-',6,141,180,gL);
 const RECTS=[[53,67],[34,50],[10,31]];
 function moldX(par,xa,xb,z0,z1){RECTS.forEach(([y0,y1])=>{box(xa,xb,y0,y0+1,z0,z1,doorMold,par,false);box(xa,xb,y1-1,y1,z0,z1,doorMold,par,false);box(xa,xb,y0,y1,z0,z0+1,doorMold,par,false);box(xa,xb,y0,y1,z1-1,z1,doorMold,par,false);});}
 function moldZ(par,za,zb,x0,x1){RECTS.forEach(([y0,y1])=>{box(x0,x1,y0,y0+1,za,zb,doorMold,par,false);box(x0,x1,y1-1,y1,za,zb,doorMold,par,false);box(x0,x0+1,y0,y1,za,zb,doorMold,par,false);box(x1-1,x1,y0,y1,za,zb,doorMold,par,false);});}
@@ -120,29 +154,31 @@ function buildPanels(h){const out=[];PSEG.forEach(([g,x0,x1,z0,z1,uw])=>{const g
  let a0=x0,a1=x1,b0=z0,b1=z1;if(x1-x0<1){if(x0<68)a1=x1+0.5;else a0=x0-0.5;}if(z1-z0<1){if(z0<92)b1=z1+0.5;else b0=z0-0.5;}
  box(a0,a1,top,top+0.8,b0,b1,capM,grp,false);});return out;}
 const pan40=buildPanels(40),pan44=buildPanels(44);
-box(11,36,90,110,0,25,soffM);
+const soffPlain=box(11,35,86,110,0,16,wallM);
 const cabG=new THREE.Group();scene.add(cabG);
-box(121,136,86,110,0.5,183.5,cabIn,cabG);
-const flaps=[];const DW=183/6;
-for(let i=0;i<6;i++){const z0=0.5+i*DW+0.15,z1=0.5+(i+1)*DW-0.15;const piv=new THREE.Group();piv.position.set(121,109.8,(z0+z1)/2);cabG.add(piv);
- const d=box(-0.8,0,-23.6,0,-(z1-z0)/2,(z1-z0)/2,cabWhite,piv);flaps.push({piv,d});}
-box(121,121.3,87,109,0.5+2*DW+1,0.5+3*DW-1,SM(0x6e6d69,0.95),cabG,false);box(121,135,97.5,98.2,0.5+2*DW+0.5,0.5+3*DW-0.5,cabWhite,cabG,false);
-const bag=new THREE.Mesh(new THREE.TorusGeometry(6,2.2,12,24,Math.PI*1.3),SM(0x2e2f31,0.8));bag.rotation.set(Math.PI/2,0,0.4);bag.position.set(128,100.3,0.5+2.5*DW);cabG.add(bag);
-box(121.4,123,85.5,86,0.5,183.5,linM,cabG,false);
+box(11,136,86,110,0.6,16,cabIn,cabG);
+const DOORS=[[11.15,34.85]];const DW=101/4;for(let i=0;i<4;i++)DOORS.push([35+i*DW+0.15,35+(i+1)*DW-0.15]);
+const flaps=DOORS.map(([x0,x1])=>{const w=x1-x0;const piv=new THREE.Group();piv.position.set((x0+x1)/2,109.8,16);cabG.add(piv);
+ const u=box(-w/2,w/2,-11.8,0,0,0.8,cabWhite,piv);const q=new THREE.Group();q.position.set(0,-11.8,0);piv.add(q);const l=box(-w/2,w/2,-11.8,0,0,0.8,cabWhite,q);return {piv,q,u,l};});
+const oi=3,ox0=DOORS[oi][0],ox1=DOORS[oi][1];
+box(ox0+1,ox1-1,87,109,15.6,15.9,SM(0x6e6d69,0.95),cabG,false);box(ox0+0.5,ox1-0.5,97.5,98.2,1,15.5,cabWhite,cabG,false);
+const bag=new THREE.Mesh(new THREE.TorusGeometry(6,2.2,12,24,Math.PI*1.3),SM(0x2e2f31,0.8));bag.rotation.set(Math.PI/2,0,0.4);bag.position.set((ox0+ox1)/2,100.3,8);cabG.add(bag);
+box(11,136,85.5,86,14.2,15.8,linM,cabG,false);
 const bsG=new THREE.Group();scene.add(bsG);
-const ring=new THREE.Mesh(new THREE.TorusGeometry(7,0.6,12,40),chromeM);ring.rotation.x=Math.PI/2;ring.position.set(50,86,14);ring.castShadow=true;bsG.add(ring);
-box(47,53,84.5,86,0.6,7.5,chromeM,bsG);box(46,54,80,90,0.6,1.2,steelM,bsG);
-const ball=new THREE.Mesh(new THREE.SphereGeometry(12.8,40,28),SM(0x4d7fbf,0.45));ball.position.set(50,96.7,14);ball.castShadow=true;ball.receiveShadow=true;bsG.add(ball);
-box(62,100,85,86.5,0.6,19,SM(0x3e4145,0.5,0.3),bsG);box(62,100,86.5,88,18,19,SM(0x3e4145,0.5,0.3),bsG);
-[66,96].forEach(x=>{box(x-1,x+1,78,85,0.6,1.4,steelM,bsG);const b=new THREE.Mesh(new THREE.BoxGeometry(1.2,1.2,Math.hypot(16,7)),steelM);b.position.set(x,81.5,9);b.rotation.x=Math.atan2(7,16);bsG.add(b);});
-box(64,98,86.5,88,3,17,SM(0x3a3c40,0.5,0.3),bsG);box(70,72,88,99,6,14,SM(0x3a3c40,0.5,0.3),bsG);box(90,92,88,99,6,14,SM(0x3a3c40,0.5,0.3),bsG);
-box(64,98,99,103,3,15,lmPad,bsG);box(64,70,88,93,4,16,lmPad,bsG);
+const ring=new THREE.Mesh(new THREE.TorusGeometry(7,0.6,12,40),chromeM);ring.rotation.x=Math.PI/2;ring.position.set(116,82.5,100);ring.castShadow=true;bsG.add(ring);
+box(122.5,135.4,81,82.5,97,103,chromeM,bsG);box(135.2,135.4,76,86,96,104,steelM,bsG);
+const ball=new THREE.Mesh(new THREE.SphereGeometry(12.8,40,28),SM(0x4d7fbf,0.45));ball.position.set(116,93.2,100);ball.castShadow=true;ball.receiveShadow=true;bsG.add(ball);
+const shM=SM(0x3e4145,0.5,0.3);
+box(117,135.4,85,86.5,126,156,shM,bsG);box(117,118.5,86.5,88,126,156,shM,bsG);
+[129,153].forEach(z=>{box(134.6,135.4,76,85,z-1,z+1,steelM,bsG);const b=new THREE.Mesh(new THREE.BoxGeometry(Math.hypot(15,8),1.2,1.2),steelM);b.position.set(127.5,81,z);b.rotation.z=Math.atan2(8,-15)+Math.PI;bsG.add(b);});
+const gs=new THREE.Shape();gs.moveTo(-8,0);gs.lineTo(8,0);gs.lineTo(4.5,12);gs.lineTo(-4.5,12);gs.lineTo(-8,0);
+const gb=new THREE.Mesh(new THREE.ExtrudeGeometry(gs,{depth:24,bevelEnabled:false}),SM(0x1e1f21,0.65));gb.position.set(126.5,86.5,129);gb.castShadow=true;bsG.add(gb);
 const ST=6.5;
 function makeTV(w,h){const g=new THREE.Group();box(-w/2,w/2,-h/2,h/2,ST,ST+1.6,SM(0x121314,0.5,0.2),g);box(-w/2+0.5,w/2-0.5,-h/2+0.5,h/2-0.5,ST+1.6,ST+1.7,SM(0x1b2430,0.25,0.3),g);
- box(-8,8,-6,6,0,0.8,steelM,g);box(-1.5,1.5,-1.5,1.5,0.8,ST,steelM,g);box(-10,10,-7,7,ST-0.8,ST,steelM,g);scene.add(g);return g;}
-const TVS=[{n:'42 in',w:37.2,h:21.2,top:108},{n:'55 in',w:48.6,h:28,top:109.5},{n:'65 in (current)',w:57.4,h:33,top:109}];
+ box(-8,8,-10,-2,0,0.8,steelM,g);box(-1.5,1.5,-7.5,-4.5,0.8,ST,steelM,g);box(-10,10,-9,5,ST-0.8,ST,steelM,g);scene.add(g);return g;}
+const TVS=[{n:'42 in',w:37.2,h:21.2,top:106},{n:'55 in',w:48.6,h:28,top:106},{n:'65 in (current)',w:57.4,h:33,top:106}];
 const tvs=TVS.map(t=>makeTV(t.w,t.h));
-const ssb=new THREE.Group();scene.add(ssb);ssb.position.set(103,0,0.6);
+const ssb=new THREE.Group();scene.add(ssb);ssb.position.set(135.4,0,24);ssb.rotation.y=-Math.PI/2;
 box(-4,4,0,3,0,8,steelM,ssb);box(-3,3,36,66,0,0.4,steelM,ssb);box(-1.5,1.5,62,64,0,7,steelM,ssb);
 cyl(1,14.75,'y',0,10.4,4,chromeM,ssb);
 const bb=new THREE.Mesh(new THREE.CylinderGeometry(0.75,0.75,7.3,20),chromeM);bb.position.set(0,21.2,5.25);bb.rotation.x=0.35;bb.castShadow=true;ssb.add(bb);
@@ -151,29 +187,40 @@ const tb=new THREE.Mesh(new THREE.CylinderGeometry(0.75,0.75,7.3,20),chromeM);tb
 cyl(1,14.75,'y',0,85.3,4,chromeM,ssb);cyl(1.4,1.2,'y',0,78.5,4,chromeM,ssb);cyl(1.4,1.2,'y',0,17.2,4,chromeM,ssb);
 box(-3.5,3.5,39.8,55.8,3.5,10,padM,ssb);box(-10.5,-3.5,39.4,43.4,4,9,padM,ssb);box(-10.5,-3.5,52.2,56.2,4,9,padM,ssb);
 cyl(0.7,5,'x',-13,41.4,6.5,steelM,ssb);cyl(0.7,5,'x',-13,54.2,6.5,steelM,ssb);
-const rack=new THREE.Group();scene.add(rack);
-[[0,7.5],[44,7.5],[0,40.5],[44,40.5]].forEach(([x,z])=>box(x,x+2,0,83,z,z+2,rackM,rack));
-box(-2,4,0,3,0,50,rackM,rack);box(42,48,0,3,0,50,rackM,rack);
-box(0,2,81,83,7.5,42.5,rackM,rack);box(44,46,81,83,7.5,42.5,rackM,rack);box(0,46,81,83,7.5,9.5,rackM,rack);
-cyl(0.7,46,'x',23,81.8,43.4,rackLt,rack);cyl(0.7,46,'x',23,78,43.4,rackLt,rack);
-cyl(0.55,40,'z',1,30,25,chromeM,rack);cyl(0.55,40,'z',45,30,25,chromeM,rack);
-box(-1.5,2,54,57,42,45.5,rackLt,rack);box(44,47.5,54,57,42,45.5,rackLt,rack);
-cyl(0.55,44,'x',23,57.6,44.3,chromeM,rack);cyl(1,8,'x',-3,57.6,44.3,chromeM,rack);cyl(1,8,'x',49,57.6,44.3,chromeM,rack);
-cyl(8.85,2.2,'x',-3.5,57.6,44.3,pBlue,rack);cyl(8.85,2.2,'x',49.5,57.6,44.3,pBlue,rack);
-[[11,pBlue],[30,pRed]].forEach(([y,m])=>{box(-3,0,y-3,y+3,7,10,rackLt,rack);cyl(1,9,'x',-7,y,8.5,chromeM,rack);cyl(8.85,2.2,'x',-4,y,8.5,m,rack);cyl(8.85,2.2,'x',-6.3,y,8.5,m,rack);
- box(46,49,y-3,y+3,7,10,rackLt,rack);cyl(1,9,'x',53,y,8.5,chromeM,rack);cyl(8.85,2.2,'x',50,y,8.5,m,rack);cyl(8.85,2.2,'x',52.3,y,8.5,m,rack);});
 function makeCrow(){const g=new THREE.Group();
  [[46.6,47.1],[50.9,51.4]].forEach(([z0,z1])=>{box(44,50,31,43,z0,z1,crM,g);beam(47,36,55.5,44.5,z0,z1,5,crM,g);beam(54,45.5,73,48.5,z0,z1,3.2,crM,g);});
  cyl(0.9,6.5,'z',47.2,39.5,49,SM(0x111111,0.5),g);cyl(0.9,6.5,'z',47.2,34.2,49,SM(0x111111,0.5),g);
  box(61,73.5,50.2,50.8,44,54,crM,g);box(61,73.5,50.8,53.6,43,55,lmPad,g);return g;}
-const crowRack=makeCrow();rack.add(crowRack);crowRack.position.set(0,-12,-7.5);
+const frRack=new THREE.Group();scene.add(frRack);
+[[0,7.5],[44,7.5],[0,40.5],[44,40.5]].forEach(([x,z])=>box(x,x+2,0,83,z,z+2,rackM,frRack));
+box(-2,4,0,3,0,50,rackM,frRack);box(42,48,0,3,0,50,rackM,frRack);
+box(0,2,81,83,7.5,42.5,rackM,frRack);box(44,46,81,83,7.5,42.5,rackM,frRack);box(0,46,81,83,7.5,9.5,rackM,frRack);
+cyl(0.7,46,'x',23,81.8,43.4,rackLt,frRack);cyl(0.7,46,'x',23,78,43.4,rackLt,frRack);
+cyl(0.55,40,'z',1,30,25,chromeM,frRack);cyl(0.55,40,'z',45,30,25,chromeM,frRack);
+box(-1.5,2,54,57,42,45.5,rackLt,frRack);box(44,47.5,54,57,42,45.5,rackLt,frRack);
+cyl(0.55,44,'x',23,57.6,44.3,chromeM,frRack);cyl(1,8,'x',-3,57.6,44.3,chromeM,frRack);cyl(1,8,'x',49,57.6,44.3,chromeM,frRack);
+cyl(8.85,2.2,'x',-3.5,57.6,44.3,pBlue,frRack);cyl(8.85,2.2,'x',49.5,57.6,44.3,pBlue,frRack);
+[[11,pBlue],[30,pRed]].forEach(([y,m])=>{box(-3,0,y-3,y+3,7,10,rackLt,frRack);cyl(1,9,'x',-7,y,8.5,chromeM,frRack);cyl(8.85,2.2,'x',-4,y,8.5,m,frRack);cyl(8.85,2.2,'x',-6.3,y,8.5,m,frRack);
+ box(46,49,y-3,y+3,7,10,rackLt,frRack);cyl(1,9,'x',53,y,8.5,chromeM,frRack);cyl(8.85,2.2,'x',50,y,8.5,m,frRack);cyl(8.85,2.2,'x',52.3,y,8.5,m,frRack);});
+const crowFR=makeCrow();frRack.add(crowFR);crowFR.position.set(0,-12,-7.5);
+const pr=new THREE.Group();scene.add(pr);
+const PW=50.8,PD=22;
+[[0,0],[PW-3,0],[0,PD-3],[PW-3,PD-3]].forEach(([x,z])=>{box(x,x+3,0.4,80,z,z+3,rackM,pr);box(x-1.5,x+4.5,0,0.4,z-1.5,z+4.5,rackDk,pr);});
+box(0,3,6,9,3,PD-3,rackM,pr);box(PW-3,PW,6,9,3,PD-3,rackM,pr);box(0,3,77,80,3,PD-3,rackM,pr);box(PW-3,PW,77,80,3,PD-3,rackM,pr);
+box(3,PW-3,72,80,0,3,rackM,pr);box(3,PW-3,73,79,-0.05,0,rackDk,pr,false);
+cyl(0.65,PW,'x',PW/2,78,PD-1.5,rackLt,pr);
+[[-0.5,3.5],[PW-3.5,PW+0.5]].forEach(([a,b])=>{box(a,b,53,59,PD,PD+1.5,rackDk,pr);box(a,b,53,55,PD+1.5,PD+4,rackDk,pr);});
+box(-0.5,3.5,33,37,PD-1,PD+22,rackDk,pr);const spR=box(PW-3.5,PW+0.5,33,37,PD-1,PD+22,rackDk,pr);
+cyl(0.55,44,'x',PW/2,57,PD+2.3,chromeM,pr);cyl(1,8,'x',PW/2-26,57,PD+2.3,chromeM,pr);cyl(1,8,'x',PW/2+26,57,PD+2.3,chromeM,pr);
+cyl(8.85,2.2,'x',PW/2-26.5,57,PD+2.3,pBlue,pr);cyl(8.85,2.2,'x',PW/2+26.5,57,PD+2.3,pBlue,pr);
+const prH=new THREE.Group();pr.add(prH);
+[[11,pBlue],[30,pRed]].forEach(([y,m])=>{cyl(1,9,'x',-4.5,y,1.5,chromeM,prH);cyl(8.85,2.2,'x',-1.6,y,1.5,m,prH);cyl(8.85,2.2,'x',-3.9,y,1.5,m,prH);
+ cyl(1,9,'x',PW+4.5,y,1.5,chromeM,prH);cyl(8.85,2.2,'x',PW+1.6,y,1.5,m,prH);cyl(8.85,2.2,'x',PW+3.9,y,1.5,m,prH);});
+const crowPR=makeCrow();pr.add(crowPR);crowPR.position.set(4.3,-12,-28.5);
 const crowV=makeCrow();scene.add(crowV);crowV.position.set(-39.9,-12,30);
-function hornStack(wall,u){const g=new THREE.Group();scene.add(g);
- [[14,6.4,3,pGreen],[31,4.6,3,pRed],[45,4,3,pBlue],[56,3.2,4,pGray]].forEach(([y,r,n,m])=>{
-  if(wall==='T'){box(u-2,u+2,y-3,y+3,0.6,1.4,steelM,g);cyl(0.9,8,'z',u,y,5,chromeM,g);for(let i=0;i<n;i++)cyl(r,1.1,'z',u,y,2.2+i*1.25,m,g);}
-  else if(wall==='L'){box(0.6,1.4,y-3,y+3,u-2,u+2,steelM,g);cyl(0.9,8,'x',5,y,u,chromeM,g);for(let i=0;i<n;i++)cyl(r,1.1,'x',2.2+i*1.25,y,u,m,g);}
-  else{box(134.6,135.4,y-3,y+3,u-2,u+2,steelM,g);cyl(0.9,8,'x',131,y,u,chromeM,g);for(let i=0;i<n;i++)cyl(r,1.1,'x',133.8-i*1.25,y,u,m,g);}});return g;}
-const stA=[hornStack('T',19),hornStack('T',121)],stB=[hornStack('L',62),hornStack('R',30)];
+function hornStack(u){const g=new THREE.Group();scene.add(g);
+ [[14,6.4,3,pGreen],[31,4.6,3,pRed],[45,4,3,pBlue],[56,3.2,4,pGray]].forEach(([y,r,n,m])=>{box(u-2,u+2,y-3,y+3,0.6,1.4,steelM,g);cyl(0.9,8,'z',u,y,5,chromeM,g);for(let i=0;i<n;i++)cyl(r,1.1,'z',u,y,2.2+i*1.25,m,g);});return g;}
+hornStack(19);hornStack(121);
 function buildViper(flip){const g=new THREE.Group();const X=(a,b)=>flip?[35-b,35-a]:[a,b];
  const b2=(a,b,y0,y1,z0,z1,m)=>{const[x0,x1]=X(a,b);return box(x0,x1,y0,y1,z0,z1,m,g);};
  b2(0,35,1,4,0,2.5,vipFr);b2(0,35,77,80,0,2.5,vipFr);b2(0,35,38,41,0,2.5,vipFr);
@@ -205,60 +252,63 @@ const bPad=SM(0x484b50,0.62),bLeg=SM(0x5a5d62,0.5,0.35);
 box(118,130,15,17.5,88,136,bPad);box(122,126,0,15,92,96,bLeg);box(122,126,0,15,128,132,bLeg);box(120,128,0,1.5,90,98,bLeg);box(120,128,0,1.5,126,134,bLeg);
 const dpiv=new THREE.Group();scene.add(dpiv);dpiv.position.set(136,0,46);
 box(-1.5,0,0,80,0,32,doorM,dpiv);moldX(dpiv,-1.85,-1.5,4.5,27.5);moldX(dpiv,0,0.35,4.5,27.5);cyl(1.1,4,'x',-0.75,36,28,brassM,dpiv);
-const RK=[{n:'15 in toward window',x:35.5},{n:'centered on rack wall',x:50.5}];
-const S={v2:1,cr:1,cb:0,bs:1,ps:0,wp:0,lt:0,tv:0,ts:0,wn:0,rk:0,lm:0,dr:0,fl:1,lb:0};
-let tvLab=[88.6,110,175];
-const LABS=[['Viper 2',()=>[6,90,64],()=>S.v2],['Chest-supported row',()=>S.cr===1?[27,48,79]:[RK[S.rk].x+67,46,43],()=>S.cr&&(S.cr===2||S.v2)],['Flap cabinets',()=>[121,112,92],()=>S.cb<3],['Yoga ball hoop',()=>[50,111,14],()=>S.bs],['Glute bench shelf',()=>[81,106,10],()=>S.bs],['TV',()=>tvLab,()=>1],['Safety squat bar',()=>[103,96,6],()=>1],['Power cage',()=>[RK[S.rk].x+23,78,45],()=>1],['Wall plates',()=>[19,66,3],()=>S.ps===0],['Wall plates',()=>[121,66,3],()=>S.ps===0],['Wall plates',()=>[3,66,62],()=>S.ps===1],['Wall plates',()=>[133,66,30],()=>S.ps===1],['Viper 1',()=>[6,90,162],()=>1],['Hallway door',()=>[132,82,62],()=>1],['Leg extension / prone curl',()=>[92,62,165],()=>1],['Bench',()=>[124,24,112],()=>1],['Window',()=>[2,76,112],()=>1],['Bath door',()=>[47,88,184],()=>1]].map(a=>{const e=document.createElement('div');e.textContent=a[0];e.style.cssText='position:absolute;font-size:11px;color:#fff;background:rgba(0,0,0,0.6);padding:2px 6px;border-radius:4px;white-space:nowrap;transform:translate(-50%,-100%)';LB.appendChild(e);return {e,p:a[1],v:a[2]};});
+const RT=['PR-5000, 16 in, 8 in off wall','PR-5000, 16 in, on the wall','current rack (Fitness Reality)'];
+const RK=[{n:'15 in toward window',c:58.5},{n:'centered on rack wall',c:73.5}];
+const S={tm:0,ac:1,sl:1,lt:0,rt:0,rk:0,cr:1,cb:0,bs:1,v2:1,wp:0,tv:0,ts:0,wn:0,lm:0,dr:0,fl:1,lb:0};
+let tvLab=[88.6,108,175];
+const LABS=[['Entrance switch: accent',()=>[134,52,38],()=>S.lt===0],['Training switch',()=>[1,42,111],()=>S.lt===0],['Floating panel',()=>[68,106.5,100],()=>S.lt===0],['Power rack',()=>[RK[S.rk].c,84,20],()=>1],['Chest-supported row',()=>S.cr===1?[27,48,79]:[RK[S.rk].c+45,46,S.rt===2?43:20+(S.rt===0?8.6:0.6)],()=>S.cr&&(S.cr===2||S.v2)],['Cabinets',()=>[85,104,16],()=>S.cb<3],['Yoga ball',()=>[116,108,100],()=>S.bs],['Glute bench holder',()=>[126,99,141],()=>S.bs],['Safety squat bar',()=>[131,96,22],()=>1],['Viper 2',()=>[6,88,64],()=>S.v2],['TV',()=>tvLab,()=>1],['Viper 1',()=>[6,88,162],()=>1],['Leg extension / prone curl',()=>[92,62,165],()=>1],['Bench',()=>[124,24,112],()=>1],['Window',()=>[2,76,112],()=>1],['Hallway door',()=>[132,82,62],()=>1],['Bath door',()=>[47,88,184],()=>1]].map(a=>{const e=document.createElement('div');e.textContent=a[0];e.style.cssText='position:absolute;font-size:11px;color:#fff;background:rgba(0,0,0,0.6);padding:2px 6px;border-radius:4px;white-space:nowrap;transform:translate(-50%,-100%)';LB.appendChild(e);return {e,p:a[1],v:a[2]};});
 let dayLevel=1.5,roomLevel=0.75;
-function applyLights(){hemi.intensity=0.4*roomLevel+0.08;
- hexL.forEach(([l,b])=>l.intensity=S.lt===2?b*roomLevel:0);perL.forEach(([l,b])=>l.intensity=S.lt===0?b*roomLevel*1.15:0);mirL.forEach(([l,b])=>l.intensity=S.lt===1?b*roomLevel*1.15:0);
- cabL.forEach(([l,b])=>l.intensity=S.cb<3?b*roomLevel*1.15:0);
- glowM.emissiveIntensity=0.7*Math.min(1,roomLevel+0.2);linM.emissiveIntensity=Math.min(1.3,roomLevel+0.3);
- const k=S.wn===0?1:0.82;day.forEach(([l,b])=>l.intensity=b*dayLevel*k);}
-const CR=['off','on Viper 2 (3×3 post)','on rack (toward door)'],CB=['white, closed','white, one flap open','dark gray, closed','hidden'],PS=['A: both stacks on rack wall','B: window wall + door wall'],WP=['dark gray to 40 in','dark gray to 44 in (sill)','painted, no panels'],LT=['linear, ceiling perimeter','linear, top of mirrors','hex (current)'],TVW=['leg machine wall','door wall (current)'];
+function applyLights(){const ev=S.tm===1;const rl=roomLevel*(ev?0.8:1),dlv=dayLevel*(ev?0.02:1);
+ const raftOn=S.lt===0,acOn=raftOn&&S.ac,slOn=raftOn&&S.sl;
+ hemi.intensity=(0.4*rl+0.08)*(ev?(raftOn?(slOn?0.55:(acOn?0.35:0.15)):0.55):1);
+ hexL.forEach(([l,b])=>l.intensity=S.lt===3?b*rl:0);coveL.forEach(([l,b])=>l.intensity=S.lt===1?b*rl*1.15:0);mirL.forEach(([l,b])=>l.intensity=S.lt===2?b*rl*1.15:0);
+ raftL.forEach(([l,b])=>l.intensity=acOn?b*rl*1.2:0);slotL.forEach(([l,b])=>l.intensity=slOn?b*rl*1.3:0);winL.forEach(([l,b])=>l.intensity=(S.lt===1||acOn)?b*rl:0);
+ cabL.forEach(([l,b])=>l.intensity=S.cb<3?b*rl*1.15:0);
+ glowM.emissiveIntensity=0.7*Math.min(1,rl+0.2);linM.emissiveIntensity=Math.min(1.3,rl+0.3);coveLed.emissiveIntensity=(S.lt===1||acOn)?Math.min(1.4,rl+0.4):0;slotM.emissiveIntensity=slOn?Math.min(1.3,rl+0.35):0;
+ glowMats.forEach(m=>m.opacity=Math.min(0.85,0.55*rl+(ev?0.25:0)));
+ const k=S.wn===0?1:0.82;day.forEach(([l,b])=>l.intensity=b*dlv*k);
+ outsideMat.color.setHex(ev?0x1f2a38:0xffffff);}
+const CR=['off','on Viper 2 (3×3 post)','on rack (toward door)'],CB=['white, closed','white, one flap open','dark gray, closed','hidden (soffit only)'],WP=['dark gray to 40 in','dark gray to 44 in (sill)','painted, no panels'],LT=['floating panel','coves','linear, top of mirrors','hex (current)'],TVW=['leg machine wall','door wall (current)'];
 function update(){
  tvs.forEach((g,i)=>g.visible=i===S.ts);const t=TVS[S.ts],g=tvs[S.ts],cy=t.top-t.h/2;
  if(S.tv===1){g.position.set(136,cy,111);g.rotation.y=-Math.PI/2;tvLab=[136-ST-2,t.top+1,111];}else{const xc=63+7+t.w/2;g.position.set(xc,cy,184);g.rotation.y=Math.PI;tvLab=[xc,t.top+1,184-ST-2];}
  const a=S.wn===0?1.25:0;sashL.rotation.y=-a;sashR.rotation.y=a;
- rack.position.set(RK[S.rk].x,0,1);
- viper2.visible=!!S.v2;crowV.visible=S.cr===1&&!!S.v2;crowRack.visible=S.cr===2;
- cabG.visible=S.cb<3;flaps.forEach((f,i)=>{f.d.material=S.cb===2?cabGray:cabWhite;f.d.userData.m=f.d.material;f.piv.rotation.z=(S.cb===1&&i===2)?-1.35:0;});
- perDoor.visible=S.cb===3;perExt.forEach(m=>m.visible=S.cb===3);
+ const c=RK[S.rk].c;frRack.visible=S.rt===2;pr.visible=S.rt<2;frRack.position.set(c-23,0,1);pr.position.set(c-PW/2,0,S.rt===0?8.6:0.6);prH.visible=S.rt===0;
+ viper2.visible=!!S.v2;crowV.visible=S.cr===1&&!!S.v2;crowFR.visible=S.cr===2;crowPR.visible=S.cr===2;spR.visible=S.cr!==2;
+ cabG.visible=S.cb<3;soffPlain.visible=S.cb===3;flaps.forEach((f,i)=>{const m=S.cb===2?cabGray:cabWhite;f.u.material=m;f.u.userData.m=m;f.l.material=m;f.l.userData.m=m;const o=S.cb===1&&i===oi;f.piv.rotation.x=o?-1.4:0;f.q.rotation.x=o?2.8:0;});
+ raftG.visible=S.lt===0;coveGs.forEach(g=>g.visible=S.lt===1);
  bsG.visible=!!S.bs;
- stA.forEach(s=>s.visible=S.ps===0);stB[0].visible=S.ps===1&&!S.v2;stB[1].visible=S.ps===1;
  pan40.forEach(p=>p.visible=S.wp===0);pan44.forEach(p=>p.visible=S.wp===1);
- perG.visible=S.lt===0;mirG.visible=S.lt===1;
+ mirG.visible=S.lt===2;
  lmExt.visible=S.lm===0;lmCurl.visible=S.lm===1;
  dpiv.rotation.y=S.dr?-Math.PI/2:0;
  floor.material=S.fl?floorRub:floorLight;
- const T=(id,s)=>document.getElementById(id).textContent=s;
- T('o_v2','Viper 2: '+(S.v2?'shown':'hidden'));T('o_cr','Chest row: '+(S.cr===1&&!S.v2?'on Viper 2 (Viper 2 hidden)':CR[S.cr]));
- T('o_cb','Cabinets: '+CB[S.cb]);T('o_bs','Ball + bench: '+(S.bs?'shown':'hidden'));
- T('o_ps','Plates: '+PS[S.ps]+(S.ps===1&&S.v2?' (window stack blocked)':''));T('o_wp','Walls: '+WP[S.wp]);T('o_lt','Lighting: '+LT[S.lt]);T('o_tv','TV: '+TVW[S.tv]);T('o_ts','TV size: '+t.n);
- T('o_wn','Window: '+(S.wn?'closed':'open'));T('o_rk','Rack: '+RK[S.rk].n);T('o_lm','Leg machine: '+(S.lm?'prone curl':'extension'));
+ const T=(id,s)=>document.getElementById(id).textContent=s,na=S.lt!==0;
+ T('o_tm','Time: '+(S.tm?'evening':'day'));T('o_ac','Accent (entrance): '+(na?'n/a':(S.ac?'on':'off')));T('o_sl','Training slots: '+(na?'n/a':(S.sl?'on':'off')));T('o_lt','Lighting: '+LT[S.lt]);
+ T('o_rt','Rack: '+RT[S.rt]);T('o_rk','Rack position: '+RK[S.rk].n);
+ T('o_cr','Chest row: '+(S.cr===1&&!S.v2?'on Viper 2 (Viper 2 hidden)':CR[S.cr]));
+ T('o_cb','Cabinets: '+CB[S.cb]);T('o_bs','Ball + glute bench: '+(S.bs?'shown':'hidden'));T('o_v2','Viper 2: '+(S.v2?'shown':'hidden'));
+ T('o_wp','Walls: '+WP[S.wp]);T('o_tv','TV: '+TVW[S.tv]);T('o_ts','TV size: '+t.n);
+ T('o_wn','Window: '+(S.wn?'closed':'open'));T('o_lm','Leg machine: '+(S.lm?'prone curl':'extension'));
  T('o_dr','Hallway door: '+(S.dr?'open':'closed'));T('o_fl','Floor: '+(S.fl?'black rubber':'light (planning)'));T('o_lb','Labels: '+(S.lb?'on':'off'));
  applyLights();render();}
-const NUM={v2:2,cr:3,cb:4,bs:2,ps:2,wp:3,lt:3,tv:2,ts:3,wn:2,rk:2,lm:2,dr:2,fl:2,lb:2};
+const NUM={tm:2,ac:2,sl:2,lt:4,rt:3,rk:2,cr:3,cb:4,bs:2,v2:2,wp:3,tv:2,ts:3,wn:2,lm:2,dr:2,fl:2,lb:2};
 function cyc(k){S[k]=(S[k]+1)%NUM[k];update();}
 const VIEWS=[
  ['door','From hallway door',[126,64,64],[10,48,130],74],
- ['v2v','Viper 2 and chest row',[110,62,95],[0,42,66],70],
- ['v2row','Low row space, Viper 2',[3,44,64],[136,34,64],80],
- ['iso','Overhead corner, window / bath',[-70,230,270],[70,20,90],45],
- ['iso2','Overhead corner, rack / door',[215,230,-85],[66,20,95],45],
- ['top','Overhead plan',[68,300,93],[68,0,92],45],
- ['cabv','Hallway wall cabinets',[30,60,95],[136,92,92],74],
- ['hiv','Rack wall, high storage',[70,64,120],[72,94,0],70],
  ['bath','From bath door',[47,64,172],[60,52,0],74],
+ ['win','From window',[12,64,112],[136,60,90],74],
  ['rack','Rack wall',[68,62,150],[68,50,0],70],
- ['tvl','Toward TV and bath door',[70,62,60],[80,70,184],70],
- ['wwall','Window wall, both Vipers',[110,62,115],[0,50,112],74],
- ['legc','Leg machine close-up',[92,58,118],[92,24,170],70]];
+ ['bathw','Bath wall (TV, leg machine)',[68,64,55],[68,55,184],74],
+ ['top','Overhead plan',[68,300,93],[68,0,92],45],
+ ['iso','Overhead corner, window / bath',[-70,230,270],[70,20,90],45],
+ ['iso2','Overhead corner, rack / door',[215,230,-85],[66,20,95],45]];
 const vbar=document.getElementById('views');
 VIEWS.forEach(([k,label])=>{const b=document.createElement('button');b.className='vw';b.dataset.k=k;b.textContent=label;b.onclick=()=>view(k);vbar.appendChild(b);});
 const look={yaw:0,pitch:0};const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 function render(){const p=cam.position;ghost(gL,p.x<0);ghost(gT,p.z<0);ghost(gR,p.x>136);ghost(gB,p.z>184);
- const above=p.y>109;ghost(ceil,above);hexG.visible=!above&&S.lt===2;perG.visible=!above&&S.lt===0;outside.visible=p.x>=0;
+ const above=p.y>106;ghost(ceil,above);hexG.visible=!above&&S.lt===3;outside.visible=p.x>=0;
+ glowCove.visible=S.lt===1&&!above;glowRaft.visible=S.lt===0&&S.ac&&!above;glowWin.visible=(S.lt===1||(S.lt===0&&S.ac))&&!above;raftMesh.visible=!above;
  ren.render(scene,cam);const w=W(),h=H();
  LABS.forEach(l=>{const v=new THREE.Vector3(...l.p()).project(cam);const ok=S.lb&&l.v()&&v.z<1&&Math.abs(v.x)<1.05&&Math.abs(v.y)<1.05;l.e.style.display=ok?'block':'none';if(ok){l.e.style.left=((v.x+1)/2*w)+'px';l.e.style.top=((1-v.y)/2*h)+'px';}});}
 function applyLook(){look.pitch=clamp(look.pitch,-1.565,1.4);const d=new THREE.Vector3(Math.cos(look.pitch)*Math.sin(look.yaw),Math.sin(look.pitch),Math.cos(look.pitch)*Math.cos(look.yaw));cam.lookAt(cam.position.clone().add(d));render();}
