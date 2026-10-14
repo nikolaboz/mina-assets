@@ -1,5 +1,5 @@
 <!doctype html>
-<html data-saved=""><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.42.0/dist/tabler-icons.min.css" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.42.0/dist/tabler-icons.min.css"></noscript><style>
+<html data-saved=""><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link id="icon-font" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.42.0/dist/tabler-icons.min.css" media="print" onload="this.media='all'"><noscript><link id="icon-font" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.42.0/dist/tabler-icons.min.css"></noscript><style>
 :root{--font-anthropic-sans:"anthropic-sans", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;--font-anthropic-serif:"anthropic-serif", ui-serif, Georgia, "Times New Roman", serif}
 :root {
   --radius: calc(0.5rem * var(--cds-rem-scale, 1));
@@ -499,6 +499,7 @@
   --border-warning: var(--role-warning-250);
   --border-pro: var(--role-pro-250);
   --border-editor-comment: var(--yellow-400);
+  --border-editor-comment-open: var(--yellow-450);
   --border-git-added: color-mix(in srgb, var(--text-git-added) 40%, transparent);
   --border-git-removed: color-mix(in srgb, var(--text-git-removed) 40%, transparent);
   --border-git-modified: color-mix(in srgb, var(--text-git-modified) 40%, transparent);
@@ -718,6 +719,7 @@
     --border-warning: var(--role-warning-700);
     --border-pro: var(--role-pro-700);
     --border-editor-comment: var(--yellow-300);
+    --border-editor-comment-open: var(--yellow-200);
     --shadow-color: rgba(0, 0, 0, 0.24);
     --shadow-popover: 0 8px 24px rgb(0 0 0 / 0.32), 0 2px 6px rgb(0 0 0 / 0.2);
     --ring-outer: 0px;
@@ -880,6 +882,7 @@
     --border-warning: var(--role-warning-700);
     --border-pro: var(--role-pro-700);
     --border-editor-comment: var(--yellow-300);
+    --border-editor-comment-open: var(--yellow-200);
     --shadow-color: rgba(0, 0, 0, 0.24);
     --shadow-popover: 0 8px 24px rgb(0 0 0 / 0.32), 0 2px 6px rgb(0 0 0 / 0.2);
     --ring-outer: 0px;
@@ -1202,7 +1205,10 @@ input[type="range"]::-moz-range-thumb {
   border: 1px solid var(--border-strong);
   cursor: pointer;
 }
-button:not(#action-btns button):not(form.elicit button) {
+button:not(
+    #action-btns button,
+    :where(#vis-container ~ #larger-btns) button
+  ):not(form.elicit button) {
   padding: 8px 16px;
   font-size: var(--font-text-sm-size, 14px);
   background: transparent;
@@ -1214,10 +1220,16 @@ button:not(#action-btns button):not(form.elicit button) {
     background 0.15s,
     transform 0.1s;
 }
-button:not(#action-btns button):not(form.elicit button):hover {
+button:not(
+    #action-btns button,
+    :where(#vis-container ~ #larger-btns) button
+  ):not(form.elicit button):hover {
   background: var(--surface-1);
 }
-button:not(#action-btns button):not(form.elicit button):active {
+button:not(
+    #action-btns button,
+    :where(#vis-container ~ #larger-btns) button
+  ):not(form.elicit button):active {
   background: var(--border);
   transform: scale(0.98);
 }
@@ -1856,6 +1868,47 @@ body {
   overflow: hidden;
   color: var(--text-primary);
 }
+@property --wide-fade-left {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+@property --wide-fade-right {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+:root:not([data-open-larger]) #vis-container.scrolls-wide:not(.whole-width) {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-padding-inline: 32px;
+  scrollbar-width: none;
+}
+#vis-container.scrolls-wide::-webkit-scrollbar {
+  height: 0;
+}
+:root:not([data-open-larger]) #vis-container.scrolls-wide:focus-visible {
+  outline-offset: -2px;
+}
+:root:not([data-open-larger]):not([data-picture])
+  #vis-container.scrolls-wide:not(.whole-width):not(
+    :focus-visible
+  )[data-wide-more] {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 var(--wide-fade-left),
+    #000 calc(100% - var(--wide-fade-right)),
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 var(--wide-fade-left),
+    #000 calc(100% - var(--wide-fade-right)),
+    transparent
+  );
+}
 #vis-container.whole-width {
   overflow-x: visible;
   overflow-y: clip;
@@ -1899,6 +1952,184 @@ body:hover #action-btns,
     display: none;
   }
 }
+:root[data-keep-menu-clear]
+  #action-btns[data-quiet]:not([data-hold-open]):not(:focus-within) {
+  opacity: 0;
+  pointer-events: none;
+}
+:root[data-keep-menu-clear][data-menu-room]:not([data-open-larger]) body {
+  padding-top: var(--menu-room) !important;
+}
+:root[data-keep-menu-clear][data-menu-held]:not([data-open-larger]) body {
+  min-height: var(--menu-held) !important;
+}
+:root[data-frame-held]:not([data-open-larger]) body {
+  min-height: var(--frame-held) !important;
+}
+:root[data-frame-capped]:not([data-open-larger]) body {
+  max-height: var(--frame-cap) !important;
+  overflow: hidden !important;
+}
+:root[data-frame-empty]:not([data-open-larger]) body {
+  height: var(--frame-empty) !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+#vis-container ~ #larger-btns {
+  all: revert;
+  display: contents !important;
+}
+#vis-container ~ #larger-btns::before,
+#vis-container ~ #larger-btns::after {
+  content: none !important;
+}
+#vis-container ~ #larger-btns button {
+  position: relative !important;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: var(--surface-1);
+  border: 0.5px solid var(--border);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+#vis-container ~ #larger-btns button::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+}
+#vis-container ~ #larger-btns button[aria-disabled="true"] {
+  opacity: 0.4;
+  cursor: default;
+}
+#vis-container ~ #larger-btns #larger-open {
+  position: absolute !important;
+  top: 8px;
+  top: min(8px, (100vh - 36px) / 2);
+  right: 8px;
+  z-index: 2147483646;
+}
+@media (hover: none) {
+  #vis-container ~ #larger-btns #larger-open[data-resting]:not(:focus-visible) {
+    opacity: 0;
+    pointer-events: none;
+  }
+  #vis-container ~ #larger-btns #larger-open[data-arming] {
+    pointer-events: none;
+  }
+}
+#vis-container ~ #larger-btns #larger-open {
+  transition: opacity 0.2s ease;
+}
+#vis-container ~ #larger-btns #larger-open[hidden],
+#vis-container ~ #larger-btns #larger-zoom[hidden] {
+  display: none !important;
+}
+@media (hover: hover), (pointer: fine) {
+  #vis-container ~ #larger-btns #larger-open {
+    right: 40px;
+  }
+}
+:root[data-open-larger] {
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  inset: auto;
+  width: auto;
+  min-width: 0;
+  max-width: none;
+  --larger-button-size: 44px;
+}
+:root[data-open-larger] body {
+  display: grid;
+  position: relative;
+  float: none;
+  margin: 0;
+  border: 0;
+  inset: auto;
+  box-sizing: border-box;
+  min-height: 0;
+  width: auto;
+  min-width: 0;
+  max-width: none;
+  grid: none;
+  gap: 0;
+  place-items: start;
+  justify-content: start;
+  align-content: start;
+  height: 100vh;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: calc(var(--host-inset-top, 0px) + 12px + var(--larger-lead-y, 0px))
+    calc(
+      var(--host-inset-right, 0px) + 12px + var(--larger-button-size) + 2px +
+        12px
+    )
+    calc(var(--host-inset-bottom, 0px) + 12px)
+    calc(var(--host-inset-left, 0px) + 12px + var(--larger-lead-x, 0px));
+}
+:root[data-open-larger][data-zoomed-in] body {
+  padding-top: calc(
+    var(--host-inset-top, 0px) + 12px + 2 * var(--larger-button-size) + 2px +
+      12px + var(--larger-lead-y, 0px)
+  );
+}
+:root[data-open-larger] body {
+  touch-action: pan-x pan-y;
+}
+:root[data-open-larger] #vis-container {
+  overflow: visible;
+}
+:root[data-open-larger] #action-btns {
+  display: none;
+}
+#vis-container ~ #larger-btns #larger-zoom-status {
+  position: absolute !important;
+  top: 0;
+  left: 0;
+}
+#vis-container ~ #larger-btns #larger-zoom {
+  position: fixed !important;
+  margin: 0;
+  top: calc(var(--host-inset-top, 0px) + 12px);
+  right: calc(var(--host-inset-right, 0px) + 12px);
+  z-index: 2147483646;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--surface-1);
+  border: 1px solid var(--alpha-5);
+  box-shadow: 0 1px 3px var(--alpha-2);
+}
+#vis-container ~ #larger-btns #larger-zoom button {
+  width: var(--larger-button-size);
+  height: var(--larger-button-size);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text-primary);
+}
+#vis-container ~ #larger-btns #larger-zoom button::before {
+  content: none;
+}
+#vis-container ~ #larger-btns #larger-zoom button:focus-visible {
+  outline-offset: -2px;
+}
+#vis-container ~ #larger-btns #larger-zoom button + button {
+  border-top: 1px solid var(--alpha-3);
+}
+#vis-container ~ #larger-btns #larger-zoom button[aria-disabled="true"] {
+  opacity: 1;
+}
+#vis-container ~ #larger-btns #larger-zoom button[aria-disabled="true"] svg {
+  opacity: 0.45;
+}
 #action-btns > button {
   width: 28px;
   height: 28px;
@@ -1915,6 +2146,31 @@ body:hover #action-btns,
 }
 #action-btns > button:hover {
   background: var(--surface-0);
+}
+:root[data-keep-menu-clear] #action-btns {
+  top: min(4px, (100vh - 22px) / 2);
+  right: 4px;
+}
+:root[data-keep-menu-clear] #action-btns > button {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  background: transparent;
+  opacity: 0.7;
+  transition:
+    background 0.15s ease,
+    opacity 0.15s ease;
+}
+:root[data-keep-menu-clear] #action-btns:hover > #more-btn,
+:root[data-keep-menu-clear] #action-btns[data-hold-open] > #more-btn,
+:root[data-keep-menu-clear] #action-btns > #more-btn:focus-visible {
+  background: var(--surface-0);
+  opacity: 1;
+}
+:root[data-keep-menu-clear] #action-btns > button > svg {
+  width: 16px;
+  height: 16px;
+  filter: drop-shadow(0 0 1px var(--surface-0));
 }
 #more-popover {
   position: absolute;
@@ -2000,6 +2256,9 @@ body:hover #action-btns,
   padding: 0;
   border-radius: 8px;
 }
+:root[data-keep-menu-clear] #action-btns[data-beside] #more-popover {
+  max-width: calc(100vw - 34px);
+}
 #action-btns[data-beside] .more-item {
   width: auto;
   min-width: 0;
@@ -2081,6 +2340,12 @@ body[data-not-sent] > #vis-container ~ #not-sent {
   position: static;
   width: 100%;
   grid-column: 1 / -1;
+}
+:root[data-open-larger] body[data-not-sent] > #vis-container ~ #not-sent {
+  max-width: calc(
+    100vw - var(--host-inset-left, 0px) - var(--host-inset-right, 0px) - 24px -
+      var(--larger-button-size) - 14px - var(--larger-lead-x, 0px)
+  );
 }
 #vis-container ~ #not-sent > p {
   margin-top: 8px;
@@ -2272,7 +2537,7 @@ body[data-not-sent] > #vis-container ~ #not-sent {
         <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
       </marker>
     </defs>
-  </svg><div id="vis-container"><h2 class="sr-only">Lit 3D render of the gym bathroom with true recessed niches cut into the wall, and the Amba swivel warmer with its post on the right</h2>
+  </svg><div id="vis-container"><h2 class="sr-only">Lit 3D render of the gym bathroom with corrected recessed niches, relocated paper niche, aligned robe hooks, a second GFCI and a three-gang switch plate</h2>
 <div id="wrap" style="position:relative;width:100%;height:480px;border-radius:12px;overflow:hidden;background:#1c1c1c;touch-action:none;cursor:grab"></div>
 <div style="margin-top:12px;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-secondary)">Views</div>
 <div id="views" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px"></div>
@@ -2290,13 +2555,12 @@ body[data-not-sent] > #vis-container ~ #not-sent {
 <button id="bx" onclick="toggleBox()" class="opt">Toilet box</button>
 <button id="cw" onclick="toggleCW()" class="opt">Control wall joint</button>
 <button id="tl" onclick="cycleTile()" class="opt">Tile colour</button>
-<button id="bs" onclick="cycleSplash()" class="opt">Backsplash</button>
 <button id="cd" onclick="toggleCabDoors()" class="opt">Cabinet doors</button>
 <button id="rd" onclick="toggleRoomDoor()" class="opt">Bathroom door</button>
 <button id="fin" onclick="toggleFinish()" class="opt">Finish</button>
 <label style="font-size:13px;color:var(--text-secondary);display:flex;align-items:center;gap:8px">Light level <input id="lv" type="range" min="30" max="140" value="75" step="5" style="width:140px"><span id="lvo">75%</span></label>
 </div>
-<p style="font-size:13px;color:var(--text-secondary);margin:10px 0 0">Drag to look around, scroll to change lens width. Niches are cut into the wall: shower 12 × 20 × 3.5, paper 6.5 × 8 × 3.5.</p>
+<p style="font-size:13px;color:var(--text-secondary);margin:10px 0 0">Drag to look around, scroll to change lens width. Paper niche above the register; hooks at 65 in; switches below the warmer.</p>
 <style>
 button.opt,button.vw{padding:6px 12px;border:0.5px solid var(--border-strong);border-radius:var(--radius);background:transparent;color:var(--text-primary);font-size:13px;cursor:pointer}
 button.vw.on{border:1.5px solid var(--text-primary)}
@@ -2332,11 +2596,9 @@ const itemA=S(0x6f7f8c,0.9),itemB=S(0x3d5a73,0.9),itemC=S(0xf2f2ef,0.8),itemD=S(
 const mirrorM=S(0xa3adb3,0.3,0.4);
 const glassM=new THREE.MeshStandardMaterial({color:0xbad6e6,roughness:0.05,metalness:0.1,transparent:true,opacity:0.18,depthWrite:false});
 const wallTile=S(0xf7f7f5,0.25),floorTile=S(0x9d9c97,0.45),groutM=S(0xb9b8b3,0.9);
-const nicheBack=S(0xeae9e5,0.55),nicheSide=S(0xf0efec,0.45),nicheShadow=S(0x9a9995,0.8);
 const ce=new THREE.Mesh(new THREE.PlaneGeometry(110,60),S(0xf2f1ed,0.95));ce.rotation.x=Math.PI/2;ce.position.set(55,RH,30);scene.add(ce);
 box(-1,111,0,RH,60,61,wall);box(-1,0,0,RH,-1,61,wall);box(110,111,0,RH,-1,61,wall);
 box(33,36,0,83,-0.5,0.8,white);box(63,66,0,83,-0.5,0.8,white);box(33,66,80,83,-0.5,0.8,white);
-// rect subtraction helpers
 function sub(r,h){if(h[0]>=r[1]||h[1]<=r[0]||h[2]>=r[3]||h[3]<=r[2])return[r];const o=[];
  if(h[0]>r[0])o.push([r[0],h[0],r[2],r[3]]);
  if(h[1]<r[1])o.push([h[1],r[1],r[2],r[3]]);
@@ -2348,6 +2610,12 @@ function subAll(rects,holes){let out=rects;holes.forEach(h=>{const n=[];out.forE
 const gShell=new THREE.Group();scene.add(gShell);
 let cwCentered=true,gray=false,nicheOn=true,ci=0;
 const e=0.07;
+// draw a tile piece, insetting only the edges that are real tile edges
+function tilePiece(orig,holes,draw){
+ subAll([orig],holes).forEach(r=>{
+  const i0=Math.abs(r[0]-orig[0])<1e-6?e:0, i1=Math.abs(r[1]-orig[1])<1e-6?e:0;
+  const j0=Math.abs(r[2]-orig[2])<1e-6?e:0, j1=Math.abs(r[3]-orig[3])<1e-6?e:0;
+  draw(r[0]+i0,r[1]-i1,r[2]+j0,r[3]-j1);});}
 function rebuildShell(){
  while(gShell.children.length)gShell.remove(gShell.children[0]);
  wallTile.color.setHex(gray?0xa9a8a3:0xf7f7f5);
@@ -2355,49 +2623,48 @@ function rebuildShell(){
  const rows=[[0,48],[48,96],[96,120]];
  const nicheHole=nicheOn?[[30,42,50,70]]:[];
  const shaverHole=ci===0?[[11,21,88,96]]:[];
- const paperHole=[[94,100.5,22,30]];
- // floor
+ const paperHole=[[69.75,76.25,22,30]];
  box(0,110,-0.04,0.02,0,60,groutM,gShell);
  const F=(x0,x1,z0,z1)=>box(x0+e,x1-e,0.02,0.07,z0+e,z1-e,floorTile,gShell);
  F(0,16.5,0,12);F(16.5,33,0,12);F(0,33,12,36);F(0,33,36,60);
  [[0,12],[12,36],[36,60]].forEach(([z0,z1])=>{F(36.5,84.5,z0,z1);F(84.5,110,z0,z1);});
- // back wall structure + tile, holes for the shower niche
+ // back wall
  subAll([[-1,61,0,RH]],nicheHole).forEach(r=>box(-1,0,r[2],r[3],r[0],r[1],wall,gShell));
  box(0.18,0.26,0,RH,0,60,groutM,gShell);
- [[36,60],[12,36],[0,12]].forEach(([z0,z1])=>rows.forEach(([y0,y1])=>{
-  subAll([[z0,z1,y0,y1]],nicheHole).forEach(r=>box(0.26,0.33,r[2]+e,r[3]-e,r[0]+e,r[1]-e,wallTile,gShell));}));
- if(nicheOn){const d=-3.17;
-  box(d-0.2,d,50,70,30,42,nicheBack,gShell);
-  box(d,0.33,50,70,29.6,30,nicheSide,gShell);box(d,0.33,50,70,42,42.4,nicheSide,gShell);
-  box(d,0.33,70,70.4,29.6,42.4,nicheSide,gShell);
-  box(d,0.6,49.6,50,29.6,42.4,stone,gShell);
-  box(0.1,0.26,49.6,70.4,29.6,42.4,nicheShadow,gShell);}
- // door-side wall of the shower + tile, hole for the shaver niche
+ [[36,60],[12,36],[0,12]].forEach(([z0,z1])=>rows.forEach(([y0,y1])=>
+  tilePiece([z0,z1,y0,y1],nicheHole,(a,b,c,d)=>box(0.26,0.33,c,d,a,b,wallTile,gShell))));
+ if(nicheOn){const bk=-3.17;
+  box(bk-0.25,bk,50,70,30,42,wallTile,gShell);
+  box(bk,0.33,50,70,29.86,30.02,wallTile,gShell);
+  box(bk,0.33,50,70,41.98,42.14,wallTile,gShell);
+  box(bk,0.33,69.98,70.14,29.86,42.14,wallTile,gShell);
+  box(bk,0.55,49.84,50.02,29.86,42.14,stone,gShell);}
+ // shower door-side wall
  subAll([[-1,36,0,RH]],shaverHole).forEach(r=>box(r[0],r[1],r[2],r[3],-1,0,wall,gShell));
  box(0,33,0,RH,0.18,0.26,groutM,gShell);
  const cols=cwCentered?[[0,16.5],[16.5,33]]:[[0,24],[24,33]];
- rows.forEach(([y0,y1])=>cols.forEach(([x0,x1])=>{
-  subAll([[x0,x1,y0,y1]],shaverHole).forEach(r=>box(r[0]+e,r[1]-e,r[2]+e,r[3]-e,0.26,0.33,wallTile,gShell));}));
- if(ci===0){const d=-2.17;
-  box(11,21,88,96,d-0.2,d,nicheBack,gShell);
-  box(10.6,11,88,96,d,0.33,nicheSide,gShell);box(21,21.4,88,96,d,0.33,nicheSide,gShell);
-  box(10.6,21.4,96,96.4,d,0.33,nicheSide,gShell);
-  box(10.6,21.4,87.6,88,d,0.6,stone,gShell);
-  box(10.6,21.4,87.6,96.4,0.1,0.26,nicheShadow,gShell);
-  box(13.5,17.5,88,90.6,d+0.3,d+1.6,S(0x2f3336,0.5),gShell);}
+ rows.forEach(([y0,y1])=>cols.forEach(([x0,x1])=>
+  tilePiece([x0,x1,y0,y1],shaverHole,(a,b,c,d)=>box(a,b,c,d,0.26,0.33,wallTile,gShell))));
+ if(ci===0){const bk=-2.17;
+  box(11,21,88,96,bk-0.25,bk,wallTile,gShell);
+  box(10.86,11.02,88,96,bk,0.33,wallTile,gShell);
+  box(20.98,21.14,88,96,bk,0.33,wallTile,gShell);
+  box(10.86,21.14,95.98,96.14,bk,0.33,wallTile,gShell);
+  box(10.86,21.14,87.84,88.02,bk,0.55,stone,gShell);
+  box(13.5,17.5,88.02,90.6,bk+0.3,bk+1.6,S(0x2f3336,0.5),gShell);}
  // control wall tile
  box(0,33,0,RH,59.74,59.82,groutM,gShell);
  rows.forEach(([y0,y1])=>cols.forEach(([x0,x1])=>box(x0+e,x1-e,y0+e,y1-e,59.67,59.74,wallTile,gShell)));
- // door wall beyond the door + paper niche
+ // door wall beyond the door, with the paper niche above the register
  subAll([[63,111,0,RH]],paperHole).forEach(r=>box(r[0],r[1],r[2],r[3],-1,0,wall,gShell));
  box(36,63,83,RH,-1,0,wall,gShell);
- (function(){const d=-3.5;
-  box(94,100.5,22,30,d-0.2,d,nicheBack,gShell);
-  box(93.7,94,22,30,d,0.1,nicheSide,gShell);box(100.5,100.8,22,30,d,0.1,nicheSide,gShell);
-  box(93.7,100.8,30,30.3,d,0.1,nicheSide,gShell);
-  box(93.7,100.8,21.7,22,d,0.3,stone,gShell);
-  cyl(2.25,4.4,paper,97.2,25.5,d+2.3,0,Math.PI/2,gShell);
-  cyl(0.8,4.5,S(0xdcdad5,0.8),97.2,25.5,d+2.3,0,Math.PI/2,gShell);})();
+ (function(){const bk=-3.5;
+  box(69.75,76.25,22,30,bk-0.25,bk,wall,gShell);
+  box(69.59,69.75,22,30,bk,0.02,wall,gShell);box(76.25,76.41,22,30,bk,0.02,wall,gShell);
+  box(69.59,76.41,29.98,30.14,bk,0.02,wall,gShell);
+  box(69.59,76.41,21.84,22.02,bk,0.25,stone,gShell);
+  cyl(2.25,4.5,paper,73,24.3,bk+2.1,0,0,gShell);
+  cyl(0.8,4.6,S(0xdcdad5,0.8),73,24.3,bk+2.1,0,0,gShell);})();
  document.getElementById('tl').textContent='Tile colour: '+(gray?'concrete gray':'white');
  document.getElementById('cw').textContent='Control wall joint: '+(cwCentered?'centered (16.5 + 16.5)':'full tile + 9 in cut');
  document.getElementById('nc').textContent='Shower niche: '+(nicheOn?'on':'off');
@@ -2433,8 +2700,7 @@ cyl(1.05,1.5,black,16.5,52.8,58.9,Math.PI/2,0);
 box(16.2,16.8,50.1,60.9,58.2,58.8,black);
 function hook(x,y){cyl(1.0,0.45,black,x,y,59.45,Math.PI/2,0);cyl(0.34,1.2,black,x,y,58.75,Math.PI/2,0);cyl(0.82,0.5,black,x,y,58.1,Math.PI/2,0);}
 const cubbyA=new THREE.Group();scene.add(cubbyA);
-box(11,21,86,94,59.2,59.6,nicheBack,cubbyA);
-box(14,18,86.4,89,58.9,59.2,S(0x2f3336,0.5),cubbyA);
+box(11,21,86,94,59.2,59.6,wallTile,cubbyA);
 const gBack=new THREE.Group(),gVert=new THREE.Group();scene.add(gBack);scene.add(gVert);
 cyl(0.625,24,black,2.8,36,36,Math.PI/2,0,gBack);
 [24,48].forEach(z=>{cyl(1.22,2.4,black,1.4,36,z,0,Math.PI/2,gBack);});
@@ -2442,7 +2708,6 @@ cyl(0.625,24,black,29,48,57.1,0,0,gVert);
 [36,60].forEach(y=>{cyl(1.22,2.4,black,29,y,58.5,Math.PI/2,0,gVert);});
 const wf=new THREE.CircleGeometry(21,8);wf.rotateZ(Math.PI/8);const wfm=new THREE.Mesh(wf,S(0xffffff,0.4,0,{side:THREE.DoubleSide}));wfm.position.set(63,68,59.6);wfm.rotation.y=Math.PI;wfm.scale.x=38/40;scene.add(wfm);
 const wg=new THREE.CircleGeometry(17,8);wg.rotateZ(Math.PI/8);const wgm=new THREE.Mesh(wg,S(0xcfe2f0,0.2,0,{side:THREE.DoubleSide,emissive:0x8fb6d6,emissiveIntensity:0.6}));wgm.position.set(63,68,59.4);wgm.rotation.y=Math.PI;wgm.scale.x=38/40;scene.add(wgm);
-// Amba 5-bar swivel — post on the right, arms to the left, hardwired
 const railAmba=new THREE.Group(),railBaby=new THREE.Group(),railFull=new THREE.Group();
 [railAmba,railBaby,railFull].forEach(g=>scene.add(g));
 (function(p){const px=90;
@@ -2450,15 +2715,20 @@ const railAmba=new THREE.Group(),railBaby=new THREE.Group(),railFull=new THREE.G
  [41,75].forEach(y=>{box(px-1.6,px+1.6,y-1.6,y+1.6,0.3,1.2,railBlack,p);cyl(0.62,1.4,railBlack,px,y,1.6,Math.PI/2,0,p);});
  [44,51,58,65,72].forEach(y=>{cyl(0.42,21,railBlack,px-10.5,y,3.2,0,Math.PI/2,p);cyl(0.42,0.9,railBlack,px-21,y,3.2,0,0,p);});
  box(px-16,px-2,52,66,4.2,5.2,itemA,p);})(railAmba);
-function gordon(y0,y1,parent){const cx=77,bw=2.55;
+function gordon(y0,y1,parent){const cx=80,bw=2.55;
  [[cx-4.1,cx-4.1+bw],[cx+4.1-bw,cx+4.1]].forEach(([a,b])=>{
   box(a,b,y0,y1,0.4,4.6,railBlack,parent);box(a+0.3,b-0.3,y0-0.5,y0,1.2,3.8,railBlack,parent);});
  box(cx-4.1,cx+4.1,y1-0.9,y1,1.4,3.6,railBlack,parent);
  box(cx-3.4,cx+3.4,y1-16,y1-1.2,4.6,5.6,itemA,parent);}
 gordon(52,71.7,railBaby);gordon(38,77.4,railFull);
 box(68,78,1,5,0,0.3,S(0x777777,0.5,0.5));
-hook(40.2,64);hook(86,64);hook(90,64);
-box(83,89,48,63,56,57.4,itemB);
+// three-gang switch plate below the warmer
+(function(){const x0=69.5,x1=77.75,y0=36.5,y1=42;
+ box(x0,x1,y0,y1,0.2,0.45,outletM);
+ [70.6,73.6,76.6].forEach(cx=>{box(cx-0.85,cx+0.85,y0+0.9,y1-0.9,0.45,0.72,S(0xfafaf8,0.45));});})();
+// hooks: window wall at 65 in — one by the shower, two on thirds toward the vanity wall
+hook(40.2,65);hook(91.33,65);hook(100.67,65);
+box(88,94,49,64,56,57.4,itemB);
 const QZ=44.75,QX=100.6,QH=33.8,Q=8.25;
 const gSq=new THREE.Group();scene.add(gSq);
 box(QX-Q,QX+Q,0,QH,QZ-Q,QZ+Q,grayResin,gSq);
@@ -2466,10 +2736,6 @@ box(QX-Q+1.1,QX+Q-2.6,QH-4.7,QH+0.06,QZ-Q+1.1,QZ+Q-1.1,grayBasin,gSq);
 cyl(0.85,0.25,drainM,QX-0.6,QH-4.5,QZ,0,0,gSq);
 cyl(1.1,5,brush,QX+6.4,QH+2.5,QZ-3,0,0,gSq);
 const gFaucet=new THREE.Group();scene.add(gFaucet);
-const splash4=new THREE.Group(),splashFull=new THREE.Group();
-[splash4,splashFull].forEach(g=>scene.add(g));
-box(109.3,109.9,QH,QH+4,QZ-11,QZ+11,stone,splash4);
-box(109.3,109.9,QH,44,QZ-12,QZ+12,stone,splashFull);
 const reaches=[[6.75,1.5,'6.75 in reach'],[9.3,2.5,'9.3 in reach']];
 const fheights=[39.5,39,38.5];
 let fsI=0,fhI=0;
@@ -2493,11 +2759,14 @@ const shelfFloat=new THREE.Group(),shelfBrkt=new THREE.Group();
 function shelfSet(parent,brackets){
  [44,64].forEach(y=>{box(104,110,y-1.4,y,4,28,stone,parent);
   if(brackets)[8,24].forEach(z=>{box(104.8,109.6,y-4.2,y-1.4,z-0.5,z+0.5,black,parent);});});
- box(105.6,108.4,44,48.5,7,11,itemC,parent);
- box(105.4,108.6,44,46.6,14,22,itemE,parent);
+ box(105.6,108.4,44,48.5,10,14,itemC,parent);
+ box(105.4,108.6,44,46.6,16,24,itemE,parent);
  cyl(1.3,5.5,itemD,107,66.8,10,0,0,parent);
  box(105.6,108.8,64,67.5,15,21,itemF,parent);}
 shelfSet(shelfFloat,false);shelfSet(shelfBrkt,true);
+// GFCI above the lower shelf, aligned with the toilet outlet
+box(109.2,109.9,46,49.5,4,8,outletM);
+box(109.1,109.2,46.6,48.9,4.9,5.6,S(0x333333,0.5));box(109.1,109.2,46.6,48.9,6.4,7.1,S(0x333333,0.5));
 const bt=cyl(8.2,16,white,90.6,8,16);bt.scale.x=1.22;
 const st2=cyl(8.5,1.4,seatM,90.8,16.9,16);st2.scale.x=1.2;
 box(96.5,100,16.2,19.6,8.4,23.6,seatM);
@@ -2510,12 +2779,12 @@ box(109.2,110,34,38,0,36,stone,gBox);box(100.5,110,34,38,0,0.8,stone,gBox);
 box(100.2,101,20,32.5,0,36,graphite,gBox);
 box(100.2,101,0,20,0,6.6,graphite,gBox);box(100.2,101,0,20,25.4,36,graphite,gBox);
 box(101,110,0,20,5.8,6.6,graphite,gBox);box(101,110,0,20,25.4,26.2,graphite,gBox);
-box(108.9,109.2,40,43.5,26,30.5,outletM,gBox);
 const gOpen=new THREE.Group();scene.add(gOpen);
 box(101,109.5,20,28,8.5,23.5,white,gOpen);
 box(101,109.5,28,28.9,8.3,23.7,white,gOpen);
 box(100.4,101.6,25.4,26.4,9,11.4,black,gOpen);
 box(109.2,109.9,16,19.5,3,7.2,outletM,gOpen);
+box(109.1,109.2,16.6,18.9,3.9,4.6,S(0x333333,0.5),gOpen);box(109.1,109.2,16.6,18.9,5.4,6.1,S(0x333333,0.5),gOpen);
 const cabG=new THREE.Group();scene.add(cabG);let cabDoors=[],cabOpen=false;
 (function(){const f=91,b0=92,t0=119.2,mid=105.6;
 box(f+0.8,110,b0-0.8,b0,0,60,cab,cabG);box(f+0.8,110,t0,RH,0,60,cab,cabG);box(109.2,110,b0,t0,0,60,cabIn,cabG);
@@ -2539,15 +2808,15 @@ function applyFinish(){mats.forEach(m=>{if(m.transparent)return;if(matte){m.roug
 function applyLevel(){lights.forEach(([l,b])=>l.intensity=b*level);}
 const VIEWS=[
  ['v','From shower, toward vanity',[18,64,44],[110,58,30],76],
+ ['h','Back wall and niche',[26,60,34],[0,58,36],72],
  ['g','In the shower',[18,64,20],[10,58,56],84],
- ['h','Back wall and niche',[28,58,34],[0,58,36],74],
- ['pn','Paper niche',[86,40,26],[100,26,0],64],
- ['ent','Shower entry',[62,64,44],[24,52,20],80],
- ['fc','Basin, faucet and mirror',[84,52,36],[110,52,46],64],
+ ['d','Head wall and shaver niche',[26,72,40],[14,92,2],78],
+ ['rail','Towel warmer, switches, paper niche',[62,52,34],[84,44,2],78],
  ['t','Sink and toilet',[62,62,38],[110,36,30],74],
+ ['fc','Basin, faucet and mirror',[84,52,36],[110,52,46],64],
  ['w','From the doorway',[46,68,4],[80,36,58],82],
  ['s','From vanity, toward shower',[88,64,34],[0,60,26],78],
- ['rail','Towel warmer wall',[66,58,36],[88,56,2],74],
+ ['win','Window wall and hooks',[64,62,18],[70,64,60],78],
  ['cab','Upper cabinet',[70,96,34],[108,104,20],70],
  ['c','Control wall',[22,56,24],[18,56,60],78],
  ['fl','Floor from above',[55,104,30],[55,0,30],80]];
@@ -2556,9 +2825,8 @@ VIEWS.forEach(([k,label])=>{const b=document.createElement('button');b.className
 const bnames=['24 in horizontal only','both (adds 24 in vertical at entry)','none'];
 const gnames=['34 in panel (26 in opening)','30 in panel (30 in opening)','40 in panel (20 in opening)','30 in panel + hinged return','18 in panel + hinged door'];
 const rnames=['Amba 5-bar swivel','Baby Gordon (19.7 in)','Gordon full (39.4 in)','none'];
-const spnames=['none (painted wall)','4 in stone strip','full height to cabinet'];
 const shnames=['floating, 24 × 6 at 44 and 64','black brackets, 24 × 6','none'];
-let bi=0,gi=0,ri=0,spI=0,shI=0,mirrorOn=false,boxOn=false,roomOpen=false;
+let bi=0,gi=0,ri=0,shI=0,mirrorOn=false,boxOn=false,roomOpen=false;
 function update(){
  gBack.visible=bi<2;gVert.visible=bi===1;
  cubbyA.visible=ci===1;
@@ -2566,10 +2834,8 @@ function update(){
  gBox.visible=boxOn;gOpen.visible=!boxOn;
  glassA.visible=gi===0;glassB.visible=gi===1;glassC.visible=gi===2;glassD.visible=gi===3;glassE.visible=gi===4;
  railAmba.visible=ri===0;railBaby.visible=ri===1;railFull.visible=ri===2;
- splash4.visible=spI===1;splashFull.visible=spI===2;
  shelfFloat.visible=shI===0;shelfBrkt.visible=shI===1;
  document.getElementById('sh').textContent='Toilet shelves: '+shnames[shI];
- document.getElementById('bs').textContent='Backsplash: '+spnames[spI];
  document.getElementById('tr').textContent='Towel warmer: '+rnames[ri];
  document.getElementById('mr').textContent='Shower mirror: '+(mirrorOn?'hung on glass':'stored away');
  document.getElementById('gs').textContent='Glass: '+gnames[gi];
@@ -2590,7 +2856,6 @@ function view(k){const v=VIEWS.find(a=>a[0]===k);if(!v)return;
 function cycleShelf(){shI=(shI+1)%3;update();}
 function cycleSpout(){fsI=(fsI+1)%2;buildFaucet();applyFinish();update();}
 function cycleFHeight(){fhI=(fhI+1)%3;buildFaucet();applyFinish();update();}
-function cycleSplash(){spI=(spI+1)%3;update();}
 function cycleRail(){ri=(ri+1)%4;update();}
 function toggleMirror(){mirrorOn=!mirrorOn;update();}
 function cycleGlass(){gi=(gi+1)%5;update();}
