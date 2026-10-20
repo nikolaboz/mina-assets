@@ -123,15 +123,19 @@ const DEF={
   /* stair side */
   stairDoorTop:27, stairDoorW:38, landW:36, landTop:12,
   cellarW:30, closet2W:50, closet2Gap:10,
-  treadsLower:3, midLand:50, treadsUpper:3, tread:10.5, riser:7.5, platDepth:36,
+  treadsLower:3, midLand:50, treadsUpper:3, tread:6, riser:3, platDepth:36,
   /* flooring */
   layout:'full', rowPhase:0, apexPhase:0, pointing:1, rows:2, runOffset:0,
-  platFloor:'long', platDir:'across',
+  platFloor:'tile', platDir:'across', midFloor:'long', midDir:'across',
   /* cabinets */
-  cabOn:true, cabLen:130, cabDepth:24, cabStart:6, cabH:36, floorUnder:true,
+  /* south-wall unit: furred wall + Novamobili Middle sliding wardrobe + fridge niche.
+     Door widths/heights in cm straight from the catalogue; door = module + 4.8 cm. */
+  wdOn:true, wdDoorA:137.3, wdDoorB:137.3, wdModH:258, wdFur:3.43, wdHandle:43,
+  alt1475:false, kitReveal:1, soffit:true, floorUnder:true,
+  frOn:true, frW:29, frD:28, frGap:1, frPart:1.5,
   /* planks */
   longN:72, longLen:55, longW:4.5, leftN:65, rightN:95, chevLen:24, chevW:3.625, angle:45, waste:7,
-  minStagger:8, minPiece:8, seed:3,
+  minStagger:8, minPiece:8, seed:3, reuseChev:true, chevMin:4, kerf:0.125,
   /* view */
   tab:'both', colorType:false, showCuts:false, showDims:true, showWalls:true, showCab:true, showLabels:true, wallCut:42
 };
@@ -176,21 +180,52 @@ function geom(){
   /* internal seams (where two rects meet) — used to hide false joints */
   const seams=[['y',yS,ns,L],['x',L,sdT,sdB],['x',ex,sdT,sdB]];
 
-  const cab=S.cabOn?[clamp(+S.cabStart,0,L),yS-+S.cabDepth,clamp(+S.cabStart+ +S.cabLen,0,ns),yS]:null;
-  const cabHole=(cab&&!S.floorUnder)?cab:null;
+  /* ---- south-wall unit ---- */
+  const CM=2.54, MIDDLE={'122.3':{mod:117.5,cols:[117.5]},
+                         '137.3':{mod:132.5,cols:[72.5,57.5]},
+                         '152.3':{mod:147.5,cols:[72.5,72.5]}};
+  let wu=null;
+  if(S.wdOn){
+    const dA=+S.wdDoorA,dB=+S.wdDoorB;
+    const mA=MIDDLE[dA.toFixed(1)]||MIDDLE['137.3'], mB=MIDDLE[dB.toFixed(1)]||MIDDLE['137.3'];
+    const sp=m=>(S.alt1475&&m.mod===147.5)?[87.5,57.5]:m.cols;
+    const widthIn=(dA+dB)/CM;                  /* finished face width */
+    const carcIn=(mA.mod+mB.mod)/CM;           /* carcass behind it   */
+    const depth=62.4/CM, fur=+S.wdFur, total=depth+fur;
+    const hgt=+S.wdModH/CM;
+    const kitL=L-+S.kitRight-+S.kitW, usable=kitL-+S.kitReveal;
+    const x1=usable, x0=x1-widthIn;
+    const yFace=yS-total, yFur=yS-fur;
+    const frNeed=+S.frW+ +S.frGap+ +S.frPart;
+    wu={x0,x1,widthIn,carcIn,depth,fur,total,hgt,kitL,usable,yFace,yFur,
+        zoneW:x0, frNeed, fits:x0>=frNeed-1e-6,
+        cols:sp(mA).concat(sp(mB)).map(c=>c/CM),
+        doorJoint:x0+dA/CM,
+        fr:S.frOn?[+S.frGap,yS-+S.frD,+S.frGap+ +S.frW,yS]:null,
+        part:S.frOn?[+S.frGap+ +S.frW,yFace,+S.frGap+ +S.frW+ +S.frPart,yS]:null};
+  }
+  /* floor exclusions: built walls are never floored; the wardrobe footprint is a choice */
+  const holes=[];
+  if(wu){
+    if(S.floorUnder){
+      holes.push([wu.x0,wu.yFur,wu.x1,yS]);
+      if(wu.x0>0.05)holes.push([0,wu.yFace,wu.x0,yS]);
+    }else holes.push([0,wu.yFace,wu.x1,yS]);
+  }
 
   /* stairs run north (−y) from the landing */
   const td=+S.tread, rh=+S.riser, nL=Math.round(+S.treadsLower), nU=Math.round(+S.treadsUpper);
   const steps=[];let y=lt,h=0;
   for(let i=0;i<nL;i++){h+=rh;steps.push({y0:y-td,y1:y,z:h,kind:'tread'});y-=td}
   h+=rh;const midY1=y,midY0=y-+S.midLand;steps.push({y0:midY0,y1:midY1,z:h,kind:'landing'});y=midY0;
+  const mid=(+S.midLand>0.05)?{r:[ex,midY0,ex+lw,midY1],z:h}:null;
   for(let i=0;i<nU;i++){h+=rh;steps.push({y0:y-td,y1:y,z:h,kind:'tread'});y-=td}
   h+=rh;const platY1=y,platY0=y-+S.platDepth;
   const plat={r:[ex,platY0,ex+lw,platY1],z:h};
   const totalRise=h, risers=nL+1+nU+1, stairN=platY0;
 
-  return {L,yS,yS2,wt,ex,lw,ns,lt,sdT,sdB,rects,seams,cab,cabHole,steps,plat,totalRise,risers,stairN,
-          floorArea:rects.reduce((a,z)=>a+rArea(z.r),0)-rArea(cabHole)};
+  return {L,yS,yS2,wt,ex,lw,ns,lt,sdT,sdB,rects,seams,wu,holes,steps,plat,mid,totalRise,risers,stairN,
+          floorArea:rects.reduce((a,z)=>a+rArea(z.r),0)-holes.reduce((a,h)=>a+rArea(h),0)};
 }
 
 /* ---- chevron over the whole floor (or a runner band) ---- */
@@ -223,21 +258,37 @@ function chevron(G){
         for(const z of zones){
           let c=clipPoly(poly,z);if(c.length<3)continue;
           if(band){c=clipPoly(c,band);if(c.length<3)continue}
-          if(G.cabHole){
-            const cut=clipPoly(c,G.cabHole);
-            if(parea(cut)>parea(c)-0.5)continue;
-            if(parea(cut)>0.5){ for(const piece of subtractRect(c,G.cabHole)){ if(parea(piece)>0.5){frags.push(piece);a+=parea(piece)} } continue }
-          }
-          frags.push(c);a+=parea(c);
+          for(const piece of subtractAll(c,G.holes)){frags.push(piece);a+=parea(piece)}
         }
         if(a<0.75)continue;
-        out.push({kind:(sg*p>0)?'left':'right',frags,area:a,cut:a<S.chevLen*S.chevW-0.75,id:id++});
+        /* A cut parallel to the apex line yields a SHORTER plank of the same width
+           and the same hand, so what a piece really consumes is length along its
+           own axis. Measure that; packChev() then treats planks as cutting stock. */
+        const axn=[-p*dx/S.chevLen, sg*H/S.chevLen];
+        let lo=Infinity,hi=-Infinity;
+        for(const fr of frags)for(const q of fr){const t=q[0]*axn[0]+q[1]*axn[1];if(t<lo)lo=t;if(t>hi)hi=t;}
+        out.push({kind:(sg*p>0)?'left':'right',frags,area:a,len:Math.min(hi-lo,S.chevLen),
+                  cut:a<S.chevLen*S.chevW-0.75,id:id++});
       }
     }
   }
   return{planks:out,H,s,band};
 }
 /* rectangular subtraction of a convex poly: returns up to 4 pieces */
+function subtractAll(poly,holes){
+  let parts=[poly];
+  for(const h of holes){
+    const next=[];
+    for(const q of parts){
+      const cut=clipPoly(q,h);
+      if(parea(cut)<0.5){next.push(q);continue}        /* no overlap   */
+      if(parea(cut)>parea(q)-0.5)continue;             /* fully inside */
+      for(const r of subtractRect(q,h))if(parea(r)>0.5)next.push(r);
+    }
+    parts=next;
+  }
+  return parts;
+}
 function subtractRect(poly,h){
   const bb=[Math.min(...poly.map(p=>p[0])),Math.min(...poly.map(p=>p[1])),Math.max(...poly.map(p=>p[0])),Math.max(...poly.map(p=>p[1]))];
   const parts=[[bb[0],bb[1],h[0],bb[3]],[h[2],bb[1],bb[2],bb[3]],[Math.max(bb[0],h[0]),bb[1],Math.min(bb[2],h[2]),h[1]],[Math.max(bb[0],h[0]),h[3],Math.min(bb[2],h[2]),bb[3]]];
@@ -281,7 +332,7 @@ function layRow(iv,prev,pool,st){
 function longPlanks(G,ch){
   const st={fresh:0,scrap:0,rng:rng32(S.seed*7919+13)},pool=[],out=[];
   const w=+S.longW;
-  const holes=[ch.band,G.cabHole].filter(Boolean);
+  const holes=[ch.band].concat(G.holes).filter(Boolean);
   const layRect=(rect,dir,holesL,tag)=>{
     const flip=dir==='y', tr=r=>flip?[r[1],r[0],r[3],r[2]]:r;
     const[u0,v0,u1,v1]=tr(rect);
@@ -293,7 +344,8 @@ function longPlanks(G,ch){
       const res=layRow(freeIntervals(u0,u1,b0,b1,hl),prev,pool,st);prev=res.joints;
       for(const pc of res.pieces){
         const lr=[pc.u,b0,pc.u+pc.len,b1];
-        out.push({rect:flip?[lr[1],lr[0],lr[3],lr[2]]:lr,len:pc.len,plat:!!tag,
+        out.push({rect:flip?[lr[1],lr[0],lr[3],lr[2]]:lr,len:pc.len,
+                  lift:tag?tag.z:0, zone:tag?tag.key:'floor',
                   cut:pc.len<+S.longLen-0.05||(b1-b0)<w-0.05});
       }
     }
@@ -302,15 +354,32 @@ function longPlanks(G,ch){
   const ids=S.layout==='full'?[]:(S.layout==='hall'?['thresh','land']:['hall','notch','thresh','land']);
   G.rects.filter(z=>ids.indexOf(z.id)>=0).forEach(z=>layRect(z.r,'x',holes));
   const platOn=S.platFloor==='long';
-  if(platOn)layRect(G.plat.r,S.platDir==='across'?'x':'y',[],true);
-  return{planks:out,st,pool,platOn};
+  if(platOn)layRect(G.plat.r,S.platDir==='across'?'x':'y',[],{z:G.plat.z,key:'plat'});
+  const midOn=!!(G.mid&&S.midFloor==='long');
+  if(midOn)layRect(G.mid.r,S.midDir==='across'?'x':'y',[],{z:G.mid.z,key:'mid'});
+  return{planks:out,st,pool,platOn,midOn};
 }
 
+/* Chevron planks as cutting stock, one pool per hand. A left plank's offcut is
+   still a left plank — it cannot be flipped, because the wear layer and the
+   tongue/groove are handed — so the two pools never mix. Best-fit decreasing. */
+function packChev(planks){
+  const FULL=+S.chevLen,K=+S.kerf,MIN=+S.chevMin,reuse=!!S.reuseChev;
+  const pools={left:[],right:[]},used={left:0,right:0};
+  for(const p of planks.slice().sort((a,b)=>b.len-a.len)){
+    const need=Math.min(p.len,FULL),pool=pools[p.kind];
+    let bi=-1;
+    if(reuse)for(let i=0;i<pool.length;i++)if(pool[i]>=need-1e-6&&(bi<0||pool[i]<pool[bi]))bi=i;
+    if(bi>=0){const r=pool[bi]-need-K;pool.splice(bi,1);if(r>=MIN)pool.push(r);p.from='offcut'}
+    else{used[p.kind]++;const r=FULL-need-K;if(reuse&&r>=MIN)pool.push(r);p.from='new'}
+  }
+  return{used,pools};
+}
 function model(){
   const G=geom(), ch=chevron(G), lg=longPlanks(G,ch);
-  const nL=ch.planks.filter(p=>p.kind==='left').length, nR=ch.planks.filter(p=>p.kind==='right').length;
+  const pk=packChev(ch.planks);
   const chevArea=ch.planks.reduce((a,p)=>a+p.area,0);
-  return{G,ch,lg,nL,nR,chevArea};
+  return{G,ch,lg,nL:pk.used.left,nR:pk.used.right,chevArea,pk};
 }
 
 /* ============================= 2D plan ============================= */
@@ -323,43 +392,73 @@ function drawPlan(M){
   for(const z of G.rects)d+=`M${z.r[0]} ${z.r[1]}H${z.r[2]}V${z.r[3]}H${z.r[0]}Z`;
   let g=`<defs><clipPath id="floorClip"><path d="${d}"/></clipPath>
   <clipPath id="platClip"><rect x="${G.plat.r[0]}" y="${G.plat.r[1]}" width="${G.lw}" height="${G.plat.r[3]-G.plat.r[1]}"/></clipPath>
+  ${G.mid?`<clipPath id="midClip"><rect x="${G.mid.r[0]}" y="${G.mid.r[1]}" width="${G.lw}" height="${G.mid.r[3]-G.mid.r[1]}"/></clipPath>`:''}
   <pattern id="hatch" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="4" style="stroke:var(--cab);stroke-width:.6"/></pattern>
   <pattern id="tile" width="9" height="9" patternUnits="userSpaceOnUse"><rect width="9" height="9" fill="#b9bfc4"/><rect width="8.4" height="8.4" x=".3" y=".3" fill="#c9cfd3"/></pattern></defs>`;
   g+=`<g>${G.rects.map(z=>`<rect x="${z.r[0]}" y="${z.r[1]}" width="${z.r[2]-z.r[0]}" height="${z.r[3]-z.r[1]}" style="fill:var(--floorbg)"/>`).join('')}</g>`;
 
   const stroke='stroke="rgba(78,50,18,.5)" stroke-width=".22"';
-  let body='',platBody='';
+  const bucket={floor:'',plat:'',mid:''};
   lg.planks.forEach((p,i)=>{const[a,b,c,e]=p.rect;
     const r=`<rect x="${a}" y="${b}" width="${c-a}" height="${e-b}" fill="${S.showCuts&&p.cut?CUT:woodLong(i)}" ${stroke}><title>Long plank ${f1(p.len)}"</title></rect>`;
-    if(p.plat)platBody+=r;else body+=r;});
+    bucket[p.zone]+=r;});
   let chevBody='';
   ch.planks.forEach(p=>{
     const fill=S.showCuts&&p.cut?CUT:(S.colorType?(p.kind==='left'?`hsl(29 54% ${55+((p.id*29)%7)}%)`:`hsl(41 58% ${68+((p.id*31)%6)}%)`):woodLong(p.id));
     for(const fr of p.frags)chevBody+=`<polygon points="${fr.map(q=>q[0].toFixed(2)+','+q[1].toFixed(2)).join(' ')}" fill="${fill}" ${stroke}><title>${p.kind==='left'?'Left':'Right'} chevron${p.cut?' (cut)':''}</title></polygon>`;
   });
-  g+=`<g clip-path="url(#floorClip)">${chevBody}</g><g clip-path="url(#floorClip)">${body}</g>`;
+  g+=`<g clip-path="url(#floorClip)">${chevBody}</g><g clip-path="url(#floorClip)">${bucket.floor}</g>`;
 
   /* top platform + stairs */
   const P=G.plat.r;
   if(S.platFloor==='tile')g+=`<rect x="${P[0]}" y="${P[1]}" width="${P[2]-P[0]}" height="${P[3]-P[1]}" fill="url(#tile)" stroke="var(--muted)" stroke-width=".3"/>`;
-  else g+=`<g clip-path="url(#platClip)">${platBody}</g>`;
+  else g+=`<g clip-path="url(#platClip)">${bucket.plat}</g>`;
   g+=`<g>`;
   for(const st of G.steps){
+    if(st.kind==='landing'&&lg.midOn)continue;          /* planks drawn instead */
     const fill=st.kind==='landing'?'hsl(33 34% 72%)':'hsl(33 32% 76%)';
     g+=`<rect x="${G.ex}" y="${st.y0}" width="${G.lw}" height="${st.y1-st.y0}" fill="${fill}" stroke="rgba(70,55,35,.55)" stroke-width=".4"><title>${st.kind==='landing'?'Mid-landing':'Tread'} at +${f1(st.z)}"</title></rect>`;
   }
+  if(lg.midOn)g+=`<g clip-path="url(#midClip)">${bucket.mid}</g>`+
+    `<rect x="${G.mid.r[0]}" y="${G.mid.r[1]}" width="${G.lw}" height="${G.mid.r[3]-G.mid.r[1]}" fill="none" stroke="rgba(70,55,35,.55)" stroke-width=".4"/>`;
   g+=`</g>`;
   const mid=G.ex+G.lw/2;
   g+=`<line x1="${mid}" y1="${G.lt-4}" x2="${mid}" y2="${G.plat.r[3]+4}" style="stroke:var(--accent)" stroke-width=".5"/>
       <polygon points="${mid},${G.plat.r[3]+1} ${mid-2.6},${G.plat.r[3]+7} ${mid+2.6},${G.plat.r[3]+7}" style="fill:var(--accent)"/>
       <text x="${mid}" y="${G.stairN-6}" text-anchor="middle" font-size="4.6" style="fill:var(--accent)">UP · ${G.risers} risers</text>`;
 
-  /* cabinets */
-  if(G.cab&&S.showCab){
-    const[a,b,c,e]=G.cab;
-    g+=`<rect x="${a}" y="${b}" width="${c-a}" height="${e-b}" style="fill:var(--panel)" opacity="${S.floorUnder?.25:.92}"/>`;
-    g+=`<rect x="${a}" y="${b}" width="${c-a}" height="${e-b}" fill="${S.floorUnder?'none':'url(#hatch)'}" style="stroke:var(--cab)" stroke-width=".6" ${S.floorUnder?'stroke-dasharray="3 2"':''}/>`;
-    g+=`<text x="${(a+c)/2}" y="${(b+e)/2+1.7}" text-anchor="middle" font-size="4.8" font-weight="600" style="fill:var(--ink)">Cabinets ${f0(c-a)}" × ${f0(e-b)}"</text>`;
+  /* south-wall unit: furring, wardrobe with columns, fridge niche */
+  const U=G.wu;
+  if(U&&S.showCab){
+    /* furring wall behind the wardrobe */
+    g+=`<rect x="${U.x0}" y="${U.yFur}" width="${U.widthIn}" height="${U.fur}" fill="url(#hatch)" style="stroke:var(--cab)" stroke-width=".5"/>`;
+    /* wardrobe carcass */
+    g+=`<rect x="${U.x0}" y="${U.yFace}" width="${U.widthIn}" height="${U.depth}" style="fill:var(--panel);stroke:var(--cab)" stroke-width=".7" opacity="${S.floorUnder?.9:.95}"/>`;
+    /* column dividers */
+    let cx=U.x0+(U.widthIn-U.carcIn)/2;
+    g+=`<line x1="${cx}" y1="${U.yFace}" x2="${cx}" y2="${U.yFur}" style="stroke:var(--cab)" stroke-width=".4"/>`;
+    for(const c of U.cols){cx+=c;
+      g+=`<line x1="${cx}" y1="${U.yFace}" x2="${cx}" y2="${U.yFur}" style="stroke:var(--cab)" stroke-width=".4"/>`;}
+    /* door face, with the joint between the two sliding doors */
+    g+=`<rect x="${U.x0}" y="${U.yFace}" width="${U.widthIn}" height="1.02" style="fill:var(--accent)" opacity=".55"/>`;
+    g+=`<line x1="${U.doorJoint}" y1="${U.yFace-1.5}" x2="${U.doorJoint}" y2="${U.yFace+2.5}" style="stroke:var(--accent)" stroke-width=".8"/>`;
+    g+=`<text x="${(U.x0+U.x1)/2}" y="${U.yFace+9}" text-anchor="middle" font-size="4.8" font-weight="600" style="fill:var(--ink)">Middle wardrobe ${f1(U.widthIn)}" · ${U.cols.length} columns</text>`;
+    g+=`<text x="${(U.x0+U.x1)/2}" y="${U.yFace+15}" text-anchor="middle" font-size="4.2" style="fill:var(--muted)">${U.cols.map(c=>f1(c)+'"').join(' · ')}</text>`;
+    /* fridge niche */
+    if(U.fr){
+      const[fa,fb,fc,fe]=U.fr;
+      g+=`<rect x="${fa}" y="${fb}" width="${fc-fa}" height="${fe-fb}" style="fill:var(--floorbg);stroke:var(--ink)" stroke-width=".7"/>`;
+      g+=`<rect x="${fa}" y="${fb}" width="${fc-fa}" height="1.2" style="fill:var(--ink)" opacity=".5"/>`;
+      g+=`<text x="${(fa+fc)/2}" y="${fb+11}" text-anchor="middle" font-size="4.6" font-weight="600" style="fill:var(--ink)">Fridge</text>`;
+      g+=`<text x="${(fa+fc)/2}" y="${fb+17}" text-anchor="middle" font-size="4.2" style="fill:var(--muted)">${f0(S.frW)}" × ${f0(S.frD)}"</text>`;
+      const[pa,pb,pc,pe]=U.part;
+      g+=`<rect x="${pa}" y="${pb}" width="${pc-pa}" height="${pe-pb}" style="fill:var(--wall)"/>`;
+    }
+    /* the fridge zone dimension — the piece that absorbs the slack */
+    g+=`<line x1="0" y1="${U.yFace-7}" x2="${U.x0}" y2="${U.yFace-7}" style="stroke:var(--accent)" stroke-width=".4"/>`;
+    g+=`<text x="${U.x0+4}" y="${U.yFace-9}" text-anchor="start" font-size="4.4" style="fill:${U.fits?'var(--accent)':'var(--bad)'}">fridge zone ${f1(U.zoneW)}" · needs ${f1(U.frNeed)}"</text>`;
+    /* flush front plane */
+    g+=`<line x1="0" y1="${U.yFace}" x2="${U.x1}" y2="${U.yFace}" style="stroke:var(--accent)" stroke-width=".5" stroke-dasharray="4 2"/>`;
   }
 
   /* walls + openings */
@@ -468,6 +567,17 @@ function resize(){
 const MATS={};
 function mat(hex,opts){const k=hex+(opts||'');if(!MATS[k])MATS[k]=new THREE.MeshLambertMaterial(Object.assign({color:hex,side:THREE.DoubleSide},opts==='t'?{transparent:true,opacity:.26}:{}));return MATS[k]}
 function hsl(h,s,l){return new THREE.Color().setHSL(h/360,s/100,l/100).getHex()}
+/* Walls are cut off below the real ceiling for the dollhouse view. A solid box
+   would cap that cut with a bright horizontal slab; hiding the +z face leaves the
+   cut open, so the wall reads as a section rather than a ledge.
+   BoxGeometry group order is +x,-x,+y,-y,+z,-z, and our boxes are built with z up,
+   so index 4 is the top. FrontSide keeps the hollow interior from showing. */
+function wallMat(hex){
+  const k='wall'+hex; if(MATS[k])return MATS[k];
+  const m=new THREE.MeshLambertMaterial({color:hex,side:THREE.FrontSide});
+  const none=new THREE.MeshBasicMaterial({visible:false});
+  MATS[k]=[m,m,m,m,none,m]; return MATS[k];
+}
 /* The plan is drawn in SVG coordinates, where +y runs DOWN the page (south).
    The 3D scene is z-up and right-handed, so world Y = -(plan y).
    Every primitive below applies that flip, so callers keep passing plan coords. */
@@ -515,9 +625,9 @@ function build3D(M){
   });
   /* long planks */
   lg.planks.forEach((p,i)=>{
-    const[a,b,c,e]=p.rect, isPlat=!!p.plat;
-    box(root,c-a,e-b,TH_PL,a,b,isPlat?G.plat.z:0,mat(hsl(34,42,56+((i*37)%10))));
-    const z=(isPlat?G.plat.z:0)+TH_PL+.02;
+    const[a,b,c,e]=p.rect, lift=p.lift||0;
+    box(root,c-a,e-b,TH_PL,a,b,lift,mat(hsl(34,42,56+((i*37)%10))));
+    const z=lift+TH_PL+.02;
     const pts=[[a,b],[c,b],[c,e],[a,e]];
     for(let k=0;k<4;k++){const u=pts[k],v=pts[(k+1)%4];if(!isSeam(u,v,G.seams))lines.push(u[0],WY(u[1]),z,v[0],WY(v[1]),z)}
   });
@@ -530,7 +640,7 @@ function build3D(M){
   /* stairs */
   const oak=mat(hsl(33,34,66)), oak2=mat(hsl(33,20,86));
   for(const st of G.steps){
-    box(root,G.lw,st.y1-st.y0,1.1,G.ex,st.y0,st.z,oak);          /* tread */
+    if(!(st.kind==='landing'&&lg.midOn))box(root,G.lw,st.y1-st.y0,1.1,G.ex,st.y0,st.z,oak);
     box(root,G.lw,1.0,+S.riser,G.ex,st.y1-1.0,st.z-+S.riser,oak2); /* riser */
   }
   box(root,G.lw,G.plat.r[3]-G.plat.r[1],1.1,G.ex,G.plat.r[1],G.plat.z-1.1,mat(0xb9c0c6));
@@ -538,7 +648,7 @@ function build3D(M){
   box(root,G.lw,G.lt-G.stairN,1,G.ex,G.stairN,-1,mat(0xa8b0b8));
   /* walls */
   if(S.showWalls){
-    const wm=mat(0xf0ece6), wt=G.wt, H=Math.min(+S.ceilH,+S.wallCut||+S.ceilH), DH=Math.min(80,H);
+    const wm=wallMat(0xf0ece6), wt=G.wt, H=Math.min(+S.ceilH,+S.wallCut||+S.ceilH), DH=Math.min(80,H);
     const seg=(x,y,dx,dy)=>box(root,dx,dy,H,x,y,0,wm);
     const hdr=(x,y,dx,dy)=>box(root,dx,dy,H-DH,x,y,DH,wm);
     const gymL=G.L-+S.gymRight-+S.gymW,gymR=G.L-+S.gymRight,clL=+S.closetX,clR=clL+ +S.closetW;
@@ -558,10 +668,37 @@ function build3D(M){
     seg(G.ex-wt,G.stairN-wt,G.lw+2*wt,wt);
   }
   /* cabinets */
-  if(G.cab&&S.showCab){
-    const[a,b,c,e]=G.cab;
-    box(root,c-a,e-b,+S.cabH-1.5,a,b,0,mat(0xe9e4dc));
-    box(root,c-a,e-b+1,1.5,a,b-1,+S.cabH-1.5,mat(0x9c9289));
+  const U=G.wu;
+  if(U&&S.showCab){
+    const H=U.hgt, face=U.yFace;
+    /* furring wall, then carcass, then the two sliding doors on the front plane */
+    box(root,U.widthIn,U.fur,H,U.x0,U.yFur,0,mat(0xeeeae4));
+    box(root,U.widthIn,U.depth,H,U.x0,face,0,mat(0xdfdad2));
+    const dA=+S.wdDoorA/2.54, dB=+S.wdDoorB/2.54, dh=+S.wdModH/2.54-2.2/2.54;
+    const hc=+S.wdHandle, hT=1.4;                    /* handle groove */
+    for(const[dx0,dw]of[[U.x0,dA],[U.x0+dA,dB]]){
+      box(root,dw-0.3,1.02,hc-hT/2,dx0+0.15,face-1.02,0,mat(0xf4f1ec));       /* lower panel */
+      box(root,dw-0.3,1.02,dh-hc-hT/2,dx0+0.15,face-1.02,hc+hT/2,mat(0xf4f1ec)); /* upper panel */
+      box(root,dw-0.3,0.45,hT,dx0+0.15,face-0.45,hc-hT/2,mat(0xb9b2a8));      /* recessed handle */
+    }
+    /* fridge + partition */
+    if(U.fr){
+      const[fa,fb,fc,fe]=U.fr;
+      box(root,fc-fa,fe-fb,70,fa,fb,0,mat(0xc3c7cb));
+      box(root,fc-fa,0.8,70,fa,fb-0.8,0,mat(0x9aa0a6));
+      const[pa,pb,pc,pe]=U.part;
+      box(root,pc-pa,pe-pb,H,pa,pb,0,mat(0xeeeae4));
+      box(root,U.x0-(pc),U.total-(+S.frD),H,pc,face,0,mat(0xeeeae4)); /* filler to wardrobe */
+    }
+    /* Soffit closing the gap to the ceiling. It is architecture, not furniture, so
+       the dollhouse cut plane applies to it as it does to the walls — otherwise it
+       floats as a slab above walls that have been cut away. Raise "Wall height in
+       3D" to the ceiling to see it meet them. */
+    if(S.soffit){
+      const cut=Math.min(+S.ceilH,+S.wallCut||+S.ceilH);
+      const z0=U.hgt, z1=Math.min(+S.ceilH,cut);
+      if(z1>z0+0.05)box(root,U.x1,U.total,z1-z0,0,face,z0,wallMat(0xf0ece6));
+    }
   }
   /* orientation labels — quickest way to confirm the model reads the right way round */
   if(S.showLabels){
@@ -571,7 +708,8 @@ function build3D(M){
     label(root,'To gym',(gymL+gymR)/2,-6,46);
     label(root,'Stair door',G.L+2,(G.sdT+G.sdB)/2,52);
     label(root,'Top of stairs',G.ex+G.lw/2,G.plat.r[1]+18,G.plat.z+22);
-    if(G.cab&&S.showCab)label(root,'Cabinets',(G.cab[0]+G.cab[2])/2,(G.cab[1]+G.cab[3])/2,+S.cabH+10);
+    if(U&&S.showCab){label(root,'Wardrobe',(U.x0+U.x1)/2,U.yFace+U.depth/2,U.hgt*0.62);
+      if(U.fr)label(root,'Fridge',(U.fr[0]+U.fr[2])/2,(U.fr[1]+U.fr[3])/2,74);}
   }
   place();
 }
@@ -614,21 +752,30 @@ function panels(M){
     ['Hallway',`${sqft(rArea(G.rects[0].r)+rArea(G.rects[1].r))}`],
     ['Stair landing + threshold',`${sqft(rArea(G.rects[2].r)+rArea(G.rects[3].r))}`],
     ['Total floor to cover',`${sqft(G.floorArea)}`],
-    G.cabHole?['Not floored (under cabinets)',`${sqft(rArea(G.cabHole))}`]:null,
+    G.holes.length?['Not floored (built-ins)',`${sqft(G.holes.reduce((a,h)=>a+rArea(h),0))}`]:null,
     ['Top platform',`${sqft(platArea)} (${S.platFloor==='long'?'long planks':'tile, kept'})`],
+    G.mid?['Mid-landing',`${sqft(rArea(G.mid.r))} (${lg.midOn?'long planks':'refinished'})`]:null,
     ['h','Flooring'],
     ['Chevron laid',`${sqft(chevAreaUsed)} · ${ch.planks.length} planks`],
     ['Long plank laid',`${sqft(longArea)} · ${lg.st.fresh} planks`],
     ['Chevron row width',`${f1(2*ch.H)}" per V · ${f1(ch.s)}" advance`],
     ['Rows across hallway',`${f1(G.yS2/(2*ch.H))}`],
-    ['Cut pieces',`${ch.planks.filter(p=>p.cut).length} chevron · ${lg.planks.filter(p=>p.cut).length} long`],
+    ['Chevron pieces laid',`${ch.planks.length} · ${ch.planks.filter(p=>p.cut).length} need cutting`],
+    ['Border pieces from offcuts',`${ch.planks.filter(p=>p.from==='offcut').length}`],
+    ['Chevron offcuts left',`${M.pk.pools.left.length+M.pk.pools.right.length} pcs · ${f0(M.pk.pools.left.concat(M.pk.pools.right).reduce((a,b)=>a+b,0))}"`],
+    ['Long cut pieces',`${lg.planks.filter(p=>p.cut).length}`],
     ['Reusable offcuts left',`${lg.pool.length} pcs · ${f0(lg.pool.reduce((a,b)=>a+b,0))}"`],
     ['h','Stairs'],
     ['Risers / total rise',`${G.risers} @ ${f1(S.riser)}" = ${f1(G.totalRise)}"`],
     ['Treads',`${Math.round(S.treadsLower)+Math.round(S.treadsUpper)} @ ${f1(S.tread)}" + ${f1(S.midLand)}" landing`],
     ['Stair run (plan)',`${f1(G.lt-G.stairN)}"`],
     ['h','Other'],
-    S.cabOn?['Cabinets',`${f1(+S.cabLen/12)} LF × ${f1(S.cabDepth)}" deep`]:null,
+    G.wu?['h','Wall unit']:null,
+    G.wu?['Wardrobe face',`${f1(G.wu.widthIn)}" (${f1(+S.wdDoorA)} + ${f1(+S.wdDoorB)} cm)`]:null,
+    G.wu?['Carcass / columns',`${f1(G.wu.carcIn)}" · ${G.wu.cols.map(c=>f1(c)+'"').join(' + ')}`]:null,
+    G.wu?['Height / gap to ceiling',`${f1(G.wu.hgt)}" · ${f1(+S.ceilH-G.wu.hgt)}" above`]:null,
+    G.wu?['Front plane / passage',`${f1(G.wu.total)}" deep · ${f1(G.yS-G.wu.total)}" clear`]:null,
+    G.wu?['Fridge zone',`${f1(G.wu.zoneW)}" available · ${f1(G.wu.frNeed)}" needed`]:null,
     ['Baseboard (approx.)',`${f1((perim-openings)/12)} LF`],
     ['Wall area @ ${h}'.replace('${h}',f1(S.ceilH/12)+' ft'),`${sqft((perim-openings)*+S.ceilH)}`],
     ['Material on hand',`${sqft(+S.longN*S.longLen*S.longW+(+S.leftN+ +S.rightN)*S.chevLen*S.chevW)}`]
@@ -641,6 +788,18 @@ function panels(M){
     (S.showCuts?`<span><i class="sw" style="background:hsl(16 80% 57%)"></i>Cut piece</span>`:'')+
     `<span>Hover a plank in the plan for its size.</span>`;
 
+  const U2=G.wu;
+  if(U2){
+    const slack=U2.zoneW-U2.frNeed;
+    document.getElementById('verdict').innerHTML+=
+      `<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--line)">`+
+      (slack< -0.01
+        ? `<b class="bad">Wardrobe and fridge don't both fit.</b> The fridge zone is ${f1(U2.zoneW)}" but needs ${f1(U2.frNeed)}" — short by ${f1(-slack)}". The doors can't be trimmed, so drop a door size or narrow the surround.`
+        : slack<2
+        ? `<b class="warn">Fits with ${f1(slack)}" to spare.</b> That is no margin on a door that cannot be cut to size — confirm the fridge's case width and side clearance before ordering.`
+        : `<b class="ok">Fits with ${f1(slack)}" to spare</b> in the fridge zone, which absorbs the slack as filler.`)+
+      ` Install needs ${f1(4/2.54)}" extra width, so build the partition after the wardrobe is set.</div>`;
+  }
   document.getElementById('assum').innerHTML=
     `Assumed from your drawing: stair flight of ${Math.round(S.treadsLower)} treads, a ${f1(S.midLand)}" mid-landing, then ${Math.round(S.treadsUpper)} treads — ${G.risers} risers at ${f1(S.riser)}" for ${f1(G.totalRise/12)} ft of rise. Correct the riser count and height in the Stairs section if that's off; nothing else in the model depends on it.`;
 }
@@ -657,14 +816,28 @@ const SECTIONS=[
   {k:'runOffset',l:'Runner offset across width',type:'range',min:-30,max:30,step:.5,unit:'"',show:runner},
   {k:'platFloor',l:'Top platform',type:'select',opts:[['long','Long planks'],['tile','Keep existing tile']]},
   {k:'platDir',l:'Platform planks run',type:'select',opts:[['across','Across the stair (parallel to treads)'],['with','With the stair (toward the door)']],show:()=>S.platFloor==='long'},
+  {k:'midFloor',l:'Mid-landing',type:'select',opts:[['long','Long planks'],['none','Refinish with the treads']]},
+  {k:'midDir',l:'Mid-landing planks run',type:'select',opts:[['across','Across the stair'],['with','With the stair']],show:()=>S.midFloor==='long'},
  ]},
- {t:'Cabinets',open:true,items:[
-  {k:'cabOn',l:'Cabinets on the kitchen wall',type:'check'},
-  {k:'cabLen',l:'Length',type:'range',min:24,max:142,step:1,unit:'"',show:()=>S.cabOn},
-  {k:'cabDepth',l:'Depth',type:'range',min:12,max:30,step:.5,unit:'"',show:()=>S.cabOn},
-  {k:'cabStart',l:'Starts from garage end at',type:'range',min:0,max:120,step:1,unit:'"',show:()=>S.cabOn},
-  {k:'cabH',l:'Height',type:'range',min:30,max:96,step:1,unit:'"',show:()=>S.cabOn},
-  {k:'floorUnder',l:'Floor under the cabinets',type:'check',show:()=>S.cabOn},
+ {t:'Wardrobe & fridge',open:true,items:[
+  {k:'wdOn',l:'Wardrobe on the kitchen wall',type:'check'},
+  {k:'wdDoorA',l:'Door 1 (cm)',type:'select',num:true,show:()=>S.wdOn,
+   opts:[[122.3,'122.3 — 1 bay'],[137.3,'137.3 — 2 cols'],[152.3,'152.3 — 2 cols']]},
+  {k:'wdDoorB',l:'Door 2 (cm)',type:'select',num:true,show:()=>S.wdOn,
+   opts:[[122.3,'122.3 — 1 bay'],[137.3,'137.3 — 2 cols'],[152.3,'152.3 — 2 cols']]},
+  {k:'wdModH',l:'Module height (cm)',type:'select',num:true,show:()=>S.wdOn,
+   opts:[[258,'258 — tallest'],[242,'242'],[226,'226']]},
+  {k:'alt1475',l:'Split 147.5 modules as 87.5 + 57.5',type:'check',show:()=>S.wdOn},
+  {k:'wdFur',l:'Fur out the wall behind it',type:'range',min:0,max:8,step:.01,unit:'"',show:()=>S.wdOn},
+  {k:'wdHandle',l:'Handle height',type:'range',min:30,max:60,step:.5,unit:'"',show:()=>S.wdOn},
+  {k:'kitReveal',l:'Gap to kitchen door casing',type:'range',min:0,max:18,step:.5,unit:'"',show:()=>S.wdOn},
+  {k:'soffit',l:'Soffit above, up to the ceiling',type:'check',show:()=>S.wdOn},
+  {k:'floorUnder',l:'Floor under the wardrobe',type:'check',show:()=>S.wdOn},
+  {k:'frOn',l:'Fridge niche at the far end',type:'check'},
+  {k:'frW',l:'Fridge width',type:'number',half:true,step:.25,show:()=>S.frOn},
+  {k:'frD',l:'Fridge depth',type:'number',half:true,step:.25,show:()=>S.frOn},
+  {k:'frGap',l:'Hinge-side clearance',type:'number',half:true,step:.25,show:()=>S.frOn},
+  {k:'frPart',l:'Partition thickness',type:'number',half:true,step:.25,show:()=>S.frOn},
  ]},
  {t:'Stairs',items:[
   {k:'treadsLower',l:'Treads, lower flight',type:'range',min:1,max:10,step:1},
@@ -709,12 +882,15 @@ const SECTIONS=[
   {k:'waste',l:'Extra allowance',type:'range',min:0,max:25,step:1,unit:'%'},
   {k:'minStagger',l:'Min joint stagger',type:'range',min:2,max:24,step:1,unit:'"'},
   {k:'minPiece',l:'Shortest usable offcut',type:'range',min:4,max:24,step:1,unit:'"'},
+  {k:'reuseChev',l:'Cut several border pieces from one chevron plank',type:'check'},
+  {k:'chevMin',l:'Shortest reusable chevron offcut',type:'range',min:2,max:14,step:.5,unit:'"',show:()=>S.reuseChev},
+  {k:'kerf',l:'Saw kerf',type:'number',half:true,step:.0625},
   {k:'_shuffle',l:'Reshuffle joint pattern',type:'button'},
  ]},
  {t:'View',items:[
   {k:'showWalls',l:'Show walls',type:'check'},
   {k:'wallCut',l:'Wall height in 3D',type:'range',min:18,max:120,step:6,unit:'"',show:()=>S.showWalls},
-  {k:'showCab',l:'Show cabinets',type:'check'},
+  {k:'showCab',l:'Show wardrobe and fridge',type:'check'},
   {k:'showLabels',l:'Show room labels in 3D',type:'check'},
   {k:'colorType',l:'Tint left vs right chevron',type:'check'},
   {k:'showCuts',l:'Highlight cut pieces',type:'check'},
@@ -762,7 +938,7 @@ function buildTabs(){
   const h=document.getElementById('tabs');
   TABS.forEach(([k,l])=>{const b=document.createElement('button');b.textContent=l;b.dataset.k=k;
     b.onclick=()=>{S.tab=k;update()};h.appendChild(b)});
-  const views=[['Far end','a'],['From the stair door','b'],['Up the stairs','c'],['Overhead','d']];
+  const views=[['Overview','e'],['Far end','a'],['From the stair door','b'],['Up the stairs','c'],['Overhead','d']];
   const vt=document.getElementById('vtools');
   views.forEach(([l,k])=>{const b=document.createElement('button');b.textContent=l;b.onclick=()=>view(k);vt.appendChild(b)});
 }
@@ -773,6 +949,7 @@ function view(k){
   if(k==='b')setView([G.L+16,cy+4,76],[G.L*.18,cy,4]);                  /* from the stair door, looking back */
   if(k==='c')setView([G.ex+G.lw/2+120,G.lt+95,100],[G.ex+G.lw/2,(G.lt+G.stairN)/2,22]); /* the whole flight, 3/4 from above */
   if(k==='d')setView([G.L*.5,cy+150,300],[G.L*.5,-25,0]);               /* overhead, tilted so up stays defined */
+  if(k==='e')setView([G.L+140,cy+86,285],[G.L*.54,cy-42,10]);           /* overview: whole L from beyond the stair end */
 }
 function update(){
   syncControls();
@@ -793,7 +970,7 @@ document.getElementById('scLoad').onclick=()=>{const n=document.getElementById('
 document.getElementById('scDel').onclick=()=>{const n=document.getElementById('scList').value,o=scen();delete o[n];save('hall2-scenarios',o);refreshScen()};
 document.getElementById('reset').onclick=()=>{S={...DEF};update()};
 
-buildControls();buildTabs();refreshScen();update();setTimeout(()=>{if(S.tab!=='plan'){resize();view('b')}},80);
+buildControls();buildTabs();refreshScen();update();setTimeout(()=>{if(S.tab!=='plan'){resize();view('e')}},80);
 </script>
 </body>
 </html>
