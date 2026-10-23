@@ -1,5 +1,5 @@
 <!doctype html>
-<html data-saved=""><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.42.0/dist/tabler-icons.min.css" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.42.0/dist/tabler-icons.min.css"></noscript><style>
+<html data-saved=""><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link id="icon-font" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.42.0/dist/tabler-icons.min.css" media="print" onload="this.media='all'"><noscript><link id="icon-font" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.42.0/dist/tabler-icons.min.css"></noscript><style>
 :root{--font-anthropic-sans:"anthropic-sans", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;--font-anthropic-serif:"anthropic-serif", ui-serif, Georgia, "Times New Roman", serif}
 :root {
   --radius: calc(0.5rem * var(--cds-rem-scale, 1));
@@ -499,6 +499,7 @@
   --border-warning: var(--role-warning-250);
   --border-pro: var(--role-pro-250);
   --border-editor-comment: var(--yellow-400);
+  --border-editor-comment-open: var(--yellow-450);
   --border-git-added: color-mix(in srgb, var(--text-git-added) 40%, transparent);
   --border-git-removed: color-mix(in srgb, var(--text-git-removed) 40%, transparent);
   --border-git-modified: color-mix(in srgb, var(--text-git-modified) 40%, transparent);
@@ -710,166 +711,169 @@
   --chart-axis: var(--gray-200);
   --chart-baseline: var(--gray-200);
 }
-[data-mode="dark"] {
-  --border-accent: var(--role-accent-700);
-  --border-danger: var(--role-danger-700);
-  --border-success: var(--role-success-700);
-  --border-warning: var(--role-warning-700);
-  --border-pro: var(--role-pro-700);
-  --border-editor-comment: var(--yellow-300);
-  --shadow-color: rgba(0, 0, 0, 0.24);
-  --shadow-popover: 0 8px 24px rgb(0 0 0 / 0.32), 0 2px 6px rgb(0 0 0 / 0.2);
-  --ring-outer: 0px;
-  --ring-inner: 1px;
-  --ring-color: var(--alpha-2);
-  --focus-shadow: inset 0 0 0 1px var(--page-bg), 0 0 0 1px var(--fill-accent), 0 0 6px 1px hsl(from var(--role-accent-600) h s l / 60%);
-  --focus-shadow-danger: inset 0 0 0 1px var(--page-bg), 0 0 0 1px var(--fill-danger), 0 0 6px 1px hsl(from var(--role-danger-600) h s l / 60%);
-  --pictogram-highlight-default: var(--gray-650);
-  --pictogram-highlight-heather: var(--plum);
-  --pictogram-highlight-cactus: var(--mineral);
-  --neutral-0: var(--gray-900);
-  --neutral-10: var(--gray-890);
-  --neutral-20: var(--gray-880);
-  --neutral-30: var(--gray-870);
-  --neutral-40: var(--gray-860);
-  --neutral-50: var(--gray-850);
-  --neutral-60: var(--gray-840);
-  --neutral-70: var(--gray-830);
-  --neutral-80: var(--gray-820);
-  --neutral-90: var(--gray-810);
-  --neutral-100: var(--gray-800);
-  --neutral-150: var(--gray-750);
-  --neutral-200: var(--gray-700);
-  --neutral-250: var(--gray-650);
-  --neutral-300: var(--gray-600);
-  --neutral-350: var(--gray-550);
-  --neutral-400: var(--gray-500);
-  --neutral-450: var(--gray-450);
-  --neutral-500: var(--gray-400);
-  --neutral-550: var(--gray-350);
-  --neutral-600: var(--gray-300);
-  --neutral-650: var(--gray-250);
-  --neutral-700: var(--gray-200);
-  --neutral-750: var(--gray-150);
-  --neutral-800: var(--gray-100);
-  --neutral-810: var(--gray-90);
-  --neutral-820: var(--gray-80);
-  --neutral-830: var(--gray-70);
-  --neutral-840: var(--gray-60);
-  --neutral-850: var(--gray-50);
-  --neutral-860: var(--gray-40);
-  --neutral-870: var(--gray-30);
-  --neutral-880: var(--gray-20);
-  --neutral-890: var(--gray-10);
-  --neutral-900: var(--gray-0);
-  --surface-0: var(--gray-900);
-  --surface-1: var(--gray-850);
-  --surface-2: var(--gray-830);
-  --surface-3: var(--gray-800);
-  --fill-git-added: var(--text-git-added);
-  --fill-git-added-hover: #27c840;
-  --fill-git-removed-hover: #ff1342;
-  --fill-git-modified: var(--text-git-modified);
-  --fill-git-modified-hover: #fac800;
-  --fill-git-merged: var(--text-git-merged);
-  --fill-git-merged-hover: #a67dff;
-  --fill-git-closed: var(--text-git-closed);
-  --fill-git-closed-hover: #ff4940;
-  --fill-git-conflicting: var(--text-git-conflicting);
-  --fill-git-conflicting-hover: #f97a1f;
-  --fill-git-draft-hover: #999999;
-  --fill-primary-hover: var(--gray-100);
-  --fill-secondary: var(--alpha-2);
-  --fill-secondary-hover: hsl(from var(--neutral-900) h s l / 14%);
-  --fill-secondary-ring: transparent;
-  --fill-field: var(--alpha-1);
-  --fill-ghost-hover: hsl(from var(--neutral-900) h s l / 7.5%);
-  --fill-ghost-selected: hsl(from var(--neutral-900) h s l / 15%);
-  --bg-accent: var(--role-accent-800);
-  --bg-danger: var(--role-danger-800);
-  --bg-success: var(--role-success-800);
-  --bg-warning: var(--role-warning-800);
-  --bg-pro: var(--role-pro-800);
-  --bg-tint-red: rgb(from var(--red-800) calc((r - 5.25) / 0.75) calc((g - 5.25) / 0.75) calc((b - 5.25) / 0.75) / 75%);
-  --bg-tint-red-opaque: var(--red-800);
-  --bg-tint-orange: rgb(from var(--orange-800) calc((r - 5.25) / 0.75) calc((g - 5.25) / 0.75) calc((b - 5.25) / 0.75) / 75%);
-  --bg-tint-orange-opaque: var(--orange-800);
-  --bg-tint-yellow: rgb(from var(--yellow-800) calc((r - 5.25) / 0.75) calc((g - 5.25) / 0.75) calc((b - 5.25) / 0.75) / 75%);
-  --bg-tint-yellow-opaque: var(--yellow-800);
-  --bg-tint-green: rgb(from var(--green-800) calc((r - 5.25) / 0.75) calc((g - 5.25) / 0.75) calc((b - 5.25) / 0.75) / 75%);
-  --bg-tint-green-opaque: var(--green-800);
-  --bg-tint-aqua: rgb(from var(--aqua-800) calc((r - 5.25) / 0.75) calc((g - 5.25) / 0.75) calc((b - 5.25) / 0.75) / 75%);
-  --bg-tint-aqua-opaque: var(--aqua-800);
-  --bg-tint-blue: rgb(from var(--blue-800) calc((r - 5.25) / 0.75) calc((g - 5.25) / 0.75) calc((b - 5.25) / 0.75) / 75%);
-  --bg-tint-blue-opaque: var(--blue-800);
-  --bg-tint-violet: rgb(from var(--violet-800) calc((r - 5.25) / 0.75) calc((g - 5.25) / 0.75) calc((b - 5.25) / 0.75) / 75%);
-  --bg-tint-violet-opaque: var(--violet-800);
-  --bg-tint-magenta: rgb(from var(--magenta-800) calc((r - 5.25) / 0.75) calc((g - 5.25) / 0.75) calc((b - 5.25) / 0.75) / 75%);
-  --bg-tint-magenta-opaque: var(--magenta-800);
-  --backdrop: rgb(0 0 0 / 0.5);
-  --text-accent: var(--role-accent-300);
-  --text-danger: var(--role-danger-300);
-  --text-success: var(--role-success-400);
-  --text-warning: var(--role-warning-300);
-  --text-pro: var(--role-pro-300);
-  --text-tint-red: var(--red-300);
-  --text-tint-orange: var(--orange-300);
-  --text-tint-yellow: var(--yellow-300);
-  --text-tint-green: var(--green-300);
-  --text-tint-aqua: var(--aqua-300);
-  --text-tint-blue: var(--blue-300);
-  --text-tint-violet: var(--violet-300);
-  --text-tint-magenta: var(--magenta-300);
-  --text-git-added: #32d74b;
-  --text-git-removed: #ff2c56;
-  --text-git-modified: #ffd014;
-  --text-git-merged: #b796ff;
-  --text-git-closed: #ff6159;
-  --text-git-conflicting: #fa832e;
-  --text-git-draft: #a6a6a6;
-  --text-primary: var(--gray-50);
-  --text-secondary: var(--gray-200);
-  --text-muted: var(--gray-400);
-  --on-git-added: var(--gray-900);
-  --on-git-removed: var(--gray-900);
-  --on-git-modified: var(--gray-900);
-  --on-git-merged: var(--gray-900);
-  --on-git-closed: var(--gray-900);
-  --on-git-conflicting: var(--gray-900);
-  --on-git-draft: var(--gray-900);
-  --chart-categorical-1: var(--blue-400);
-  --chart-categorical-2: var(--orange-400);
-  --chart-categorical-3: var(--aqua-400);
-  --chart-categorical-4: var(--yellow-350);
-  --chart-categorical-5: var(--magenta-400);
-  --chart-categorical-6: var(--green-500);
-  --chart-categorical-7: var(--violet-350);
-  --chart-categorical-8: var(--red-350);
-  --chart-sequential-1: var(--blue-700);
-  --chart-sequential-2: var(--blue-600);
-  --chart-sequential-3: var(--blue-500);
-  --chart-sequential-4: var(--blue-400);
-  --chart-sequential-5: var(--blue-300);
-  --chart-sequential-6: var(--blue-200);
-  --chart-sequential-7: var(--blue-100);
-  --chart-diverging-1: var(--blue-300);
-  --chart-diverging-2: var(--blue-450);
-  --chart-diverging-3: var(--blue-600);
-  --chart-diverging-4: var(--gray-700);
-  --chart-diverging-5: var(--red-600);
-  --chart-diverging-6: var(--red-450);
-  --chart-diverging-7: var(--red-300);
-  --chart-status-good: var(--green-400);
-  --chart-status-warning: var(--yellow-200);
-  --chart-status-serious: var(--orange-300);
-  --chart-status-critical: var(--red-450);
-  --chart-muted: var(--gray-550);
-  --chart-reference: var(--gray-350);
-  --chart-reference-tint: hsl(from var(--gray-350) h s l / 15%);
-  --chart-axis: var(--gray-700);
-  --chart-baseline: var(--gray-700);
+@media screen {
+  [data-mode="dark"] {
+    --border-accent: var(--role-accent-700);
+    --border-danger: var(--role-danger-700);
+    --border-success: var(--role-success-700);
+    --border-warning: var(--role-warning-700);
+    --border-pro: var(--role-pro-700);
+    --border-editor-comment: var(--yellow-300);
+    --border-editor-comment-open: var(--yellow-200);
+    --shadow-color: rgba(0, 0, 0, 0.24);
+    --shadow-popover: 0 8px 24px rgb(0 0 0 / 0.32), 0 2px 6px rgb(0 0 0 / 0.2);
+    --ring-outer: 0px;
+    --ring-inner: 1px;
+    --ring-color: var(--alpha-2);
+    --focus-shadow: inset 0 0 0 1px var(--page-bg), 0 0 0 1px var(--fill-accent), 0 0 6px 1px hsl(from var(--role-accent-600) h s l / 60%);
+    --focus-shadow-danger: inset 0 0 0 1px var(--page-bg), 0 0 0 1px var(--fill-danger), 0 0 6px 1px hsl(from var(--role-danger-600) h s l / 60%);
+    --pictogram-highlight-default: var(--gray-650);
+    --pictogram-highlight-heather: var(--plum);
+    --pictogram-highlight-cactus: var(--mineral);
+    --neutral-0: var(--gray-900);
+    --neutral-10: var(--gray-890);
+    --neutral-20: var(--gray-880);
+    --neutral-30: var(--gray-870);
+    --neutral-40: var(--gray-860);
+    --neutral-50: var(--gray-850);
+    --neutral-60: var(--gray-840);
+    --neutral-70: var(--gray-830);
+    --neutral-80: var(--gray-820);
+    --neutral-90: var(--gray-810);
+    --neutral-100: var(--gray-800);
+    --neutral-150: var(--gray-750);
+    --neutral-200: var(--gray-700);
+    --neutral-250: var(--gray-650);
+    --neutral-300: var(--gray-600);
+    --neutral-350: var(--gray-550);
+    --neutral-400: var(--gray-500);
+    --neutral-450: var(--gray-450);
+    --neutral-500: var(--gray-400);
+    --neutral-550: var(--gray-350);
+    --neutral-600: var(--gray-300);
+    --neutral-650: var(--gray-250);
+    --neutral-700: var(--gray-200);
+    --neutral-750: var(--gray-150);
+    --neutral-800: var(--gray-100);
+    --neutral-810: var(--gray-90);
+    --neutral-820: var(--gray-80);
+    --neutral-830: var(--gray-70);
+    --neutral-840: var(--gray-60);
+    --neutral-850: var(--gray-50);
+    --neutral-860: var(--gray-40);
+    --neutral-870: var(--gray-30);
+    --neutral-880: var(--gray-20);
+    --neutral-890: var(--gray-10);
+    --neutral-900: var(--gray-0);
+    --surface-0: var(--gray-900);
+    --surface-1: var(--gray-850);
+    --surface-2: var(--gray-830);
+    --surface-3: var(--gray-800);
+    --fill-git-added: var(--text-git-added);
+    --fill-git-added-hover: #27c840;
+    --fill-git-removed-hover: #ff1342;
+    --fill-git-modified: var(--text-git-modified);
+    --fill-git-modified-hover: #fac800;
+    --fill-git-merged: var(--text-git-merged);
+    --fill-git-merged-hover: #a67dff;
+    --fill-git-closed: var(--text-git-closed);
+    --fill-git-closed-hover: #ff4940;
+    --fill-git-conflicting: var(--text-git-conflicting);
+    --fill-git-conflicting-hover: #f97a1f;
+    --fill-git-draft-hover: #999999;
+    --fill-primary-hover: var(--gray-100);
+    --fill-secondary: var(--alpha-2);
+    --fill-secondary-hover: hsl(from var(--neutral-900) h s l / 14%);
+    --fill-secondary-ring: transparent;
+    --fill-field: var(--alpha-1);
+    --fill-ghost-hover: hsl(from var(--neutral-900) h s l / 7.5%);
+    --fill-ghost-selected: hsl(from var(--neutral-900) h s l / 15%);
+    --bg-accent: var(--role-accent-800);
+    --bg-danger: var(--role-danger-800);
+    --bg-success: var(--role-success-800);
+    --bg-warning: var(--role-warning-800);
+    --bg-pro: var(--role-pro-800);
+    --bg-tint-red: rgb(from var(--red-800) calc((r - 5.25) / 0.75) calc((g - 5.25) / 0.75) calc((b - 5.25) / 0.75) / 75%);
+    --bg-tint-red-opaque: var(--red-800);
+    --bg-tint-orange: rgb(from var(--orange-800) calc((r - 5.25) / 0.75) calc((g - 5.25) / 0.75) calc((b - 5.25) / 0.75) / 75%);
+    --bg-tint-orange-opaque: var(--orange-800);
+    --bg-tint-yellow: rgb(from var(--yellow-800) calc((r - 5.25) / 0.75) calc((g - 5.25) / 0.75) calc((b - 5.25) / 0.75) / 75%);
+    --bg-tint-yellow-opaque: var(--yellow-800);
+    --bg-tint-green: rgb(from var(--green-800) calc((r - 5.25) / 0.75) calc((g - 5.25) / 0.75) calc((b - 5.25) / 0.75) / 75%);
+    --bg-tint-green-opaque: var(--green-800);
+    --bg-tint-aqua: rgb(from var(--aqua-800) calc((r - 5.25) / 0.75) calc((g - 5.25) / 0.75) calc((b - 5.25) / 0.75) / 75%);
+    --bg-tint-aqua-opaque: var(--aqua-800);
+    --bg-tint-blue: rgb(from var(--blue-800) calc((r - 5.25) / 0.75) calc((g - 5.25) / 0.75) calc((b - 5.25) / 0.75) / 75%);
+    --bg-tint-blue-opaque: var(--blue-800);
+    --bg-tint-violet: rgb(from var(--violet-800) calc((r - 5.25) / 0.75) calc((g - 5.25) / 0.75) calc((b - 5.25) / 0.75) / 75%);
+    --bg-tint-violet-opaque: var(--violet-800);
+    --bg-tint-magenta: rgb(from var(--magenta-800) calc((r - 5.25) / 0.75) calc((g - 5.25) / 0.75) calc((b - 5.25) / 0.75) / 75%);
+    --bg-tint-magenta-opaque: var(--magenta-800);
+    --backdrop: rgb(0 0 0 / 0.5);
+    --text-accent: var(--role-accent-300);
+    --text-danger: var(--role-danger-300);
+    --text-success: var(--role-success-400);
+    --text-warning: var(--role-warning-300);
+    --text-pro: var(--role-pro-300);
+    --text-tint-red: var(--red-300);
+    --text-tint-orange: var(--orange-300);
+    --text-tint-yellow: var(--yellow-300);
+    --text-tint-green: var(--green-300);
+    --text-tint-aqua: var(--aqua-300);
+    --text-tint-blue: var(--blue-300);
+    --text-tint-violet: var(--violet-300);
+    --text-tint-magenta: var(--magenta-300);
+    --text-git-added: #32d74b;
+    --text-git-removed: #ff2c56;
+    --text-git-modified: #ffd014;
+    --text-git-merged: #b796ff;
+    --text-git-closed: #ff6159;
+    --text-git-conflicting: #fa832e;
+    --text-git-draft: #a6a6a6;
+    --text-primary: var(--gray-50);
+    --text-secondary: var(--gray-200);
+    --text-muted: var(--gray-400);
+    --on-git-added: var(--gray-900);
+    --on-git-removed: var(--gray-900);
+    --on-git-modified: var(--gray-900);
+    --on-git-merged: var(--gray-900);
+    --on-git-closed: var(--gray-900);
+    --on-git-conflicting: var(--gray-900);
+    --on-git-draft: var(--gray-900);
+    --chart-categorical-1: var(--blue-400);
+    --chart-categorical-2: var(--orange-400);
+    --chart-categorical-3: var(--aqua-400);
+    --chart-categorical-4: var(--yellow-350);
+    --chart-categorical-5: var(--magenta-400);
+    --chart-categorical-6: var(--green-500);
+    --chart-categorical-7: var(--violet-350);
+    --chart-categorical-8: var(--red-350);
+    --chart-sequential-1: var(--blue-700);
+    --chart-sequential-2: var(--blue-600);
+    --chart-sequential-3: var(--blue-500);
+    --chart-sequential-4: var(--blue-400);
+    --chart-sequential-5: var(--blue-300);
+    --chart-sequential-6: var(--blue-200);
+    --chart-sequential-7: var(--blue-100);
+    --chart-diverging-1: var(--blue-300);
+    --chart-diverging-2: var(--blue-450);
+    --chart-diverging-3: var(--blue-600);
+    --chart-diverging-4: var(--gray-700);
+    --chart-diverging-5: var(--red-600);
+    --chart-diverging-6: var(--red-450);
+    --chart-diverging-7: var(--red-300);
+    --chart-status-good: var(--green-400);
+    --chart-status-warning: var(--yellow-200);
+    --chart-status-serious: var(--orange-300);
+    --chart-status-critical: var(--red-450);
+    --chart-muted: var(--gray-550);
+    --chart-reference: var(--gray-350);
+    --chart-reference-tint: hsl(from var(--gray-350) h s l / 15%);
+    --chart-axis: var(--gray-700);
+    --chart-baseline: var(--gray-700);
+  }
 }
-@media (prefers-color-scheme: dark) {
+@media screen and (prefers-color-scheme: dark) {
   :root:where(:not([data-mode="light"])),
   [data-mode="system"] {
     --border-accent: var(--role-accent-700);
@@ -878,6 +882,7 @@
     --border-warning: var(--role-warning-700);
     --border-pro: var(--role-pro-700);
     --border-editor-comment: var(--yellow-300);
+    --border-editor-comment-open: var(--yellow-200);
     --shadow-color: rgba(0, 0, 0, 0.24);
     --shadow-popover: 0 8px 24px rgb(0 0 0 / 0.32), 0 2px 6px rgb(0 0 0 / 0.2);
     --ring-outer: 0px;
@@ -1043,10 +1048,12 @@
 [data-mode="system"]:not(:root) {
   color-scheme: light;
 }
-[data-mode="dark"]:not(:root) {
-  color-scheme: dark;
+@media screen {
+  [data-mode="dark"]:not(:root) {
+    color-scheme: dark;
+  }
 }
-@media (prefers-color-scheme: dark) {
+@media screen and (prefers-color-scheme: dark) {
   [data-mode="system"]:not(:root) {
     color-scheme: dark;
   }
@@ -1068,11 +1075,7 @@ button {
 }
 body {
   font-family:
-    "anthropic-sans",
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
+    "anthropic-sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background: transparent;
 }
 html:where(:not([data-saved])),
@@ -1198,7 +1201,10 @@ input[type="range"]::-moz-range-thumb {
   border: 1px solid var(--border-strong);
   cursor: pointer;
 }
-button:not(#action-btns button):not(form.elicit button) {
+button:not(
+    #action-btns button,
+    :where(#vis-container ~ #larger-btns) button
+  ):not(form.elicit button) {
   padding: 8px 16px;
   font-size: var(--font-text-sm-size, 14px);
   background: transparent;
@@ -1210,10 +1216,16 @@ button:not(#action-btns button):not(form.elicit button) {
     background 0.15s,
     transform 0.1s;
 }
-button:not(#action-btns button):not(form.elicit button):hover {
+button:not(
+    #action-btns button,
+    :where(#vis-container ~ #larger-btns) button
+  ):not(form.elicit button):hover {
   background: var(--surface-1);
 }
-button:not(#action-btns button):not(form.elicit button):active {
+button:not(
+    #action-btns button,
+    :where(#vis-container ~ #larger-btns) button
+  ):not(form.elicit button):active {
   background: var(--border);
   transform: scale(0.98);
 }
@@ -1369,6 +1381,9 @@ form.elicit .elicit-files {
   align-items: flex-start;
   gap: 12px;
 }
+:root[data-host-platform="mobile"] form.elicit .elicit-files {
+  display: none !important;
+}
 form.elicit .elicit-dropzone {
   width: 120px;
   height: 120px;
@@ -1514,6 +1529,56 @@ form.elicit .elicit-submit:hover {
 }
 form.elicit .elicit-submit:hover:active {
   transform: scale(0.96);
+}
+form.elicit .elicit-optout {
+  min-width: 0;
+  min-height: calc(var(--font-text-sm-size, 14px) * 36 / 14);
+  padding: 0 8px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: none;
+  color: var(--text-secondary);
+  line-height: 1.2;
+  text-align: start;
+  cursor: pointer;
+  user-select: none;
+  transition: color 100ms ease-out;
+}
+form.elicit .elicit-optout ~ .elicit-skip,
+form.elicit .elicit-optout ~ .elicit-submit {
+  flex-shrink: 0;
+}
+@media (hover: hover) {
+  form.elicit .elicit-optout:hover {
+    color: var(--text-primary);
+  }
+}
+form.elicit .elicit-optout[aria-disabled="true"] {
+  color: var(--text-secondary);
+  opacity: 0.5;
+  cursor: default;
+}
+form.elicit .elicit-footer.elicit-footer-stacked {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  row-gap: 4px;
+  height: auto;
+  padding-block: calc(var(--font-text-sm-size, 14px) * 16 / 14) 12px;
+  interpolate-size: allow-keywords;
+}
+form.elicit .elicit-footer-stacked > .elicit-skip {
+  grid-area: 1 / 2;
+}
+form.elicit .elicit-footer-stacked > .elicit-submit {
+  grid-area: 1 / 3;
+}
+form.elicit:not(.elicit-submitted) .elicit-footer.elicit-footer-stacked {
+  transition: none;
+}
+form.elicit .elicit-footer-stacked > .elicit-optout {
+  grid-column: 1 / -1;
+  justify-self: start;
+  margin-inline-start: -9px;
 }
 form.elicit .elicit-body {
   transition: opacity 150ms ease-out;
@@ -1852,6 +1917,47 @@ body {
   overflow: hidden;
   color: var(--text-primary);
 }
+@property --wide-fade-left {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+@property --wide-fade-right {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+:root:not([data-open-larger]) #vis-container.scrolls-wide:not(.whole-width) {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-padding-inline: 32px;
+  scrollbar-width: none;
+}
+#vis-container.scrolls-wide::-webkit-scrollbar {
+  height: 0;
+}
+:root:not([data-open-larger]) #vis-container.scrolls-wide:focus-visible {
+  outline-offset: -2px;
+}
+:root:not([data-open-larger]):not([data-picture])
+  #vis-container.scrolls-wide:not(.whole-width):not(
+    :focus-visible
+  )[data-wide-more] {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 var(--wide-fade-left),
+    #000 calc(100% - var(--wide-fade-right)),
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 var(--wide-fade-left),
+    #000 calc(100% - var(--wide-fade-right)),
+    transparent
+  );
+}
 #vis-container.whole-width {
   overflow-x: visible;
   overflow-y: clip;
@@ -1895,6 +2001,184 @@ body:hover #action-btns,
     display: none;
   }
 }
+:root[data-keep-menu-clear]
+  #action-btns[data-quiet]:not([data-hold-open]):not(:focus-within) {
+  opacity: 0;
+  pointer-events: none;
+}
+:root[data-keep-menu-clear][data-menu-room]:not([data-open-larger]) body {
+  padding-top: var(--menu-room) !important;
+}
+:root[data-keep-menu-clear][data-menu-held]:not([data-open-larger]) body {
+  min-height: var(--menu-held) !important;
+}
+:root[data-frame-held]:not([data-open-larger]) body {
+  min-height: var(--frame-held) !important;
+}
+:root[data-frame-capped]:not([data-open-larger]) body {
+  max-height: var(--frame-cap) !important;
+  overflow: hidden !important;
+}
+:root[data-frame-empty]:not([data-open-larger]) body {
+  height: var(--frame-empty) !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+#vis-container ~ #larger-btns {
+  all: revert;
+  display: contents !important;
+}
+#vis-container ~ #larger-btns::before,
+#vis-container ~ #larger-btns::after {
+  content: none !important;
+}
+#vis-container ~ #larger-btns button {
+  position: relative !important;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: var(--surface-1);
+  border: 0.5px solid var(--border);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+#vis-container ~ #larger-btns button::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+}
+#vis-container ~ #larger-btns button[aria-disabled="true"] {
+  opacity: 0.4;
+  cursor: default;
+}
+#vis-container ~ #larger-btns #larger-open {
+  position: absolute !important;
+  top: 8px;
+  top: min(8px, (100vh - 36px) / 2);
+  right: 8px;
+  z-index: 2147483646;
+}
+@media (hover: none) {
+  #vis-container ~ #larger-btns #larger-open[data-resting]:not(:focus-visible) {
+    opacity: 0;
+    pointer-events: none;
+  }
+  #vis-container ~ #larger-btns #larger-open[data-arming] {
+    pointer-events: none;
+  }
+}
+#vis-container ~ #larger-btns #larger-open {
+  transition: opacity 0.2s ease;
+}
+#vis-container ~ #larger-btns #larger-open[hidden],
+#vis-container ~ #larger-btns #larger-zoom[hidden] {
+  display: none !important;
+}
+@media (hover: hover), (pointer: fine) {
+  #vis-container ~ #larger-btns #larger-open {
+    right: 40px;
+  }
+}
+:root[data-open-larger] {
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  inset: auto;
+  width: auto;
+  min-width: 0;
+  max-width: none;
+  --larger-button-size: 44px;
+}
+:root[data-open-larger] body {
+  display: grid;
+  position: relative;
+  float: none;
+  margin: 0;
+  border: 0;
+  inset: auto;
+  box-sizing: border-box;
+  min-height: 0;
+  width: auto;
+  min-width: 0;
+  max-width: none;
+  grid: none;
+  gap: 0;
+  place-items: start;
+  justify-content: start;
+  align-content: start;
+  height: 100vh;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: calc(var(--host-inset-top, 0px) + 12px + var(--larger-lead-y, 0px))
+    calc(
+      var(--host-inset-right, 0px) + 12px + var(--larger-button-size) + 2px +
+        12px
+    )
+    calc(var(--host-inset-bottom, 0px) + 12px)
+    calc(var(--host-inset-left, 0px) + 12px + var(--larger-lead-x, 0px));
+}
+:root[data-open-larger][data-zoomed-in] body {
+  padding-top: calc(
+    var(--host-inset-top, 0px) + 12px + 2 * var(--larger-button-size) + 2px +
+      12px + var(--larger-lead-y, 0px)
+  );
+}
+:root[data-open-larger] body {
+  touch-action: pan-x pan-y;
+}
+:root[data-open-larger] #vis-container {
+  overflow: visible;
+}
+:root[data-open-larger] #action-btns {
+  display: none;
+}
+#vis-container ~ #larger-btns #larger-zoom-status {
+  position: absolute !important;
+  top: 0;
+  left: 0;
+}
+#vis-container ~ #larger-btns #larger-zoom {
+  position: fixed !important;
+  margin: 0;
+  top: calc(var(--host-inset-top, 0px) + 12px);
+  right: calc(var(--host-inset-right, 0px) + 12px);
+  z-index: 2147483646;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--surface-1);
+  border: 1px solid var(--alpha-5);
+  box-shadow: 0 1px 3px var(--alpha-2);
+}
+#vis-container ~ #larger-btns #larger-zoom button {
+  width: var(--larger-button-size);
+  height: var(--larger-button-size);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text-primary);
+}
+#vis-container ~ #larger-btns #larger-zoom button::before {
+  content: none;
+}
+#vis-container ~ #larger-btns #larger-zoom button:focus-visible {
+  outline-offset: -2px;
+}
+#vis-container ~ #larger-btns #larger-zoom button + button {
+  border-top: 1px solid var(--alpha-3);
+}
+#vis-container ~ #larger-btns #larger-zoom button[aria-disabled="true"] {
+  opacity: 1;
+}
+#vis-container ~ #larger-btns #larger-zoom button[aria-disabled="true"] svg {
+  opacity: 0.45;
+}
 #action-btns > button {
   width: 28px;
   height: 28px;
@@ -1911,6 +2195,31 @@ body:hover #action-btns,
 }
 #action-btns > button:hover {
   background: var(--surface-0);
+}
+:root[data-keep-menu-clear] #action-btns {
+  top: min(4px, (100vh - 22px) / 2);
+  right: 4px;
+}
+:root[data-keep-menu-clear] #action-btns > button {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  background: transparent;
+  opacity: 0.7;
+  transition:
+    background 0.15s ease,
+    opacity 0.15s ease;
+}
+:root[data-keep-menu-clear] #action-btns:hover > #more-btn,
+:root[data-keep-menu-clear] #action-btns[data-hold-open] > #more-btn,
+:root[data-keep-menu-clear] #action-btns > #more-btn:focus-visible {
+  background: var(--surface-0);
+  opacity: 1;
+}
+:root[data-keep-menu-clear] #action-btns > button > svg {
+  width: 16px;
+  height: 16px;
+  filter: drop-shadow(0 0 1px var(--surface-0));
 }
 #more-popover {
   position: absolute;
@@ -1996,6 +2305,9 @@ body:hover #action-btns,
   padding: 0;
   border-radius: 8px;
 }
+:root[data-keep-menu-clear] #action-btns[data-beside] #more-popover {
+  max-width: calc(100vw - 34px);
+}
 #action-btns[data-beside] .more-item {
   width: auto;
   min-width: 0;
@@ -2077,6 +2389,12 @@ body[data-not-sent] > #vis-container ~ #not-sent {
   position: static;
   width: 100%;
   grid-column: 1 / -1;
+}
+:root[data-open-larger] body[data-not-sent] > #vis-container ~ #not-sent {
+  max-width: calc(
+    100vw - var(--host-inset-left, 0px) - var(--host-inset-right, 0px) - 24px -
+      var(--larger-button-size) - 14px - var(--larger-lead-x, 0px)
+  );
 }
 #vis-container ~ #not-sent > p {
   margin-top: 8px;
@@ -2268,17 +2586,20 @@ body[data-not-sent] > #vis-container ~ #not-sent {
         <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
       </marker>
     </defs>
-  </svg><div id="vis-container"><h2 class="sr-only">Lit 3D model of the home gym with a 120 inch ceiling, rack-wall cabinets from 96 to 120 inches, a 93 inch PR-5000 rack sliding under them, a flush 55 inch TV with its bottom at 90 inches on the bath wall, Barrina ceiling frame, rings, mirror up-wash, oak floor with mats, SkiErg and Viper 2</h2>
+  </svg><div id="vis-container"><h2 class="sr-only">Lit 3D model of the home gym with an Exponent Edge Core Post on the bath wall 7 inches from the bath door trim, the Edge landmine bar parked or in use with its usable floor sweep, the SkiErg shifted toward the window, a centered 55 inch Frame TV, mirror ledges at 83 inches, and an optional overlay showing where wall, floor and ceiling blocking goes</h2>
 <div id="wrap" style="position:relative;width:100%;height:480px;border-radius:12px;overflow:hidden;background:#1c1c1c;touch-action:none;cursor:grab"><div id="lbl" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div></div>
 <div class="hd">Views</div>
 <div id="views" class="row"></div>
 <div class="hd" style="margin-top:14px">Options</div>
 <div class="grid">
+<button id="o_bk" class="opt" onclick="cyc('bk')">Blocking</button>
+<button id="o_cp" class="opt" onclick="cyc('cp')">Core Post</button>
+<button id="o_lmb" class="opt" onclick="cyc('lmb')">Landmine bar</button>
+<button id="o_c1" class="opt" onclick="cyc('c1')">Corner</button>
 <button id="o_rt" class="opt" onclick="cyc('rt')">Rack</button>
 <button id="o_ts" class="opt" onclick="cyc('ts')">TV size</button>
 <button id="o_tv" class="opt" onclick="cyc('tv')">TV</button>
 <button id="o_fl" class="opt" onclick="cyc('fl')">Floor</button>
-<button id="o_c1" class="opt" onclick="cyc('c1')">Corner</button>
 <button id="o_rg" class="opt" onclick="cyc('rg')">Rings</button>
 <button id="o_wc" class="opt" onclick="cyc('wc')">Window cabinet</button>
 <button id="o_lt" class="opt" onclick="cyc('lt')">Lighting</button>
@@ -2301,7 +2622,7 @@ body[data-not-sent] > #vis-container ~ #not-sent {
 <label style="font-size:13px;color:var(--text-secondary);display:flex;align-items:center;gap:8px">Room lights <input id="lv" type="range" min="0" max="140" value="40" step="5" style="width:120px"><span id="lvo" style="width:36px">40%</span></label>
 <label style="font-size:13px;color:var(--text-secondary);display:flex;align-items:center;gap:8px">Daylight <input id="dl" type="range" min="0" max="150" value="70" step="5" style="width:120px"><span id="dlo" style="width:36px">70%</span></label>
 </div>
-<p style="font-size:13px;color:var(--text-secondary);margin:10px 0 0">Drag to look around, scroll to change lens width. Ceiling 120 in. Cabinets 96–120 in. TV flush (about 1.5 in off the wall), bottom edge at 90 in.</p>
+<p style="font-size:13px;color:var(--text-secondary);margin:10px 0 0">Drag to look around, scroll to change lens width. Core Post: 3×3 in, 7 ft, 6–9 in off the bath wall, 7 in from the bath-door trim. Shaded floor arc = usable landmine sweep (about 65°). Blocking overlay is orange.</p>
 <style>
 .hd{margin-top:12px;font-size:13px;color:var(--text-secondary)}
 .row{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
@@ -2331,7 +2652,7 @@ pl(coveL,0xfff1e0,0.26,68,110,92,true);
 pl(slotL,0xfff3e4,0.2,68,112,100,true);
 [[72,113,34],[126,113,102],[68,113,170],[10,113,112]].forEach(p=>pl(slotL,0xfff3e4,0.2,p[0],p[1],p[2],false,260));
 pl(winL,0xffe2b8,0.16,3,100,112,false,120);
-[[132,105,105],[132,105,160],[80,105,180],[118,105,180]].forEach(p=>pl(mirL,0xffdcb0,0.16,p[0],p[1],p[2],false,150));
+[[132,102,105],[132,102,160],[80,102,180],[118,102,180]].forEach(p=>pl(mirL,0xffdcb0,0.16,p[0],p[1],p[2],false,150));
 [[35,94,19],[75,94,19],[115,94,19]].forEach(p=>pl(cabL,0xffe8cc,0.11,p[0],p[1],p[2],false,160));
 pl(l2L,0xfff6ee,0.24,68,112,92,true);[[46,114,70],[46,114,115],[90,114,70],[90,114,115]].forEach(p=>pl(l2L,0xfff6ee,0.2,p[0],p[1],p[2],false,300));
 pl(lrL,0xfff6ee,0.26,68,112,100,true);[[15,114,60],[15,114,140],[121,114,60],[121,114,140],[68,114,33],[68,114,169]].forEach(p=>pl(lrL,0xfff6ee,0.24,p[0],p[1],p[2],false,300));
@@ -2346,6 +2667,7 @@ function SM(c,r,m,o){const p={color:c,roughness:r===undefined?0.8:r,metalness:m|
 function box(x0,x1,y0,y1,z0,z1,mat,par,cs){const m=new THREE.Mesh(new THREE.BoxGeometry(x1-x0,y1-y0,z1-z0),mat);m.position.set((x0+x1)/2,(y0+y1)/2,(z0+z1)/2);m.castShadow=cs!==false&&!mat.transparent;m.receiveShadow=!mat.transparent;(par||scene).add(m);return m;}
 function cyl(r,len,ax,x,y,z,mat,par){const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,len,32),mat);if(ax==='x')m.rotation.z=Math.PI/2;if(ax==='z')m.rotation.x=Math.PI/2;m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;(par||scene).add(m);return m;}
 function beam(ax,ay,bx,by,z0,z1,th,mat,par){const len=Math.hypot(bx-ax,by-ay);const m=new THREE.Mesh(new THREE.BoxGeometry(len,th,z1-z0),mat);m.position.set((ax+bx)/2,(ay+by)/2,(z0+z1)/2);m.rotation.z=Math.atan2(by-ay,bx-ax);m.castShadow=true;m.receiveShadow=true;(par||scene).add(m);return m;}
+function rod(a,b,r,mat,par){const d=new THREE.Vector3().subVectors(b,a);const len=d.length();const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,len,20),mat);m.position.copy(a).add(d.clone().multiplyScalar(0.5));m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());m.castShadow=true;(par||scene).add(m);return m;}
 const wallM=SM(0xebe2cf,0.92),trimM=SM(0xfafaf7,0.6),glassM=SM(0xdcebf5,0.05,0,0.22),mirrorM=SM(0xc9cbce,0.45,0.05),mframeM=SM(0x2c2d30,0.5,0.2),steelM=SM(0x2a2b2e,0.5,0.4),rackM=SM(0x2b2c2f,0.5,0.35),rackLt=SM(0x36383b,0.45,0.35),rackDk=SM(0x222326,0.5,0.3),chromeM=SM(0xd4d5d9,0.3,0.6),padM=SM(0x1d1d1d,0.7),doorM=SM(0xf6f5f0,0.7),doorMold=SM(0xfbfbf8,0.55),darkM=SM(0x55524d,0.95),brassM=SM(0x3a3633,0.35,0.6),postM=SM(0x2f3134,0.45,0.35),alM=SM(0x9fa2a6,0.35,0.7),plateM=SM(0xf7f6f2,0.4);
 const vipM=SM(0x2c2e31,0.55,0.25),vipFr=SM(0x323437,0.5,0.35),vipPad=SM(0x26282b,0.65);
 const pRed=SM(0xb8413a,0.6),pBlue=SM(0x2f62ad,0.6),pGreen=SM(0x3f8a4a,0.6),pGray=SM(0x4a4c50,0.5,0.4);
@@ -2353,6 +2675,8 @@ const lmFrame=SM(0x2e3033,0.5,0.35),lmPad=SM(0x33353a,0.62),lmStack=SM(0x2a2c2f,
 const charM=SM(0x3c3d40,0.65,0.05),capM=SM(0x2c2d30,0.4,0.3),crM=SM(0x2a2c2f,0.6,0.3);
 const cabWhite=SM(0xccc6ba,0.55),cabGray=SM(0x5b5e63,0.5,0.05),cabIn=SM(0x8b8a86,0.9);
 const leonH=SM(0x1c1d1f,0.45,0.4),skiM=SM(0x1f2124,0.45,0.35),woodM=SM(0xc49a63,0.55),oakM=SM(0xc29a62,0.55),strapM=SM(0x1f1f22,0.8),benchCab=SM(0x2f3033,0.55,0.1),limeM=SM(0xa9c93a,0.5),cordM=SM(0xd8d8d8,0.6);
+const cpM=SM(0x1e1f22,0.45,0.45),barM=SM(0x18191b,0.4,0.5);
+const blkM=new THREE.MeshStandardMaterial({color:0xe2772c,emissive:0x5a2306,roughness:0.6});
 const glowM=new THREE.MeshStandardMaterial({color:0xffffff,emissive:0xffffff,emissiveIntensity:0.7});
 const linM=new THREE.MeshStandardMaterial({color:0xfff8ee,emissive:0xffe9cf,emissiveIntensity:1});
 const mirLed=new THREE.MeshStandardMaterial({color:0xfff2e0,emissive:0xffdcb0,emissiveIntensity:1});
@@ -2420,7 +2744,39 @@ function buildSki(){const g=new THREE.Group();
  box(0.4,3.2,81,89,6.4,9.4,limeM,g);box(20.8,23.6,81,89,6.4,9.4,limeM,g);
  scene.add(g);return g;}
 const skiBath=buildSki();skiBath.rotation.y=Math.PI;skiBath.position.set(28,0,184);
-const skiWin=buildSki();skiWin.rotation.y=Math.PI/2;skiWin.position.set(0.6,0,174);
+const skiWin=buildSki();skiWin.rotation.y=Math.PI/2;skiWin.position.set(0.6,0,167);
+const PX0=21,PX1=24,PCX=22.5,PZ0=175,PZ1=178;
+const cpG=new THREE.Group();scene.add(cpG);
+box(PX0,PX1,1,85,PZ0,PZ1,cpM,cpG);
+[10,44,78].forEach(y=>{box(PX0+0.3,PX1-0.3,y-2,y+2,PZ1,183.4,cpM,cpG);box(PX0-1.5,PX1+1.5,y-4,y+4,183,183.4,cpM,cpG);});
+for(let y=4;y<84;y+=2)box(PCX-0.35,PCX+0.35,y-0.35,y+0.35,PZ0-0.05,PZ0,SM(0x0c0c0d,0.9),cpG,false);
+box(PX0-0.8,PX1+0.8,5,11,PZ0-3.5,PZ0,steelM,cpG);
+box(PX0-0.5,PX1+0.5,79,84,PZ0-4,PZ0,steelM,cpG);box(PX0-0.5,PX0+0.3,84,87,PZ0-4,PZ0-2.5,steelM,cpG);box(PX1-0.3,PX1+0.5,84,87,PZ0-4,PZ0-2.5,steelM,cpG);
+const PIV=new THREE.Vector3(PCX,8,PZ0-2.2);
+const lmPark=new THREE.Group(),lmUse=new THREE.Group();cpG.add(lmPark);cpG.add(lmUse);
+rod(PIV,new THREE.Vector3(PCX,78,PZ0-3),0.75,barM,lmPark);rod(new THREE.Vector3(PCX,78,PZ0-3),new THREE.Vector3(PCX,90,PZ0-3.1),1,chromeM,lmPark);
+const SW0=-105*Math.PI/180,SW1=-40*Math.PI/180,SWC=(SW0+SW1)/2,BL=82;
+const bEnd=new THREE.Vector3(PCX+BL*Math.cos(SWC),9.5,PIV.z+BL*Math.sin(SWC));
+const bDir=new THREE.Vector3().subVectors(bEnd,PIV).normalize();
+const bMid=PIV.clone().add(bDir.clone().multiplyScalar(BL-13));
+rod(PIV,bMid,0.75,barM,lmUse);rod(bMid,bEnd,1,chromeM,lmUse);
+rod(bEnd.clone().sub(bDir.clone().multiplyScalar(5)),bEnd.clone().sub(bDir.clone().multiplyScalar(2.8)),8.85,pBlue,lmUse);
+rod(bMid.clone().sub(bDir.clone().multiplyScalar(14)),bMid.clone().sub(bDir.clone().multiplyScalar(3)),0.95,SM(0x3b3d40,0.6),lmUse);
+const swM=new THREE.MeshBasicMaterial({color:0xf2b44a,transparent:true,opacity:0.22,depthWrite:false,side:THREE.DoubleSide});
+const sweep=new THREE.Mesh(new THREE.CircleGeometry(BL,48,-SW1,-(SW0-SW1)),swM);sweep.rotation.x=-Math.PI/2;sweep.position.set(PCX,0.75,PIV.z);scene.add(sweep);
+const bkG=new THREE.Group();scene.add(bkG);
+function bk(x0,x1,y0,y1,z0,z1){box(x0,x1,y0,y1,z0,z1,blkM,bkG,false);}
+bk(-0.2,1.0,83,89,141,170);bk(-0.2,1.0,0,6,141,170);
+bk(19.5,25.5,0,90,183.0,184.2);
+bk(-0.2,1.0,2,9,44,84);bk(-0.2,1.0,74,82,44,84);
+bk(52,84,94,112,183.0,184.2);
+bk(5,13,98,110,183.0,184.2);bk(123,131,98,110,183.0,184.2);
+bk(15,23,8,62,-0.2,0.9);bk(117,125,8,62,-0.2,0.9);
+bk(11,136,113,118,-0.2,0.9);
+bk(135.0,136.2,66,98,92,158);bk(135.0,136.2,0,90,15,33);
+bk(-0.2,1.0,4,19,96,139);
+bk(50,86,119.1,120,98.5,101.5);
+[[31,38],[79,86]].forEach(([a,b])=>[[6.5,13.5],[25.5,32.5]].forEach(([c,d])=>bk(a,b,0.55,0.8,c,d)));
 const winCab=new THREE.Group();scene.add(winCab);
 box(0.6,12.6,4,18,96,139,benchCab,winCab);box(0.3,13.2,18,19.25,95.5,139.5,oakM,winCab);box(12.6,12.7,5,17,117.4,117.6,SM(0x1f2023,0.8),winCab,false);
 function gradTex(dir){const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');let lg;
@@ -2433,8 +2789,8 @@ band(glowCove,100,136,16,184,'x+');band(glowCove,0,136,150,184,'z+');band(glowCo
 band(glowRaft,11,136,16,30,'z+');band(glowRaft,0,130,174,184,'z-');band(glowRaft,130,136,16,184,'x-');band(glowRaft,0,6,49,184,'x+');band(glowRaft,11,17,30,49,'x+');
 const whead=new THREE.MeshBasicMaterial({map:gradTex('z+'),transparent:true,depthWrite:false,opacity:0.5});glowMats.push(whead);
 const wh=new THREE.Mesh(new THREE.PlaneGeometry(55,60),whead);wh.rotation.set(0,Math.PI/2,Math.PI/2);wh.position.set(-1.2,76,111.75);glowWin.add(wh);
-const WH=CH-86.5;
-function vwash(w,px,pz,ry){const m=new THREE.MeshBasicMaterial({map:gradTex('z-'),transparent:true,depthWrite:false,opacity:0.6});glowMats.push(m);const p=new THREE.Mesh(new THREE.PlaneGeometry(w,WH),m);p.rotation.y=ry;p.position.set(px,86.5+WH/2,pz);glowMir.add(p);}
+const LGT=83,WH=CH-LGT;
+function vwash(w,px,pz,ry){const m=new THREE.MeshBasicMaterial({map:gradTex('z-'),transparent:true,depthWrite:false,opacity:0.6});glowMats.push(m);const p=new THREE.Mesh(new THREE.PlaneGeometry(w,WH),m);p.rotation.y=ry;p.position.set(px,LGT+WH/2,pz);glowMir.add(p);}
 vwash(103,135.3,132.5,-Math.PI/2);vwash(75.5,98.25,183.3,Math.PI);
 band(glowMir,124,136,81,184,'x+');band(glowMir,60.5,136,172,184,'z+');
 const raftG=new THREE.Group();scene.add(raftG);
@@ -2443,8 +2799,8 @@ const raftMesh=new THREE.Mesh(new THREE.ExtrudeGeometry(rs,{depth:2,bevelEnabled
 const slotG=new THREE.Group();raftG.add(slotG);const SY=CH-3.3;
 box(23,124,SY,SY+0.3,33.4,34.6,slotM,slotG,false);box(125.4,126.6,SY,SY+0.3,36,168,slotM,slotG,false);box(12,124,SY,SY+0.3,169.4,170.6,slotM,slotG,false);box(9.4,10.6,SY,SY+0.3,55,168,slotM,slotG,false);
 const mirG=new THREE.Group();scene.add(mirG);
-box(133.8,135.4,83.5,84.3,81,184,wallM,mirG);box(133.4,133.8,83.5,86.5,81,184,wallM,mirG);box(134.3,135.1,84.3,84.8,81,184,mirLed,mirG,false);
-box(60.5,133.4,83.5,84.3,181.8,183.4,wallM,mirG);box(60.5,133.4,83.5,86.5,181.4,181.8,wallM,mirG);box(60.5,133.4,84.3,84.8,182.3,183.1,mirLed,mirG,false);
+box(133.8,135.4,80,80.8,81,184,wallM,mirG);box(133.4,133.8,80,83,81,184,wallM,mirG);box(134.3,135.1,80.8,81.3,81,184,mirLed,mirG,false);
+box(60.5,133.4,80,80.8,181.8,183.4,wallM,mirG);box(60.5,133.4,80,83,181.4,181.8,wallM,mirG);box(60.5,133.4,80.8,81.3,182.3,183.1,mirLed,mirG,false);
 const gL=new THREE.Group(),gT=new THREE.Group(),gR=new THREE.Group(),gB=new THREE.Group();[gL,gT,gR,gB].forEach(g=>scene.add(g));
 box(0,11,0,CH,0,43,wallM,gL);
 box(-4,0,0,CH,43,84,wallM,gL);box(-4,0,0,CH,139.5,184,wallM,gL);box(-4,0,0,44,84,139.5,wallM,gL);box(-4,0,106,CH,84,139.5,wallM,gL);
@@ -2459,14 +2815,14 @@ const sashL=sash(1),sashR=sash(-1);sashL.position.set(-2,0,84);sashR.position.se
 box(0,136,0,CH,-4,0,wallM,gT);
 box(136,140,0,CH,0,43,wallM,gR);box(136,140,0,CH,81,184,wallM,gR);box(136,140,83,CH,43,81,wallM,gR);
 box(135.2,136,0,83,43,46,trimM,gR);box(135.2,136,0,83,78,81,trimM,gR);box(135.2,136,80,83,43,81,trimM,gR);
-box(135.4,136,0,83,81,184,mirrorM,gR);box(135.2,136,82.5,83.5,81,184,mframeM,gR);
-[98,116,133,150,167].forEach(z=>box(135.3,135.5,0,83,z-0.15,z+0.15,mframeM,gR));
+box(135.4,136,0,80,81,184,mirrorM,gR);box(135.2,136,79.5,80.5,81,184,mframeM,gR);
+[98,116,133,150,167].forEach(z=>box(135.3,135.5,0,80,z-0.15,z+0.15,mframeM,gR));
 box(135.05,135.4,45,50,36.5,39.5,plateM,gR,false);cyl(0.9,0.6,'x',134.9,47.5,38,SM(0xc9c7c1,0.3,0.5),gR);
 box(0,33.5,0,CH,184,188,wallM,gB);box(60.5,136,0,CH,184,188,wallM,gB);box(33.5,60.5,83,CH,184,188,wallM,gB);
 box(33.5,60.5,0,83,196,197,darkM,gB);box(33.5,60.5,-1,0,184,196,SM(0x2c2c2a,0.9),gB,false);
-box(60.5,136,0,83,183.4,184,mirrorM,gB);box(60.5,136,82.5,83.5,183.2,184,mframeM,gB);
-[79,98,117].forEach(x=>box(x-0.15,x+0.15,0,83,183.3,183.5,mframeM,gB));
-box(31,33.5,0,85,183,184.5,trimM,gB);box(60.5,63,0,85,183,184.5,trimM,gB);box(31,63,83,85.5,183,184.5,trimM,gB);
+box(60.5,136,0,80,183.4,184,mirrorM,gB);box(60.5,136,79.5,80.5,183.2,184,mframeM,gB);
+[79,98,117].forEach(x=>box(x-0.15,x+0.15,0,80,183.3,183.5,mframeM,gB));
+box(31,33.5,0,83,183,184.5,trimM,gB);box(60.5,63,0,83,183,184.5,trimM,gB);box(31,63,80,83,183,184.5,trimM,gB);
 const coveGs=[];const CY=CH-10;
 function cove(side,d,a0,a1,par){const g=new THREE.Group();par.add(g);coveGs.push(g);
  if(side==='x+'){box(136-d,136,CY,CY+0.75,a0,a1,wallM,g);box(136-d,136-d+0.75,CY+0.75,CY+3,a0,a1,wallM,g);box(134.4,135.4,CY+0.75,CY+1.4,a0,a1,coveLed,g,false);}
@@ -2478,7 +2834,7 @@ function moldX(par,xa,xb,z0,z1){RECTS.forEach(([y0,y1])=>{box(xa,xb,y0,y0+1,z0,z
 function moldZ(par,za,zb,x0,x1){RECTS.forEach(([y0,y1])=>{box(x0,x1,y0,y0+1,za,zb,doorMold,par,false);box(x0,x1,y1-1,y1,za,zb,doorMold,par,false);box(x0,x0+1,y0,y1,za,zb,doorMold,par,false);box(x1-1,x1,y0,y1,za,zb,doorMold,par,false);});}
 const bathDoor=new THREE.Group();gB.add(bathDoor);
 box(33.5,60.5,0,80,184.6,186.1,doorM,bathDoor);moldZ(bathDoor,184.25,184.6,37.5,56.5);moldZ(bathDoor,186.1,186.45,37.5,56.5);
-cyl(1.1,4,'z',57,36,185.35,brassM,bathDoor);box(33.5,60.5,80,83,184.6,186.1,trimM,bathDoor);
+cyl(1.1,4,'z',57,36,185.35,brassM,bathDoor);
 const PSEG=[[gT,11,136,0,0.6,0],[gL,11,11.6,0,43,0],[gL,0,11,43,43.6,0],[gL,0,0.6,43.6,82.5,0],[gL,0,0.6,82.5,141,1],[gL,0,0.6,141,184,0],[gR,135.4,136,0,43,0],[gB,0,31,183.4,184,0]];
 function buildPanels(h){const out=[];PSEG.forEach(([g,x0,x1,z0,z1,uw])=>{const grp=new THREE.Group();g.add(grp);out.push(grp);const top=uw?Math.min(h,42.5):h;
  box(x0,x1,0,top,z0,z1,charM,grp,false);if(uw&&h>=42.5)return;
@@ -2497,18 +2853,18 @@ box(ox0+1,ox1-1,CB0+1,CH-1,15.6,15.9,SM(0x6e6d69,0.95),cabG,false);box(ox0+0.5,o
 const bag=new THREE.Mesh(new THREE.TorusGeometry(6,2.2,12,24,Math.PI*1.3),SM(0x2e2f31,0.8));bag.rotation.set(Math.PI/2,0,0.4);bag.position.set((ox0+ox1)/2,CB0+14.3,8);cabG.add(bag);
 box(11,136,CB0-0.5,CB0,14.2,15.8,linM,cabG,false);
 const bsG=new THREE.Group();scene.add(bsG);
-const ring=new THREE.Mesh(new THREE.TorusGeometry(7,0.6,12,40),chromeM);ring.rotation.x=Math.PI/2;ring.position.set(116,82.5,100);ring.castShadow=true;bsG.add(ring);
-box(122.5,135.4,81,82.5,97,103,chromeM,bsG);box(135.2,135.4,72,82,96,104,steelM,bsG);
-const ball=new THREE.Mesh(new THREE.SphereGeometry(12.8,40,28),SM(0x4d7fbf,0.45));ball.position.set(116,93.2,100);ball.castShadow=true;ball.receiveShadow=true;bsG.add(ball);
+const ring=new THREE.Mesh(new THREE.TorusGeometry(7,0.6,12,40),chromeM);ring.rotation.x=Math.PI/2;ring.position.set(116,78.5,100);ring.castShadow=true;bsG.add(ring);
+box(122.5,135.4,77,78.5,97,103,chromeM,bsG);box(135.2,135.4,68,78,96,104,steelM,bsG);
+const ball=new THREE.Mesh(new THREE.SphereGeometry(12.8,40,28),SM(0x4d7fbf,0.45));ball.position.set(116,89.2,100);ball.castShadow=true;ball.receiveShadow=true;bsG.add(ball);
 const shM=SM(0x2e3033,0.5,0.3);
 box(117,133.4,88,89.5,126,156,shM,bsG);box(117,118.5,89.5,91,126,156,shM,bsG);
 [129,153].forEach(z=>{box(134.6,135.4,86.5,95,z-1,z+1,steelM,bsG);box(118,134.6,86.8,88,z-0.6,z+0.6,steelM,bsG);});
 const gs=new THREE.Shape();gs.moveTo(-8,0);gs.lineTo(8,0);gs.lineTo(4.5,12);gs.lineTo(-4.5,12);gs.lineTo(-8,0);
 const gb=new THREE.Mesh(new THREE.ExtrudeGeometry(gs,{depth:24,bevelEnabled:false}),SM(0x1e1f21,0.65));gb.position.set(125.5,89.5,129);gb.castShadow=true;bsG.add(gb);
-const ST=1.5,TVB=90;
-function makeTV(w,h){const g=new THREE.Group();box(-w/2,w/2,-h/2,h/2,ST-1,ST+0.2,SM(0x121314,0.5,0.2),g);box(-w/2+0.4,w/2-0.4,-h/2+0.4,h/2-0.4,ST+0.2,ST+0.3,SM(0x1b2430,0.25,0.3),g);
- box(-8,8,-6,6,0,ST-1,steelM,g);scene.add(g);return g;}
-const TVS=[{n:'42 in',w:37.2,h:21.2},{n:'50 in',w:43.6,h:24.5},{n:'55 in',w:47.9,h:27},{n:'65 in (too tall)',w:56.7,h:31.9}];
+const ST=1.2,TVB=88;
+function makeTV(w,h){const g=new THREE.Group();box(-w/2,w/2,-h/2,h/2,ST-0.9,ST+0.1,SM(0x121314,0.5,0.2),g);box(-w/2+0.4,w/2-0.4,-h/2+0.4,h/2-0.4,ST+0.1,ST+0.2,SM(0x1b2430,0.25,0.3),g);
+ box(-8,8,-6,6,0,ST-0.9,steelM,g);scene.add(g);return g;}
+const TVS=[{n:'42 in',w:37.2,h:21.2},{n:'50 in',w:43.6,h:24.5},{n:'55 in Samsung Frame',w:48.4,h:27.8},{n:'65 in (too tall)',w:56.7,h:31.9}];
 const tvs=TVS.map(t=>makeTV(t.w,t.h));
 const ssb=new THREE.Group();scene.add(ssb);ssb.position.set(135.4,0,24);ssb.rotation.y=-Math.PI/2;
 box(-4,4,0,3,0,8,steelM,ssb);box(-3,3,36,66,0,0.4,steelM,ssb);box(-1.5,1.5,62,64,0,7,steelM,ssb);
@@ -2588,13 +2944,14 @@ const dpiv=new THREE.Group();scene.add(dpiv);dpiv.position.set(136,0,46);
 box(-1.5,0,0,80,0,32,doorM,dpiv);moldX(dpiv,-1.85,-1.5,4.5,27.5);moldX(dpiv,0,0.35,4.5,27.5);cyl(1.1,4,'x',-0.75,36,28,brassM,dpiv);
 const RT=['PR-5000 93 in, 8 in off wall','PR-5000 80 in, 8 in off wall','PR-5000 93 in, on the wall','current rack (Fitness Reality)'];
 const RK=[{n:'15 in toward window',c:58.5},{n:'centered on rack wall',c:73.5}];
-const S={rt:0,ts:2,tv:0,fl:3,c1:1,rg:0,wc:1,lt:2,ct:1,sl:1,ac:1,tm:0,rk:0,cr:1,cb:0,bs:1,v2:1,wp:0,wn:0,lm:0,dr:0,lb:0};
+const S={bk:0,cp:1,lmb:0,rt:0,ts:2,tv:0,fl:3,c1:1,rg:0,wc:1,lt:2,ct:1,sl:1,ac:1,tm:0,rk:0,cr:1,cb:0,bs:1,v2:1,wp:0,wn:0,lm:0,dr:0,lb:0};
 const CT=[{n:'3000K warm',c:0xffe2bf},{n:'4000K neutral',c:0xfff6ec},{n:'6000K cool',c:0xe6efff}];
 const RG=[{n:'hang height (102 in)',y:101.5},{n:'low (48 in, rows / dips)',y:48},{n:'stowed at ceiling',y:CH-6},{n:'hidden',y:0}];
-const C1=['SkiErg on bath wall','SkiErg on window wall','Viper 1'];
+const C1=['SkiErg on bath wall','SkiErg on window wall (shifted to window)','Viper 1'];
+const LMB=['parked, sweep shown','in use, sweep shown','parked, no sweep'];
 const FLN=['light (planning)','black rubber, wall to wall','hardwood + rubber zones','hardwood + charcoal mats','hardwood + blue-fleck mats'];
-let tvLab=[94,118,182];
-const LABS=[['Cabinets (96–120 in)',()=>[85,108,16],()=>S.cb<3],['Rack mat',()=>[58.5,2,58],()=>S.fl>=3],['Landmine pad',()=>[58.5,2,124],()=>S.fl>=3],['Leg machine mat',()=>[98,2,143],()=>S.fl>=3],['SkiErg mat',()=>[16,2,143],()=>S.fl>=3],['SkiErg',()=>[16,98,178],()=>S.c1===0],['SkiErg',()=>[6,98,162],()=>S.c1===1],['Viper 1',()=>[6,88,162],()=>S.c1===2],['Rings',()=>[68,S.rg===1?60:98,100],()=>S.rg<3],['Under-window cabinet',()=>[6,22,117],()=>S.wc],['Barrina 9 × 5 ft rectangle',()=>[68,CH-4,47],()=>S.lt===2],['Power rack',()=>[RK[S.rk].c,S.rt===1?82:95,24],()=>1],['Viper 2',()=>[6,88,64],()=>S.v2],['TV',()=>tvLab,()=>1],['Leg extension / prone curl',()=>[92,62,165],()=>1],['Bench',()=>[124,24,112],()=>1],['Hallway door',()=>[132,82,62],()=>1],['Bath door',()=>[47,88,184],()=>1]].map(a=>{const e=document.createElement('div');e.textContent=a[0];e.style.cssText='position:absolute;font-size:11px;color:#fff;background:rgba(0,0,0,0.6);padding:2px 6px;border-radius:4px;white-space:nowrap;transform:translate(-50%,-100%)';LB.appendChild(e);return {e,p:a[1],v:a[2]};});
+let tvLab=[68,117,182];
+const LABS=[['Blocking: SkiErg top + bottom',()=>[1,92,156],()=>S.bk],['Blocking: Core Post stud',()=>[22.5,94,183],()=>S.bk],['Blocking: TV mount',()=>[68,114,183],()=>S.bk],['Blocking: speaker brackets',()=>[127,113,183],()=>S.bk],['Blocking: Viper 2',()=>[1,86,64],()=>S.bk],['Blocking: plate horns',()=>[19,66,1],()=>S.bk],['Blocking: cabinet cleat',()=>[70,112,1],()=>S.bk],['Blocking: ball + glute shelf',()=>[135,100,125],()=>S.bk],['Blocking: SSB',()=>[135,92,24],()=>S.bk],['Blocking: window cabinet',()=>[1,22,117],()=>S.bk],['Joist: ring anchors',()=>[68,118,100],()=>S.bk],['Floor blocking: rack feet',()=>[58.5,3,20],()=>S.bk],['Core Post (7 ft)',()=>[22.5,90,176],()=>S.cp],['Landmine bar',()=>S.lmb===1?[bEnd.x,16,bEnd.z]:[PCX,94,173],()=>S.cp],['Usable sweep ≈ 65°',()=>[PCX-6,2,PIV.z-60],()=>S.cp&&S.lmb<2],['SkiErg',()=>[16,98,178],()=>S.c1===0],['SkiErg',()=>[6,98,155],()=>S.c1===1],['Viper 1',()=>[6,88,162],()=>S.c1===2],['Rings',()=>[68,S.rg===1?60:98,100],()=>S.rg<3],['Power rack',()=>[RK[S.rk].c,S.rt===1?82:95,24],()=>1],['TV',()=>tvLab,()=>1],['Leg extension / prone curl',()=>[92,62,165],()=>1],['Bath door',()=>[47,88,184],()=>1]].map(a=>{const e=document.createElement('div');e.textContent=a[0];e.style.cssText='position:absolute;font-size:11px;color:#fff;background:rgba(0,0,0,0.6);padding:2px 6px;border-radius:4px;white-space:nowrap;transform:translate(-50%,-100%)';LB.appendChild(e);return {e,p:a[1],v:a[2]};});
 let dayLevel=0.7,roomLevel=0.4;
 function applyLights(){const ev=S.tm===1;const rl=roomLevel*(ev?0.8:1),dlv=dayLevel*(ev?0.02:1);
  const fixOn=S.lt<3&&S.sl,mirOn=S.lt<3&&S.ac,raftOn=S.lt===3,acR=raftOn&&S.ac,slR=raftOn&&S.sl;
@@ -2611,16 +2968,17 @@ function applyLights(){const ev=S.tm===1;const rl=roomLevel*(ev?0.8:1),dlv=dayLe
  const k=S.wn===0?1:0.82;day.forEach(([l,b])=>l.intensity=b*dlv*k);
  outsideMat.color.setHex(ev?0x1f2a38:0xffffff);}
 const LT=['LEONLITE, 2 lines (4 fixtures)','LEONLITE rectangle (10 fixtures)','Barrina rectangle, 9 × 5 ft','floating panel','coves','hex (current)'];
-const CR=['off','on Viper 2 (3×3 post)','on rack (toward door)'],CB=['greige, closed','greige, one flap open','dark gray, closed','hidden (soffit only)'],WP=['charcoal to 40 in','charcoal to 44 in (sill)','painted, no panels'],TVW=['leg machine wall','door wall (current)'];
+const CR=['off','on Viper 2 (3×3 post)','on rack (toward door)'],CB=['greige, closed','greige, one flap open','dark gray, closed','hidden (soffit only)'],WP=['charcoal to 40 in','charcoal to 44 in (sill)','painted, no panels'],TVW=['bath wall, centered','door wall'];
 function update(){
  tvs.forEach((g,i)=>g.visible=i===S.ts);const t=TVS[S.ts],g=tvs[S.ts],cy=TVB+t.h/2,top=TVB+t.h;
- if(S.tv===1){g.position.set(136,cy,111);g.rotation.y=-Math.PI/2;tvLab=[134,top+1,111];}else{const xc=63+7+t.w/2;g.position.set(xc,cy,184);g.rotation.y=Math.PI;tvLab=[xc,top+1,182];}
+ if(S.tv===1){g.position.set(136,cy,111);g.rotation.y=-Math.PI/2;tvLab=[134,top+1,111];}else{g.position.set(68,cy,184);g.rotation.y=Math.PI;tvLab=[68,top+1,182];}
  const a=S.wn===0?1.25:0;sashL.rotation.y=-a;sashR.rotation.y=a;
  const ry=S.fl===2?0.75:S.fl>=3?0.5:0;
  const c=RK[S.rk].c;frRack.visible=S.rt===3;frRack.position.set(c-23,ry,1);
  const act=S.rt===1?P80:P93;[P93,P80].forEach(P=>{P.pr.visible=(S.rt<3&&P===act);});
  act.pr.position.set(c-PW/2,ry,S.rt===2?0.6:8.6);act.prH.visible=S.rt!==2;
  skiBath.visible=S.c1===0;skiWin.visible=S.c1===1;viper.visible=S.c1===2;ringG.visible=S.rg<3;if(S.rg<3)setRings(RG[S.rg].y);winCab.visible=!!S.wc;
+ cpG.visible=!!S.cp;lmPark.visible=S.lmb!==1;lmUse.visible=S.lmb===1;sweep.visible=!!S.cp&&S.lmb<2;bkG.visible=!!S.bk;
  viper2.visible=!!S.v2;crowV.visible=S.cr===1&&!!S.v2;crowFR.visible=S.cr===2;[P93,P80].forEach(P=>{P.crow.visible=S.cr===2;P.spR.visible=S.cr!==2;});
  cabG.visible=S.cb<3;soffPlain.visible=S.cb===3;flaps.forEach((f,i)=>{const m=S.cb===2?cabGray:cabWhite;f.u.material=m;f.u.userData.m=m;f.l.material=m;f.l.userData.m=m;const o=S.cb===1&&i===oi;f.piv.rotation.x=o?-1.4:0;f.q.rotation.x=o?2.8:0;});
  leon2G.visible=S.lt===0;leonRG.visible=S.lt===1;barG.visible=S.lt===2;
@@ -2631,6 +2989,7 @@ function update(){
  dpiv.rotation.y=S.dr?-Math.PI/2:0;
  floor.material=S.fl===0?floorLight:S.fl===1?floorRub:floorWood;zoneG.visible=S.fl===2;accG.visible=S.fl===3;accB.visible=S.fl===4;
  const T=(id,s)=>document.getElementById(id).textContent=s,na=S.lt>=4;
+ T('o_bk','Blocking: '+(S.bk?'shown':'hidden'));T('o_cp','Core Post: '+(S.cp?'shown':'hidden'));T('o_lmb','Landmine bar: '+LMB[S.lmb]);
  T('o_rt','Rack: '+RT[S.rt]);T('o_ts','TV size: '+t.n);T('o_tv','TV: '+TVW[S.tv]);
  T('o_fl','Floor: '+FLN[S.fl]);T('o_c1','Corner: '+C1[S.c1]);T('o_rg','Rings: '+RG[S.rg].n);T('o_wc','Window cabinet: '+(S.wc?'shown':'hidden'));
  T('o_lt','Lighting: '+LT[S.lt]);T('o_ct','Color temp: '+(S.lt<3?CT[S.ct].n:'n/a'));T('o_sl','Training lights: '+(na?'n/a':(S.sl?'on':'off')));T('o_ac','Accent (mirror up-wash): '+(na?'n/a':(S.ac?'on':'off')));T('o_tm','Time: '+(S.tm?'evening':'day'));
@@ -2641,8 +3000,8 @@ function update(){
  T('o_wn','Window: '+(S.wn?'closed':'open'));T('o_lm','Leg machine: '+(S.lm?'prone curl':'extension'));
  T('o_dr','Hallway door: '+(S.dr?'open':'closed'));T('o_lb','Labels: '+(S.lb?'on':'off'));
  applyLights();render();}
-const NUM={rt:4,ts:4,tv:2,fl:5,c1:3,rg:4,wc:2,lt:6,ct:3,sl:2,ac:2,tm:2,rk:2,cr:3,cb:4,bs:2,v2:2,wp:3,wn:2,lm:2,dr:2,lb:2};
-function cyc(k){S[k]=(S[k]+1)%NUM[k];update();}
+const NUM={bk:2,cp:2,lmb:3,rt:4,ts:4,tv:2,fl:5,c1:3,rg:4,wc:2,lt:6,ct:3,sl:2,ac:2,tm:2,rk:2,cr:3,cb:4,bs:2,v2:2,wp:3,wn:2,lm:2,dr:2,lb:2};
+function cyc(k){S[k]=(S[k]+1)%NUM[k];if(k==='bk'&&S.bk)S.lb=1;update();}
 const VIEWS=[
  ['door','From hallway door',[126,64,64],[10,52,130],74],
  ['bath','From bath door',[47,64,172],[60,56,0],74],
