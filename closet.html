@@ -40,7 +40,7 @@ td.n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
 .fine{font-size:13px;color:var(--mute);margin-top:12px}
 @media(max-width:600px){table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-block:8px}.stack td{display:flow-root;border:0;padding:2px 0;padding-inline-start:7em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:6.5em;margin-inline-start:-7em;color:var(--mute)}}
 </style><script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script></head><body>
-<header><h1 id="ttl">Closet cabinets: three ways to fill the top and right walls</h1>
+<header><h1 id="ttl">Closet cabinets: four ways to fill the top and right walls</h1>
 <p class="sub">Novamobili Wardrobes &amp; Walk-in Closets 2023 catalog · 10 ft ceiling · drag to orbit, scroll or pinch to zoom, shift-drag to pan</p></header>
 <main>
 <div id="wrap"><div id="hint">Drag to orbit</div></div>
@@ -49,6 +49,7 @@ td.n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
  <div class="grp"><b>Configuration</b><div class="seg" id="g-preset"></div></div>
  <div class="grp"><b>Doors</b><div class="seg" id="g-doors"></div></div>
  <div class="grp"><b>Finish</b><div class="seg" id="g-finish"></div></div>
+ <div class="grp" id="grp-glass"><b>Perry glass</b><div class="seg" id="g-glass"></div></div>
  <div class="grp"><b>Show</b><div class="seg" id="g-tog"></div></div>
  <div class="grp"><b>View</b><div class="seg" id="g-view"></div></div>
 </div>
@@ -66,7 +67,7 @@ td.n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
 const IN=cm=>cm/2.54, f1=v=>v.toFixed(1), f2=v=>v.toFixed(2);
 const RW=94.3, RD=110, NX=7.3, NY=90, CEIL=120, DOORH=84;
 const BED={x0:5.9,x1:38.4}, BATH={y0:8.5,y1:33.5};
-const S={scheme:'A',preset:0,doors:'closed',finish:'bianco',clothes:true,soffit:false,view:'overview'};
+const S={scheme:'A',preset:0,doors:'closed',finish:'bianco',glass:'reeded',clothes:true,soffit:false,view:'overview'};
 try{Object.assign(S,JSON.parse(localStorage.getItem('closetS')||'{}'))}catch(e){}
 const FIN={bianco:{n:'Bianco',door:0xe9e6e0,body:0xdcd7cf,in:0xcdc6bb},tortora:{n:'Tortora',door:0xa3978a,body:0x978b7e,in:0x8b8278},ardesia:{n:'Ardesia',door:0x56585b,body:0x4b4d50,in:0x3f4144}};
 const WOOD=0xa8784a, WALL=0xd9d3c9, FLOOR=0xb89e80, METAL=0x8d8f91;
@@ -79,6 +80,10 @@ const SCH={
    {name:'Wide bays',top:[[97.5,'double',2]],right:[[117.5,'long',2],[42.5,'shelves',1]]},
    {name:'More columns',top:[[57.5,'drawers',1],[42.5,'shoes',1]],right:[[57.5,'long',1],[57.5,'double',1],[42.5,'shelves',1]]}],
    note:'The most storage, and all of it behind doors. The hinged corner module (109.3 cm square) is the only catalog piece that turns a corner with doors. At 290 cm it is the tallest height offered and stops 5.8″ below the ceiling. The corner is available with Alfa, Crystal, Gola, Perry, Plissé and Thick doors, but not Middle.'},
+ D:{name:'Perry glass L · Perry corner module · 258 cm',short:'Perry glass',presets:[
+   {name:'Mixed glass + mirror',corner:'glass',top:[[57.5,'drawers',1,'panel'],[47.5,'shoes',1,'glass']],right:[[117.5,'long',2,'glass'],[47.5,'shelves',1,'mirror']]},
+   {name:'All glass',corner:'glass',top:[[57.5,'drawers',1,'glass'],[47.5,'shoes',1,'glass']],right:[[57.5,'long',1,'glass'],[57.5,'double',1,'glass'],[47.5,'shelves',1,'glass']]}],
+   note:'Hinged doors in a slim metal frame (bronze shown; lacquered colors are also offered). Each door can be clear, reeded or smoked glass, a mirror, leather, or a solid panel, so you can choose bay by bay. Perry has its own corner module (105.5 × 104.3 cm). Perry only goes to 258 cm, which leaves 18.4″ above, so turn on Soffit to see it closed in. Glass shows everything behind it, so the inside finish and lighting matter more.'},
  B:{name:'Open walk-in L · Ben · 290 cm',short:'Open (Ben)',presets:[
    {name:'Hanging first',top:[[120,'double']],right:[[120,'long'],[60,'mirror']]},
    {name:'Shelves first',top:[[60,'shoes'],[60,'shelves']],right:[[90,'drawers'],[90,'long']]}],
@@ -101,9 +106,9 @@ const sun=new THREE.DirectionalLight(0xfff4e6,1.0);sun.position.set(-60,260,60);
 Object.assign(sun.shadow.camera,{left:-120,right:120,top:120,bottom:-120,near:10,far:600});sun.shadow.mapSize.set(2048,2048);sun.shadow.bias=-0.0004;scene.add(sun,sun.target);
 const fill=new THREE.PointLight(0xfff1df,0.35,400);fill.position.set(45,112,-50);scene.add(fill);
 const BOXG=new THREE.BoxGeometry(1,1,1), MATS={};
-function mat(c,o={}){const k=c+'|'+(o.ghost?1:0)+(o.metal?1:0)+(o.mirror?1:0);if(!MATS[k]){MATS[k]=new THREE.MeshStandardMaterial({color:new THREE.Color(c).convertSRGBToLinear(),roughness:o.mirror?0.08:o.metal?0.35:0.82,metalness:o.mirror?0.55:o.metal?0.7:0,transparent:!!o.ghost,opacity:o.ghost?0.16:1,depthWrite:!o.ghost})}return MATS[k]}
+function mat(c,o={}){const k=c+'|'+(o.ghost?1:0)+(o.metal?1:0)+(o.mirror?1:0)+'|'+(o.op||'')+'|'+(o.rough||'');if(!MATS[k]){const tr=!!o.ghost||!!o.op;MATS[k]=new THREE.MeshStandardMaterial({color:new THREE.Color(c).convertSRGBToLinear(),roughness:o.rough!=null?o.rough:o.mirror?0.08:o.metal?0.35:0.82,metalness:o.mirror?0.55:o.metal?0.7:o.op?0.1:0,transparent:tr,opacity:o.ghost?0.16:o.op||1,depthWrite:!tr})}return MATS[k]}
 // plan (x right, y up) -> 3D (x, height, -y)
-function box(g,x0,x1,y0,y1,z0,z1,c,o={}){if(x1-x0<0.01||y1-y0<0.01||z1-z0<0.01)return;const m=new THREE.Mesh(BOXG,mat(c,o));m.scale.set(x1-x0,z1-z0,y1-y0);m.position.set((x0+x1)/2,(z0+z1)/2,-(y0+y1)/2);m.castShadow=!o.ghost&&!o.ns;m.receiveShadow=true;g.add(m);return m}
+function box(g,x0,x1,y0,y1,z0,z1,c,o={}){if(x1-x0<0.01||y1-y0<0.01||z1-z0<0.01)return;const m=new THREE.Mesh(BOXG,mat(c,o));m.scale.set(x1-x0,z1-z0,y1-y0);m.position.set((x0+x1)/2,(z0+z1)/2,-(y0+y1)/2);m.castShadow=!o.ghost&&!o.ns&&!o.op;m.receiveShadow=true;g.add(m);return m}
 // wall-local: along-wall range [a,b], depth from wall [d0,d1]
 let TAG=null;function W(g,w,a,b,d0,d1,z0,z1,c,o){const lo=Math.min(a,b),hi=Math.max(a,b);const m=w==='top'?box(g,lo,hi,RD-d1,RD-d0,z0,z1,c,o):box(g,RW-d1,RW-d0,lo,hi,z0,z1,c,o);if(m)m.userData.w=TAG||w;return m}
 
@@ -142,35 +147,51 @@ function fitout(g,w,a,b,d0,d1,z0,z1,kind,f,seed){
  else if(kind==='shoes'){for(let z=z0+6;z<60;z+=7.5){shelf(z);shoes(z)}shoes(z0-0.9);for(let z=66;z<z1-7;z+=13){shelf(z);stacks(z)}}
 }
 function doorO(){return S.doors==='ghost'?{ghost:1}:{}}
-function hDoors(g,w,a,b,D,DT,z0,z1,n,f){if(S.doors==='off')return;const q=(b-a)/n;for(let i=0;i<n;i++)W(g,w,a+i*q+0.12,a+(i+1)*q-0.12,D,D+DT,z0+0.25,z1-0.25,f.door,doorO())}
+const GLASS={clear:{n:'Clear',c:0xdbe6e8,op:0.2,r:0.05},reeded:{n:'Reeded',c:0xf1f3f2,op:0.55,r:0.55},smoked:{n:'Smoked',c:0x3b3835,op:0.55,r:0.1}}, BRONZE=0x5a4939;
+// one door leaf in wall-local coords; kind: panel | glass | mirror; framed = Perry metal frame
+function leaf(g,w,a,b,D,DT,z0,z1,kind,f,framed){
+ if(S.doors==='off')return;const gh=S.doors==='ghost';
+ if(!framed){W(g,w,a,b,D,D+DT,z0,z1,f.door,doorO());return}
+ const fw=IN(2.9),fc=gh?{ghost:1}:{metal:1};
+ W(g,w,a,a+fw,D,D+DT,z0,z1,BRONZE,fc);W(g,w,b-fw,b,D,D+DT,z0,z1,BRONZE,fc);W(g,w,a+fw,b-fw,D,D+DT,z0,z0+fw,BRONZE,fc);W(g,w,a+fw,b-fw,D,D+DT,z1-fw,z1,BRONZE,fc);
+ const ia=a+fw,ib=b-fw,iz0=z0+fw,iz1=z1-fw,dm=D+DT*0.4,dM=D+DT*0.6;
+ if(gh){W(g,w,ia,ib,dm,dM,iz0,iz1,f.door,{ghost:1});return}
+ if(kind==='glass'){const G_=GLASS[S.glass]||GLASS.clear;W(g,w,ia,ib,dm,dM,iz0,iz1,G_.c,{op:G_.op,rough:G_.r});
+   if(S.glass==='reeded')for(let x=ia+0.6;x<ib-0.3;x+=0.9)W(g,w,x,x+0.35,dM,dM+0.12,iz0,iz1,0xffffff,{op:0.35,rough:0.3});}
+ else if(kind==='mirror')W(g,w,ia,ib,dm,dM,iz0,iz1,0xe4eaee,{mirror:1});
+ else W(g,w,ia,ib,dm,dM,iz0,iz1,f.door);
+}
+function hDoors(g,w,a,b,D,DT,z0,z1,n,f,kind,framed){const q=(b-a)/n;for(let i=0;i<n;i++)leaf(g,w,a+i*q+0.12,a+(i+1)*q-0.12,D,DT,z0+0.25,z1-0.25,kind||'panel',f,framed)}
 function soffit(g,w,a,b,dep,z){if(S.soffit)W(g,w,a,b,0,dep,z,CEIL,WALL)}
-
-function buildA(p,f,out){
- const Dh=IN(58.2),DT=IN(2.7),D=Dh+DT,H=IN(290),t=IN(2.5),C=IN(109.3),z0=0;
+const CFG={A:{Ct:109.3,Cr:109.3,H:290,DTcm:2.7,framed:false,cname:'Hinged corner module',depthTxt:'60.9 with door'},
+           D:{Ct:105.5,Cr:104.3,H:258,DTcm:4.0,framed:true,cname:'Perry corner module',depthTxt:'62.2 with door'}};
+function buildH(p,f,out,cfg){
+ const Dh=IN(58.2),DT=IN(cfg.DTcm),D=Dh+DT,H=IN(cfg.H),t=IN(2.5),Ct=IN(cfg.Ct),Cr=IN(cfg.Cr),z0=0,fr=cfg.framed,ck=p.corner||'panel';
  TAG='corner';
- W(G,'top',RW-C,RW,0,0.5,z0,H,f.in);W(G,'right',RD-C,RD,0,0.5,z0,H,f.in);
- W(G,'top',RW-C,RW-C+t,0,Dh,z0,H,f.body);W(G,'right',RD-C,RD-C+t,0,Dh,z0,H,f.body);
- for(const z of [z0,H-t]){W(G,'top',RW-C,RW,0,Dh,z,z+t,f.body);W(G,'right',RD-C,RD-Dh,0,Dh,z,z+t,f.body)}
+ W(G,'top',RW-Ct,RW,0,0.5,z0,H,f.in);W(G,'right',RD-Cr,RD,0,0.5,z0,H,f.in);
+ W(G,'top',RW-Ct,RW-Ct+t,0,Dh,z0,H,f.body);W(G,'right',RD-Cr,RD-Cr+t,0,Dh,z0,H,f.body);
+ for(const z of [z0,H-t]){W(G,'top',RW-Ct,RW,0,Dh,z,z+t,f.body);W(G,'right',RD-Cr,RD-Dh,0,Dh,z,z+t,f.body)}
  const r=Math.min(80,H-16);
- W(G,'top',RW-C+t,RW-2,Dh/2-0.45,Dh/2+0.45,r-0.8,r,METAL,{metal:1});W(G,'right',RD-C+t,RD-Dh,Dh/2-0.45,Dh/2+0.45,r-0.8,r,METAL,{metal:1});rails.push({len:C-t+C-Dh-t,long:true});
- if(S.clothes){let i=0;for(let s=RW-C+t+1.3;s<RW-Dh/2-9;s+=1.85,i++)W(G,'top',s,s+0.8,Dh/2-8,Dh/2+8,r-51,r-1.2,GC[Math.floor(rnd(900+i)*GC.length)],{ns:1});for(let s=RD-C+t+1.3;s<RD-Dh-1;s+=1.85,i++)W(G,'right',s,s+0.8,Dh/2-8,Dh/2+8,r-51,r-1.2,GC[Math.floor(rnd(900+i)*GC.length)],{ns:1})}
- for(let z=r+3;z<H-7;z+=14){W(G,'top',RW-C+t,RW,0.5,Dh,z,z+0.9,f.in);W(G,'right',RD-C+t,RD-Dh,0.5,Dh,z,z+0.9,f.in)}
- if(S.doors!=='off'){W(G,'top',RW-C+0.12,RW-Dh-DT-0.12,Dh,D,z0+0.25,H-0.25,f.door,doorO());W(G,'right',RD-C+0.12,RD-Dh-0.12,Dh,D,z0+0.25,H-0.25,f.door,doorO())}
- TAG=null;out.plan.push(['L','top',RW-C,RW,0,D,'corner 109.3'],['L','right',RD-C,RD-D,0,D,'']);
- out.rows.push(['Hinged corner module','109.3 × 109.3',f1(IN(109.3))+'″ each way','']);
- soffit(G,'top',RW-C,RW,D,H);soffit(G,'right',RD-C,RD-D,D,H);
- const run=(w,list,start,lim)=>{let e=start,seed=w==='top'?10:50;for(const [cm,kind,n] of list){const L=IN(cm),b=e,a=e-L;
+ W(G,'top',RW-Ct+t,RW-2,Dh/2-0.45,Dh/2+0.45,r-0.8,r,METAL,{metal:1});W(G,'right',RD-Cr+t,RD-Dh,Dh/2-0.45,Dh/2+0.45,r-0.8,r,METAL,{metal:1});rails.push({len:Ct-t+Cr-Dh-t,long:true});
+ if(S.clothes){let i=0;for(let s=RW-Ct+t+1.3;s<RW-Dh/2-9;s+=1.85,i++)W(G,'top',s,s+0.8,Dh/2-8,Dh/2+8,r-51,r-1.2,GC[Math.floor(rnd(900+i)*GC.length)],{ns:1});for(let s=RD-Cr+t+1.3;s<RD-Dh-1;s+=1.85,i++)W(G,'right',s,s+0.8,Dh/2-8,Dh/2+8,r-51,r-1.2,GC[Math.floor(rnd(900+i)*GC.length)],{ns:1})}
+ for(let z=r+3;z<H-7;z+=14){W(G,'top',RW-Ct+t,RW,0.5,Dh,z,z+0.9,f.in);W(G,'right',RD-Cr+t,RD-Dh,0.5,Dh,z,z+0.9,f.in)}
+ leaf(G,'top',RW-Ct+0.12,RW-Dh-DT-0.12,Dh,DT,z0+0.25,H-0.25,ck,f,fr);leaf(G,'right',RD-Cr+0.12,RD-Dh-0.12,Dh,DT,z0+0.25,H-0.25,ck,f,fr);
+ TAG=null;out.plan.push(['L','top',RW-Ct,RW,0,D,'corner '+cfg.Ct+(cfg.Ct!==cfg.Cr?'×'+cfg.Cr:'')],['L','right',RD-Cr,RD-D,0,D,'']);
+ out.rows.push([cfg.cname+(fr?' · '+ck+' doors':''),cfg.Ct+' × '+cfg.Cr,cfg.Ct===cfg.Cr?f1(Ct)+'″ each way':f1(Ct)+'″ × '+f1(Cr)+'″','']);
+ soffit(G,'top',RW-Ct,RW,D,H);soffit(G,'right',RD-Cr,RD-D,D,H);
+ const run=(w,list,start,lim)=>{let e=start,seed=w==='top'?10:50;for(const [cm,kind,n,dk] of list){const L=IN(cm),b=e,a=e-L;
    W(G,w,a,b,0,0.5,z0,H,f.in);W(G,w,a,a+t,0,Dh,z0,H,f.body);W(G,w,b-t,b,0,Dh,z0,H,f.body);W(G,w,a,b,0,Dh,z0,z0+t,f.body);W(G,w,a,b,0,Dh,H-t,H,f.body);
-   fitout(G,w,a+t,b-t,0.5,Dh,z0+t,H-t,kind,f,seed+=17);hDoors(G,w,a,b,Dh,DT,z0,H,n,f);soffit(G,w,a,b,D,H);
-   out.plan.push(['M',w,a,b,0,D,String(cm)]);out.rows.push([`${n===2?'Double':'Single'}-door module · ${kind}`,cm+' × 58.2 (60.9 with door)',f2(L)+'″','']);e=a}
-  const ep=e-t;W(G,w,ep,e,0,D,z0,H,f.door);out.plan.push(['P',w,ep,e,0,D,'']);soffit(G,w,ep,e,D,H);
+   fitout(G,w,a+t,b-t,0.5,Dh,z0+t,H-t,kind,f,seed+=17);hDoors(G,w,a,b,Dh,DT,z0,H,n,f,dk,fr);soffit(G,w,a,b,D,H);
+   out.plan.push(['M',w,a,b,0,D,String(cm)+(fr&&dk&&dk!=='panel'?' '+dk:'')]);out.rows.push([`${n===2?'Double':'Single'}-door module · ${kind}${fr?' · '+(dk||'panel')+' door'+(n===2?'s':''):''}`,cm+' × 58.2 ('+cfg.depthTxt+')',f2(L)+'″','']);e=a}
+  const ep=e-t;W(G,w,ep,e,0,D,z0,H,fr?BRONZE:f.door);out.plan.push(['P',w,ep,e,0,D,'']);soffit(G,w,ep,e,D,H);
   const slack=ep-lim;if(slack>0.05){W(G,w,lim,ep,0,D,z0,H,f.body);soffit(G,w,lim,ep,D,H);out.plan.push(['F',w,lim,ep,0,D,''])}
   return {len:start-ep+(w==='top'?RW-start:RD-start),slack}};
- const top=run('top',p.top,RW-C,NX), right=run('right',p.right,RD-C,0);
+ const top=run('top',p.top,RW-Ct,NX), right=run('right',p.right,RD-Cr,0);
  out.rows.push(['End panels (finished sides)','2.5 cm each','0.98″','']);
  fitRows(out,top,right,IN(4),'+4 cm width to assemble');
- out.depth=D;out.H=H;out.leaf=Math.max(...p.right.map(([cm,k,n])=>IN(cm)/n));out.leafTop=Math.max(...p.top.map(([cm,k,n])=>IN(cm)/n),IN(51.1));
+ out.depth=D;out.H=H;out.leaf=Math.max(...p.right.map(([cm,k,n])=>IN(cm)/n));out.leafTop=Math.max(...p.top.map(([cm,k,n])=>IN(cm)/n),Ct-Dh);
 }
+const buildA=(p,f,out)=>buildH(p,f,out,CFG.A), buildD=(p,f,out)=>buildH(p,f,out,CFG.D);
 function fitRows(out,top,right,asm,asmTxt){
  const st=v=>v>=asm+0.75?['ok','fits, '+f1(v)+'″ filler']:v>=asm?['warn','tight: '+f2(v-asm)+'″ to spare beyond the '+asmTxt]:v>=0?['warn','fits, but '+f2(v)+'″ is less than the '+asmTxt]:['bad','too long by '+f1(-v)+'″'];
  out.fit=[['Top wall run','87″ wall',f1(top.len)+'″',...st(top.slack)],['Right wall run','110″ wall',f1(right.len)+'″',...st(right.slack)]];
@@ -236,7 +257,8 @@ function buildC(p,f,out){
 function build(){
  if(G){scene.remove(G);G.traverse(o=>{})}G=new THREE.Group();scene.add(G);rails.length=0;
  const f=FIN[S.finish],sc=SCH[S.scheme],p=sc.presets[S.preset]||sc.presets[0],out={plan:[],rows:[],fit:[]};
- ({A:buildA,B:buildB,C:buildC})[S.scheme](p,f,out);
+ ({A:buildA,B:buildB,C:buildC,D:buildD})[S.scheme](p,f,out);
+ document.getElementById('grp-glass').style.display=S.scheme==='D'?'':'none';
  info(sc,out);plan(out);applyCam();
  try{localStorage.setItem('closetS',JSON.stringify(S))}catch(e){}
 }
@@ -302,6 +324,7 @@ function presetSeg(){return seg('g-preset',SCH[S.scheme].presets.map((p,i)=>[i,p
 syncs.push(seg('g-scheme',Object.entries(SCH).map(([k,v])=>[k,v.short]),k=>k===S.scheme,k=>{S.scheme=k;S.preset=0;syncs[1]=presetSeg();build()}));
 syncs.push(presetSeg());
 syncs.push(seg('g-doors',[['closed','Closed'],['ghost','See-through'],['off','Removed']],k=>k===S.doors,k=>{S.doors=k;build()}));
+syncs.push(seg('g-glass',Object.entries(GLASS).map(([k,v])=>[k,v.n]),k=>k===S.glass,k=>{S.glass=k;build()}));
 syncs.push(seg('g-finish',Object.entries(FIN).map(([k,v])=>[k,v.n]),k=>k===S.finish,k=>{S.finish=k;build()}));
 syncs.push(seg('g-tog',[['clothes','Clothes'],['soffit','Soffit to ceiling']],k=>S[k],k=>{S[k]=!S[k];build()}));
 syncs.push(seg('g-view',Object.entries(VIEWS).map(([k,v])=>[k,v.n]),k=>k===S.view,k=>setView(k)));
