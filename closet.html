@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Closet cabinet model</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: calm millwork shop drawing, measured and exact
+   IDEA: a cabinetmaker's sheet — live 3D model, plan and fit schedule
+   PICTURE: the closet in 3D, switchable between three catalog layouts
+   COLOUR and TYPE: white sheet, graphite ink, one blue for dimensions; Figtree
+   LAYOUT: model on top, controls under it, plan + schedule side by side */
+:root{color-scheme:light dark;--bg:light-dark(#f7f6f3,#141517);--card:light-dark(#fff,#1d1f22);--ink:light-dark(#1d1f22,#ecebe8);--mute:light-dark(#6b6a66,#a3a29d);--line:light-dark(#dedbd5,#33363a);--acc:#0a5cff;--ok:light-dark(#0f7a43,#4cc88a);--warn:light-dark(#b25b00,#ffb454);--bad:light-dark(#c0262d,#ff6b6b)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Figtree,system-ui,sans-serif;overflow-x:clip}
+header{padding:20px max(4vw,16px) 8px;max-width:1300px;margin:auto}
+h1{font-size:clamp(26px,3.4vw,40px);line-height:1.08;margin:0 0 4px;font-weight:800;text-wrap:balance}
+.sub{color:var(--mute);margin:0;font-size:15px}
+main{max-width:1300px;margin:auto;padding:0 max(4vw,16px) 40px}
+#wrap{position:relative;height:min(64vh,640px);min-height:360px;border-radius:14px;overflow:hidden;background:light-dark(#e9e7e2,#0f1012);cursor:grab;touch-action:none;margin-top:10px}
+#wrap canvas{display:block;width:100%;height:100%}
+#hint{position:absolute;left:12px;bottom:10px;font-size:13px;color:#555;background:#ffffffcc;padding:4px 9px;border-radius:8px;pointer-events:none}
+.ctl{display:flex;flex-wrap:wrap;gap:10px 22px;margin:14px 0 6px}
+.grp{display:flex;flex-direction:column;gap:5px}
+.grp b{font-size:13px;color:var(--mute);font-weight:600}
+.seg{display:flex;flex-wrap:wrap;gap:4px}
+.seg button{font:600 14px Figtree,sans-serif;min-height:40px;padding:0 13px;border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.seg button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:22px;margin-top:16px}
+@media(max-width:860px){.cols{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.card h2{font-size:19px;margin:0 0 8px;line-height:1.2}
+#plan{width:100%;height:auto;display:block}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{padding:6px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{color:var(--mute);font-weight:600;font-size:13px}
+td.n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.ok{color:var(--ok);font-weight:600}.warn{color:var(--warn);font-weight:600}.bad{color:var(--bad);font-weight:600}
+#note{margin:10px 0 0;font-size:15px}
+.fine{font-size:13px;color:var(--mute);margin-top:12px}
+@media(max-width:600px){table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-block:8px}.stack td{display:flow-root;border:0;padding:2px 0;padding-inline-start:7em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:6.5em;margin-inline-start:-7em;color:var(--mute)}}
+</style><script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script></head><body>
+<header><h1 id="ttl">Closet cabinets: three ways to fill the top and right walls</h1>
+<p class="sub">Novamobili Wardrobes &amp; Walk-in Closets 2023 catalog · 10 ft ceiling · drag to orbit, scroll or pinch to zoom, shift-drag to pan</p></header>
+<main>
+<div id="wrap"><div id="hint">Drag to orbit</div></div>
+<div class="ctl">
+ <div class="grp"><b>Layout</b><div class="seg" id="g-scheme"></div></div>
+ <div class="grp"><b>Configuration</b><div class="seg" id="g-preset"></div></div>
+ <div class="grp"><b>Doors</b><div class="seg" id="g-doors"></div></div>
+ <div class="grp"><b>Finish</b><div class="seg" id="g-finish"></div></div>
+ <div class="grp"><b>Show</b><div class="seg" id="g-tog"></div></div>
+ <div class="grp"><b>View</b><div class="seg" id="g-view"></div></div>
+</div>
+<div class="cols">
+ <div class="card"><h2>Plan</h2><svg id="plan" viewBox="-22 -16 140 146" role="img" aria-label="Floor plan of the closet with cabinets"></svg>
+  <p class="fine">Room width (≈94.3″), the 7.3″ × 20″ notch and both door positions are scaled from your sketch. Door height assumed 84″.</p></div>
+ <div class="card"><h2 id="sname"></h2><p id="note"></p>
+  <table class="stack" id="sched"><thead><tr><th>Item</th><th>Catalog size</th><th>Inches</th><th>Check</th></tr></thead><tbody></tbody></table>
+  <p class="fine">Module widths are as printed in the catalog; I've added one 2.5 cm finished end panel (hinged) or 3 cm side panel (Ben) at each open end. Novamobili says to confirm limits against the price list, so have the dealer check the final composition.</p></div>
+</div>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+{
+const IN=cm=>cm/2.54, f1=v=>v.toFixed(1), f2=v=>v.toFixed(2);
+const RW=94.3, RD=110, NX=7.3, NY=90, CEIL=120, DOORH=84;
+const BED={x0:5.9,x1:38.4}, BATH={y0:8.5,y1:33.5};
+const S={scheme:'A',preset:0,doors:'closed',finish:'bianco',clothes:true,soffit:false,view:'overview'};
+try{Object.assign(S,JSON.parse(localStorage.getItem('closetS')||'{}'))}catch(e){}
+const FIN={bianco:{n:'Bianco',door:0xe9e6e0,body:0xdcd7cf,in:0xcdc6bb},tortora:{n:'Tortora',door:0xa3978a,body:0x978b7e,in:0x8b8278},ardesia:{n:'Ardesia',door:0x56585b,body:0x4b4d50,in:0x3f4144}};
+const WOOD=0xa8784a, WALL=0xd9d3c9, FLOOR=0xb89e80, METAL=0x8d8f91;
+const GC=[0x2f3640,0x8c7b6b,0xd8cfc4,0x6b4f3f,0x9aa5ae,0x3c4a3e,0xb9a089,0x7a2f2f,0xe8e2d8,0x44506b,0xa67c5b,0x1f1f22,0xc9b8a6,0x5e6a74];
+const rnd=s=>{const x=Math.sin(s*12.9898+78.233)*43758.5453;return x-Math.floor(x)};
+
+// ---------- catalog-derived schemes ----------
+const SCH={
+ A:{name:'Hinged L · corner module · 290 cm',short:'Hinged L',presets:[
+   {name:'Wide bays',top:[[97.5,'double',2]],right:[[117.5,'long',2],[42.5,'shelves',1]]},
+   {name:'More columns',top:[[57.5,'drawers',1],[42.5,'shoes',1]],right:[[57.5,'long',1],[57.5,'double',1],[42.5,'shelves',1]]}],
+   note:'The most storage, and all of it behind doors. The hinged corner module (109.3 cm square) is the only catalog piece that turns a corner with doors. At 290 cm it is the tallest height offered and stops 5.8″ below the ceiling. The corner is available with Alfa, Crystal, Gola, Perry, Plissé and Thick doors, but not Middle.'},
+ B:{name:'Open walk-in L · Ben · 290 cm',short:'Open (Ben)',presets:[
+   {name:'Hanging first',top:[[120,'double']],right:[[120,'long'],[60,'mirror']]},
+   {name:'Shelves first',top:[[60,'shoes'],[60,'shelves']],right:[[90,'drawers'],[90,'long']]}],
+   note:'A boutique-style open system, and the shallowest at 49.3 cm, which leaves the most floor. The Ben corner unit is 85.3 × 88.3 cm. Without doors everything collects dust. A full-height mirror door is offered only on 60 cm columns.'},
+ C:{name:'Middle on the right wall + Break on the top wall',short:'Middle + Break',presets:[
+   {name:'122.3 + 137.3 doors',doors:[137.3,122.3]},
+   {name:'137.3 + 137.3 doors',doors:[137.3,137.3]}],
+   note:'Keeps the Middle door from the hallway. Middle has no corner module, and its smallest two-door unit (96.3″) is longer than the 87″ top wall, so Middle can only go on the right wall. A Break wall system fills the top wall, with its adjustable end uprights taking up the slack. Nothing is lost in the corner because it sits inside Middle\'s first module.'}
+};
+
+// ---------- three.js ----------
+const wrap=document.getElementById('wrap');
+const ren=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
+ren.setPixelRatio(Math.min(devicePixelRatio,2));ren.outputEncoding=THREE.sRGBEncoding;ren.toneMapping=THREE.ACESFilmicToneMapping;ren.toneMappingExposure=0.95;
+ren.shadowMap.enabled=true;ren.shadowMap.type=THREE.PCFSoftShadowMap;wrap.prepend(ren.domElement);
+const scene=new THREE.Scene();scene.background=new THREE.Color(0xe4e1db).convertSRGBToLinear();
+const cam=new THREE.PerspectiveCamera(45,1,1,3000);
+scene.add(new THREE.HemisphereLight(0xffffff,0xa89884,0.6));
+const sun=new THREE.DirectionalLight(0xfff4e6,1.0);sun.position.set(-60,260,60);sun.target.position.set(50,0,-60);sun.castShadow=true;
+Object.assign(sun.shadow.camera,{left:-120,right:120,top:120,bottom:-120,near:10,far:600});sun.shadow.mapSize.set(2048,2048);sun.shadow.bias=-0.0004;scene.add(sun,sun.target);
+const fill=new THREE.PointLight(0xfff1df,0.35,400);fill.position.set(45,112,-50);scene.add(fill);
+const BOXG=new THREE.BoxGeometry(1,1,1), MATS={};
+function mat(c,o={}){const k=c+'|'+(o.ghost?1:0)+(o.metal?1:0)+(o.mirror?1:0);if(!MATS[k]){MATS[k]=new THREE.MeshStandardMaterial({color:new THREE.Color(c).convertSRGBToLinear(),roughness:o.mirror?0.08:o.metal?0.35:0.82,metalness:o.mirror?0.55:o.metal?0.7:0,transparent:!!o.ghost,opacity:o.ghost?0.16:1,depthWrite:!o.ghost})}return MATS[k]}
+// plan (x right, y up) -> 3D (x, height, -y)
+function box(g,x0,x1,y0,y1,z0,z1,c,o={}){if(x1-x0<0.01||y1-y0<0.01||z1-z0<0.01)return;const m=new THREE.Mesh(BOXG,mat(c,o));m.scale.set(x1-x0,z1-z0,y1-y0);m.position.set((x0+x1)/2,(z0+z1)/2,-(y0+y1)/2);m.castShadow=!o.ghost&&!o.ns;m.receiveShadow=true;g.add(m);return m}
+// wall-local: along-wall range [a,b], depth from wall [d0,d1]
+let TAG=null;function W(g,w,a,b,d0,d1,z0,z1,c,o){const lo=Math.min(a,b),hi=Math.max(a,b);const m=w==='top'?box(g,lo,hi,RD-d1,RD-d0,z0,z1,c,o):box(g,RW-d1,RW-d0,lo,hi,z0,z1,c,o);if(m)m.userData.w=TAG||w;return m}
+
+// room shell
+const walls=[];
+function wallGroup(n,p,parts){const g=new THREE.Group();parts.forEach(q=>box(g,...q,WALL));scene.add(g);walls.push({n,p,g})}
+const T=4;
+wallGroup([0,1],[50,0],[[-T,BED.x0,-T,0,0,CEIL],[BED.x1,RW+T,-T,0,0,CEIL],[BED.x0,BED.x1,-T,0,DOORH,CEIL]]);
+wallGroup([-1,0],[RW,50],[[RW,RW+T,-T,RD+T,0,CEIL]]);
+wallGroup([0,-1],[50,RD],[[NX-T,RW+T,RD,RD+T,0,CEIL]]);
+wallGroup([1,0],[NX,100],[[NX-T,NX,NY,RD,0,CEIL]]);
+wallGroup([0,-1],[3,NY],[[-T,NX,NY,NY+T,0,CEIL]]);
+wallGroup([1,0],[0,50],[[-T,0,-T,BATH.y0,0,CEIL],[-T,0,BATH.y1,NY+T,0,CEIL],[-T,0,BATH.y0,BATH.y1,DOORH,CEIL]]);
+box(scene,0,RW,0,NY,-0.6,0,FLOOR);box(scene,NX,RW,NY-0.1,RD,-0.6,0,FLOOR);
+// bedroom door closed (hinged at right jamb, swings in), bath door ajar into bath
+box(walls[0].g,BED.x0+0.2,BED.x1-0.2,-1.75,0,0,DOORH-0.2,0xf4f2ee);
+box(walls[0].g,BED.x0+2.5,BED.x0+3.2,0.02,0.9,34,40,METAL,{metal:true});
+{const g=new THREE.Group();box(g,-1.75,0,0,BATH.y1-BATH.y0-0.4,0,DOORH-0.2,0xf4f2ee);g.position.set(0,0,-BATH.y0-0.2);g.rotation.y=0.9;scene.add(g);walls.find(w=>w.n[0]===1&&w.p[1]===50).g.add(g)}
+function arc(cx,cy,r,a0,a1,col){const pts=[];for(let i=0;i<=40;i++){const a=a0+(a1-a0)*i/40;pts.push(new THREE.Vector3(cx+r*Math.cos(a),0.15,-(cy+r*Math.sin(a))))}scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:col})))}
+arc(BED.x1,0,BED.x1-BED.x0,Math.PI/2,Math.PI,0x8a8378);
+
+// ---------- builders ----------
+let G=null;const rails=[];
+function fitout(g,w,a,b,d0,d1,z0,z1,kind,f,seed){
+ const dc=(d0+d1)/2, gd=Math.min(17,d1-d0-2);
+ const shelf=z=>W(g,w,a,b,d0,d1,z,z+0.9,f.in);
+ const rail=(z,long)=>{W(g,w,a+0.3,b-0.3,dc-0.45,dc+0.45,z-0.8,z,METAL,{metal:true});rails.push({len:b-a,long})};
+ const clothes=(z,len)=>{if(!S.clothes)return;let i=0;for(let s=a+1.3;s<b-1.4;s+=1.85,i++){const L=len*(0.82+0.18*rnd(seed+i));W(g,w,s,s+0.8,dc-gd/2,dc+gd/2,z-1.2-L,z-1.2,GC[Math.floor(rnd(seed*3+i)*GC.length)],{ns:1})}};
+ const stacks=z=>{if(!S.clothes)return;let i=0;for(let s=a+1.5;s+9<b-1;s+=11,i++){W(g,w,s,s+9.5,d0+3,Math.min(d1-2,d0+15),z+0.9,z+0.9+4+4*rnd(seed+z+i),GC[Math.floor(rnd(seed+z*7+i)*GC.length)],{ns:1})}};
+ const shoes=z=>{if(!S.clothes)return;let i=0;for(let s=a+1;s+7.6<b-0.5;s+=8.2,i++){const c=GC[Math.floor(rnd(seed+z*5+i)*GC.length)];W(g,w,s,s+3.6,d1-11,d1-1.5,z+0.9,z+4.6,c,{ns:1});W(g,w,s+3.9,s+7.5,d1-11,d1-1.5,z+0.9,z+4.6,c,{ns:1})}};
+ const tops=from=>{for(let z=from;z<z1-7;z+=14){shelf(z);stacks(z)}};
+ if(kind==='long'){const r=Math.min(80,z1-16);rail(r,true);clothes(r,50);tops(r+3)}
+ else if(kind==='double'){const r=Math.min(82,z1-14);rail(r,false);clothes(r,35);rail(r-41,false);clothes(r-41,32);tops(r+3)}
+ else if(kind==='drawers'){const dh=7.6;for(let i=0;i<4;i++)W(g,w,a+0.3,b-0.3,d1-1.4,d1-0.5,z0+0.4+i*dh,z0+(i+1)*dh-0.3,f.body);shelf(z0+4*dh+0.4);const r=Math.min(76,z1-16);rail(r,false);clothes(r,30);tops(r+3)}
+ else if(kind==='shelves'){for(let z=z0+12;z<z1-7;z+=12){shelf(z);stacks(z)}stacks(z0)}
+ else if(kind==='shoes'){for(let z=z0+6;z<60;z+=7.5){shelf(z);shoes(z)}shoes(z0-0.9);for(let z=66;z<z1-7;z+=13){shelf(z);stacks(z)}}
+}
+function doorO(){return S.doors==='ghost'?{ghost:1}:{}}
+function hDoors(g,w,a,b,D,DT,z0,z1,n,f){if(S.doors==='off')return;const q=(b-a)/n;for(let i=0;i<n;i++)W(g,w,a+i*q+0.12,a+(i+1)*q-0.12,D,D+DT,z0+0.25,z1-0.25,f.door,doorO())}
+function soffit(g,w,a,b,dep,z){if(S.soffit)W(g,w,a,b,0,dep,z,CEIL,WALL)}
+
+function buildA(p,f,out){
+ const Dh=IN(58.2),DT=IN(2.7),D=Dh+DT,H=IN(290),t=IN(2.5),C=IN(109.3),z0=0;
+ TAG='corner';
+ W(G,'top',RW-C,RW,0,0.5,z0,H,f.in);W(G,'right',RD-C,RD,0,0.5,z0,H,f.in);
+ W(G,'top',RW-C,RW-C+t,0,Dh,z0,H,f.body);W(G,'right',RD-C,RD-C+t,0,Dh,z0,H,f.body);
+ for(const z of [z0,H-t]){W(G,'top',RW-C,RW,0,Dh,z,z+t,f.body);W(G,'right',RD-C,RD-Dh,0,Dh,z,z+t,f.body)}
+ const r=Math.min(80,H-16);
+ W(G,'top',RW-C+t,RW-2,Dh/2-0.45,Dh/2+0.45,r-0.8,r,METAL,{metal:1});W(G,'right',RD-C+t,RD-Dh,Dh/2-0.45,Dh/2+0.45,r-0.8,r,METAL,{metal:1});rails.push({len:C-t+C-Dh-t,long:true});
+ if(S.clothes){let i=0;for(let s=RW-C+t+1.3;s<RW-Dh/2-9;s+=1.85,i++)W(G,'top',s,s+0.8,Dh/2-8,Dh/2+8,r-51,r-1.2,GC[Math.floor(rnd(900+i)*GC.length)],{ns:1});for(let s=RD-C+t+1.3;s<RD-Dh-1;s+=1.85,i++)W(G,'right',s,s+0.8,Dh/2-8,Dh/2+8,r-51,r-1.2,GC[Math.floor(rnd(900+i)*GC.length)],{ns:1})}
+ for(let z=r+3;z<H-7;z+=14){W(G,'top',RW-C+t,RW,0.5,Dh,z,z+0.9,f.in);W(G,'right',RD-C+t,RD-Dh,0.5,Dh,z,z+0.9,f.in)}
+ if(S.doors!=='off'){W(G,'top',RW-C+0.12,RW-Dh-DT-0.12,Dh,D,z0+0.25,H-0.25,f.door,doorO());W(G,'right',RD-C+0.12,RD-Dh-0.12,Dh,D,z0+0.25,H-0.25,f.door,doorO())}
+ TAG=null;out.plan.push(['L','top',RW-C,RW,0,D,'corner 109.3'],['L','right',RD-C,RD-D,0,D,'']);
+ out.rows.push(['Hinged corner module','109.3 × 109.3',f1(IN(109.3))+'″ each way','']);
+ soffit(G,'top',RW-C,RW,D,H);soffit(G,'right',RD-C,RD-D,D,H);
+ const run=(w,list,start,lim)=>{let e=start,seed=w==='top'?10:50;for(const [cm,kind,n] of list){const L=IN(cm),b=e,a=e-L;
+   W(G,w,a,b,0,0.5,z0,H,f.in);W(G,w,a,a+t,0,Dh,z0,H,f.body);W(G,w,b-t,b,0,Dh,z0,H,f.body);W(G,w,a,b,0,Dh,z0,z0+t,f.body);W(G,w,a,b,0,Dh,H-t,H,f.body);
+   fitout(G,w,a+t,b-t,0.5,Dh,z0+t,H-t,kind,f,seed+=17);hDoors(G,w,a,b,Dh,DT,z0,H,n,f);soffit(G,w,a,b,D,H);
+   out.plan.push(['M',w,a,b,0,D,String(cm)]);out.rows.push([`${n===2?'Double':'Single'}-door module · ${kind}`,cm+' × 58.2 (60.9 with door)',f2(L)+'″','']);e=a}
+  const ep=e-t;W(G,w,ep,e,0,D,z0,H,f.door);out.plan.push(['P',w,ep,e,0,D,'']);soffit(G,w,ep,e,D,H);
+  const slack=ep-lim;if(slack>0.05){W(G,w,lim,ep,0,D,z0,H,f.body);soffit(G,w,lim,ep,D,H);out.plan.push(['F',w,lim,ep,0,D,''])}
+  return {len:start-ep+(w==='top'?RW-start:RD-start),slack}};
+ const top=run('top',p.top,RW-C,NX), right=run('right',p.right,RD-C,0);
+ out.rows.push(['End panels (finished sides)','2.5 cm each','0.98″','']);
+ fitRows(out,top,right,IN(4),'+4 cm width to assemble');
+ out.depth=D;out.H=H;out.leaf=Math.max(...p.right.map(([cm,k,n])=>IN(cm)/n));out.leafTop=Math.max(...p.top.map(([cm,k,n])=>IN(cm)/n),IN(51.1));
+}
+function fitRows(out,top,right,asm,asmTxt){
+ const st=v=>v>=asm+0.75?['ok','fits, '+f1(v)+'″ filler']:v>=asm?['warn','tight: '+f2(v-asm)+'″ to spare beyond the '+asmTxt]:v>=0?['warn','fits, but '+f2(v)+'″ is less than the '+asmTxt]:['bad','too long by '+f1(-v)+'″'];
+ out.fit=[['Top wall run','87″ wall',f1(top.len)+'″',...st(top.slack)],['Right wall run','110″ wall',f1(right.len)+'″',...st(right.slack)]];
+}
+function buildB(p,f,out){
+ const Db=IN(49.3),H=IN(290),tp=IN(3),Ct=IN(85.3),Cr=IN(88.3),z0=0,bench=IN(7);
+ TAG='corner';W(G,'top',RW-Ct,RW,0,0.5,z0,H,f.in);W(G,'right',RD-Cr,RD,0,0.5,z0,H,f.in);
+ W(G,'top',RW-Ct,RW-Ct+tp,0,Db,z0,H,f.body);W(G,'right',RD-Cr,RD-Cr+tp,0,Db,z0,H,f.body);
+ for(let z=12;z<H-6;z+=13){if(z>36&&z<79)continue;W(G,'top',RW-Ct+tp,RW,0.5,Db,z,z+1.2,f.body);W(G,'right',RD-Cr+tp,RD-Db,0.5,Db,z,z+1.2,f.body)}
+ W(G,'top',RW-Ct+tp,RW,0.5,Db,79,80.2,f.body);W(G,'right',RD-Cr+tp,RD-Db,0.5,Db,79,80.2,f.body);
+ W(G,'top',RW-Ct+tp,RW,0.5,Db,z0,1.2,f.body);W(G,'right',RD-Cr+tp,RD-Db,0.5,Db,z0,1.2,f.body);
+ if(S.clothes){for(const z of [12,25,80.2,93,106]){let i=0;for(let s=RW-Ct+tp+1.5;s+9<RW-1;s+=11,i++)W(G,'top',s,s+9.5,3,15,z+1.2,z+5+3*rnd(z+i),GC[Math.floor(rnd(z*3+i)*GC.length)],{ns:1})}}
+ TAG=null;out.plan.push(['L','top',RW-Ct,RW,0,Db,'corner 85.3×88.3'],['L','right',RD-Cr,RD-Db,0,Db,'']);
+ out.rows.push(['Ben corner unit','85.3 × 88.3',f1(IN(85.3))+'″ × '+f1(IN(88.3))+'″','']);
+ soffit(G,'top',RW-Ct,RW,Db,H);soffit(G,'right',RD-Cr,RD-Db,Db,H);
+ const run=(w,list,start,lim)=>{let e=start,seed=w==='top'?20:70;for(const [cm,kind] of list){const L=IN(cm),b=e,a=e-L;
+   W(G,w,a,b,0,0.5,z0,H,f.in);W(G,w,a,a+tp,0,Db,z0,H,f.body);W(G,w,a+tp,b,0,Db,H-tp,H,f.body);
+   if(kind==='mirror'){for(let z=10;z<H-7;z+=12)W(G,w,a+tp,b,0.5,Db,z,z+1.2,f.body);fitout(G,w,a+tp,b,0.5,Db-1,z0,H-tp,'shelves',f,seed);
+     W(G,w,a+tp+0.1,b-0.1,Db,Db+IN(2.6),2,2+IN(191.8),0xc9d2d6,{mirror:1})}
+   else if(kind==='drawers'){W(G,w,a+tp,b,0,Db,z0,bench,f.body);fitout(G,w,a+tp,b,0.5,Db,bench,H-tp,'drawers',f,seed+=13)}
+   else{W(G,w,a+tp,b,0,Db,z0,1.2,f.body);fitout(G,w,a+tp,b,0.5,Db,1.2,H-tp,kind,f,seed+=13)}
+   soffit(G,w,a,b,Db,H);out.plan.push(['M',w,a,b,0,Db,String(cm)]);out.rows.push(['Ben module · '+(kind==='mirror'?'shelves + mirror door':kind),cm+' × 49.3',f2(L)+'″','']);e=a}
+  const ep=e-tp;W(G,w,ep,e,0,Db,z0,H,f.body);soffit(G,w,ep,e,Db,H);out.plan.push(['P',w,ep,e,0,Db,'']);
+  return {len:start-ep+(w==='top'?RW-start:RD-start),slack:ep-lim}};
+ const top=run('top',p.top,RW-Ct,NX),right=run('right',p.right,RD-Cr,0);
+ out.rows.push(['Side panels','3 cm each','1.18″','']);
+ fitRows(out,top,right,IN(2),'+2 cm width to assemble');
+ out.depth=Db;out.H=H;out.leaf=0;out.leafTop=0;
+}
+function buildC(p,f,out){
+ const Dc=IN(58.2),Dm=IN(62.4),H=IN(258),t=IN(2.5),z0=0,ov=IN(4.8);
+ const total=p.doors.reduce((s,d)=>s+IN(d),0);
+ // carcass modules (start 4.8 cm in from the top end, doors overhang)
+ let e=RD-ov,seed=300;
+ for(const d of p.doors){const mod=d-4.8,L=IN(mod),b=e,a=e-L;
+  W(G,'right',a,b,0,0.5,z0,H,f.in);W(G,'right',a,a+t,0,Dc,z0,H,f.body);W(G,'right',b-t,b,0,Dc,z0,H,f.body);W(G,'right',a,b,0,Dc,z0,z0+t,f.body);W(G,'right',a,b,0,Dc,H-t,H,f.body);
+  const cols=mod===132.5?[[72.5,'long'],[57.5,'drawers']]:mod===147.5?[[72.5,'long'],[72.5,'double']]:[[117.5,'double']];
+  let ce=b-t;cols.forEach(([cw,k],i)=>{const cb=ce,ca=i===cols.length-1?a+t:ce-IN(cw)+t;fitout(G,'right',ca,cb,0.5,Dc,z0+t,H-t,k,f,seed+=11);if(i<cols.length-1)W(G,'right',ca-t,ca,0.5,Dc,z0+t,H-t,f.body);ce=ca-t});
+  out.rows.push([`Middle module behind ${d} door`,mod+(mod===132.5?' (72.5 + 57.5 columns)':mod===147.5?' (72.5 + 72.5)':' (one open bay)'),f2(L)+'″','']);e=a}
+ // doors
+ let de=RD;if(S.doors!=='off')for(const d of p.doors){const L=IN(d),b=de,a=de-L,zi=H*0.66;
+  for(const [z0_,z1_,c] of [[0.3,zi,f.door],[zi,zi+IN(2.6),WOOD],[zi+IN(2.6),H-0.3,f.door]])W(G,'right',a+0.1,b-0.1,Dc,Dm,z0_,z1_,c,doorO());de=a}
+ else de=RD-total;
+ const runEnd=RD-total;
+ out.plan.push(['M','right',runEnd,RD,0,Dm,'Middle '+p.doors.join(' + ')]);
+ soffit(G,'right',runEnd,RD,Dm,H);
+ if(RD-total>0.05){W(G,'right',0,runEnd,0,Dm,z0,H,f.body);soffit(G,'right',0,runEnd,Dm,H);out.plan.push(['F','right',0,runEnd,0,Dm,''])}
+ // Break on top wall
+ const Hb=IN(258),Db=IN(56.8),gap=2,xEnd=RW-Dm-gap,avail=xEnd-NX,mods=[90,45],cu=IN(2.5),eu=(avail-IN(135)-cu)/2;
+ let x=NX;const seg=(w,c)=>{W(G,'top',x,x+w,0,IN(5),z0,Hb,c);x+=w};
+ seg(eu,f.body);const m1=x;W(G,'top',x,x+IN(90),0,IN(1.2),z0,Hb,f.in);fitout(G,'top',x,x+IN(90),IN(5),Db,z0,Hb,'long',f,410);x+=IN(90);
+ seg(cu,f.body);W(G,'top',x,x+IN(45),0,IN(1.2),z0,Hb,f.in);fitout(G,'top',x,x+IN(45),IN(5),Db,z0,Hb,'shoes',f,430);x+=IN(45);seg(eu,f.body);
+ for(const [a,b] of [[m1,m1+IN(90)],[m1+IN(92.5),m1+IN(137.5)]])W(G,'top',a,b,IN(5),Db,z0,1.2,f.body);
+ out.plan.push(['M','top',NX,xEnd,0,Db,'Break 90 + 45']);soffit(G,'top',NX,xEnd,Db,Hb);
+ out.rows.push(['Break modules (top wall)','90 + 45, depth 56.8',f1(IN(135))+'″',''],['Break end uprights (adjustable 4–25 cm)',f1(eu*2.54)+' cm each',f1(eu)+'″',eu>=IN(4)&&eu<=IN(25)?'ok':'bad']);
+ const slack=RD-total, need=IN(4);
+ out.fit=[['Right wall: Middle doors','110″ wall',f1(total)+'″',...(slack>=need+0.75?['ok','fits, '+f1(slack)+'″ filler']:slack>=need?['warn','tight: '+f2(slack-need)+'″ to spare beyond the +4 cm assembly allowance']:slack>=0?['warn','less than the +4 cm needed to assemble']:['bad','too long'])],
+  ['Top wall: Break to Middle face','62.4″ open, 2″ kept for door pop-out',f1(avail)+'″',eu>=IN(4)&&eu<=IN(25)?'ok':'bad',eu>=IN(4)?'uprights absorb the rest':'too tight']];
+ out.depth=Dm;out.depthTop=Db;out.H=H;out.leaf=0;out.leafTop=0;
+}
+
+// ---------- build + info ----------
+function build(){
+ if(G){scene.remove(G);G.traverse(o=>{})}G=new THREE.Group();scene.add(G);rails.length=0;
+ const f=FIN[S.finish],sc=SCH[S.scheme],p=sc.presets[S.preset]||sc.presets[0],out={plan:[],rows:[],fit:[]};
+ ({A:buildA,B:buildB,C:buildC})[S.scheme](p,f,out);
+ info(sc,out);plan(out);applyCam();
+ try{localStorage.setItem('closetS',JSON.stringify(S))}catch(e){}
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function info(sc,out){
+ document.getElementById('sname').textContent=sc.name;document.getElementById('note').textContent=sc.note;
+ const dR=out.depth,dT=out.depthTop||out.depth,hang=rails.reduce((s,r)=>s+r.len,0),longH=rails.filter(r=>r.long).reduce((s,r)=>s+r.len,0);
+ const rows=[...out.rows.map(r=>[r[0],r[1],r[2],r[3]==='bad'?'<span class="bad">check</span>':'']),
+  ...out.fit.map(r=>[r[0],r[1],r[2],`<span class="${r[3]}">${esc(r[4])}</span>`]),
+  ['Height','ceiling 120″',f1(out.H)+'″',`<span class="ok">${f1(CEIL-out.H)}″ gap above${S.soffit?', closed with a soffit':''}</span>`],
+  ['Depth from wall','right / top',dR===dT?f1(dR)+'″':f1(dR)+'″ / '+f1(dT)+'″',''],
+  ['Clear floor','left wall → right run',f1(RW-dR)+'″',''],
+  ['Clear floor','top run → bedroom wall',f1(RD-dT)+'″',''],
+  ['Hanging rail','total (long hang)',f1(hang)+'″ ('+f1(longH)+'″)','']];
+ if(out.leaf){const reach=RW-dR-out.leaf;rows.push(['Right-run door swing','widest leaf '+f1(out.leaf)+'″','reaches x = '+f1(reach)+'″',`<span class="${reach>BED.x1+6?'ok':'warn'}">clears the bedroom-door swing by ${f1(reach-BED.x1)}″</span>`]);
+  rows.push(['Aisle with doors open','top doors open',f1(RD-dT-out.leafTop)+'″ left','<span class="ok">fine</span>'])}
+ document.querySelector('#sched tbody').innerHTML=rows.map(r=>`<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td><td class="n">${esc(r[2])}</td><td>${r[3]}</td></tr>`).join('');
+}
+function plan(out){
+ const sv=document.getElementById('plan'),Y=y=>RD-y;let s='';
+ const room=[[0,0],[RW,0],[RW,RD],[NX,RD],[NX,NY],[0,NY]];
+ s+=`<polygon points="${room.map(([x,y])=>x+','+Y(y)).join(' ')}" fill="light-dark(#f4efe7,#2a2620)" stroke="currentColor" stroke-width="1.4"/>`;
+ s+=`<rect x="-5" y="${Y(NY)}" width="${NX+5}" height="${RD-NY+5}" fill="url(#hatch)" opacity=".55"/>`;
+ s+=`<line x1="${BED.x0}" y1="${Y(0)}" x2="${BED.x1}" y2="${Y(0)}" stroke="light-dark(#fff,#141517)" stroke-width="3"/><path d="M${BED.x0} ${Y(0)} A ${BED.x1-BED.x0} ${BED.x1-BED.x0} 0 0 1 ${BED.x1} ${Y(BED.x1-BED.x0)}" fill="none" stroke="#999" stroke-width=".5" stroke-dasharray="2 1.5"/><line x1="${BED.x1}" y1="${Y(0)}" x2="${BED.x1}" y2="${Y(BED.x1-BED.x0)}" stroke="#999" stroke-width=".7"/>`;
+ s+=`<line x1="0" y1="${Y(BATH.y0)}" x2="0" y2="${Y(BATH.y1)}" stroke="light-dark(#fff,#141517)" stroke-width="3"/>`;
+ const fills={L:'#9fb4d6',M:'#c9d3e6',P:'#7a8aa8',F:'#e4d9c6'};
+ for(const [k,w,a,b,d0,d1,lab] of out.plan){let x,y,ww,hh;if(w==='top'){x=Math.min(a,b);ww=Math.abs(b-a);y=Y(RD-d0);hh=d1-d0}else{x=RW-d1;ww=d1-d0;y=Y(Math.max(a,b));hh=Math.abs(b-a)}
+  s+=`<rect x="${x}" y="${y}" width="${ww}" height="${hh}" fill="${fills[k]}" stroke="#2c3e63" stroke-width=".5"/>`;
+  if(lab){const cx=x+ww/2,cy=y+hh/2;s+=w==='top'?`<text x="${cx}" y="${cy+1.4}" font-size="3.6" text-anchor="middle" fill="#14213d">${esc(lab)}</text>`:`<text transform="translate(${cx+1.3} ${cy}) rotate(-90)" font-size="3.6" text-anchor="middle" fill="#14213d">${esc(lab)}</text>`}}
+ if(out.plan.find(p=>p[0]==='L')){/* corner label already on top leg */}
+ s+=`<g stroke="var(--acc)" stroke-width=".4" fill="var(--acc)" font-size="4"><line x1="${NX}" y1="-7" x2="${RW}" y2="-7"/><text x="${(NX+RW)/2}" y="-9" text-anchor="middle" stroke="none">87″</text><line x1="${RW+10}" y1="0" x2="${RW+10}" y2="${RD}"/><text transform="translate(${RW+15} ${RD/2}) rotate(90)" text-anchor="middle" stroke="none">110″</text><line x1="0" y1="${RD+9}" x2="${RW}" y2="${RD+9}"/><text x="${RW/2}" y="${RD+15}" text-anchor="middle" stroke="none">≈94.3″</text></g>`;
+ s+=`<text x="${(BED.x0+BED.x1)/2}" y="${RD+5}" font-size="3.4" text-anchor="middle" fill="var(--mute)">from bedroom</text><text transform="translate(-3 ${Y((BATH.y0+BATH.y1)/2)}) rotate(-90)" font-size="3.4" text-anchor="middle" fill="var(--mute)">to bath</text>`;
+ sv.innerHTML=`<defs><pattern id="hatch" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="3" stroke="#999" stroke-width=".6"/></pattern></defs>`+s;
+}
+
+// ---------- camera ----------
+const VIEWS={overview:{n:'Overview',p:[-95,170,95],t:[58,42,-62],f:45},bed:{n:'From bedroom door',p:[22,64,-6],t:[80,56,-96],f:70},bath:{n:'From bath door',p:[5,64,-22],t:[90,55,-86],f:70},
+ plan:{n:'Plan',p:[RW/2,330,-RD/2+0.01],t:[RW/2,0,-RD/2],f:40},top:{n:'Top wall',p:[RW/2+3,60,170],t:[RW/2+3,60,-RD],f:36},right:{n:'Right wall',p:[-175,60,-RD/2],t:[RW,60,-RD/2],f:36}};
+const tgt=new THREE.Vector3(),sph={r:200,phi:1,th:0};
+function applyCam(){const s=Math.sin(sph.phi);cam.position.set(tgt.x+sph.r*s*Math.sin(sph.th),tgt.y+sph.r*Math.cos(sph.phi),tgt.z+sph.r*s*Math.cos(sph.th));cam.lookAt(tgt);
+ const cx=cam.position.x,cy=-cam.position.z;for(const w of walls)w.g.visible=((cx-w.p[0])*w.n[0]+(cy-w.p[1])*w.n[1])>=0;
+ const sec=S.view==='top'?'right':S.view==='right'?'top':null;if(sec){walls.forEach((w,i)=>w.g.visible=(sec==='right'?i===2:i===1))}if(G)G.traverse(m=>{if(m.userData.w)m.visible=m.userData.w!==sec});render()}
+function setView(k){const v=VIEWS[k];S.view=k;const p=new THREE.Vector3(...v.p);tgt.set(...v.t);const d=p.sub(tgt);sph.r=d.length();sph.phi=Math.acos(Math.max(-1,Math.min(1,d.y/sph.r)));sph.th=Math.atan2(d.x,d.z);cam.fov=v.f;cam.updateProjectionMatrix();applyCam()}
+let raf=0;function render(){if(raf)return;raf=requestAnimationFrame(()=>{raf=0;ren.render(scene,cam)})}
+function resize(){const w=wrap.clientWidth,h=wrap.clientHeight;ren.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();render()}
+const ro=new ResizeObserver(resize);ro.observe(wrap);
+const ptr=new Map();let pinch=0;
+wrap.addEventListener('pointerdown',e=>{wrap.setPointerCapture(e.pointerId);ptr.set(e.pointerId,{x:e.clientX,y:e.clientY,pan:e.shiftKey||e.button===2});document.getElementById('hint').style.display='none';wrap.style.cursor='grabbing'});
+wrap.addEventListener('pointermove',e=>{const q=ptr.get(e.pointerId);if(!q)return;const dx=e.clientX-q.x,dy=e.clientY-q.y;q.x=e.clientX;q.y=e.clientY;
+ if(ptr.size===2){const [a,b]=[...ptr.values()],d=Math.hypot(a.x-b.x,a.y-b.y);if(pinch)sph.r=Math.max(20,Math.min(900,sph.r*pinch/d));pinch=d;applyCam();return}
+ if((S.view==='top'||S.view==='right')){S.view=null;syncAll()}
+ if(q.pan){const k=sph.r*0.0016,r=new THREE.Vector3().setFromMatrixColumn(cam.matrix,0),u=new THREE.Vector3().setFromMatrixColumn(cam.matrix,1);tgt.addScaledVector(r,-dx*k).addScaledVector(u,dy*k)}
+ else{sph.th-=dx*0.006;sph.phi=Math.max(0.001,Math.min(Math.PI-0.05,sph.phi-dy*0.006))}applyCam()});
+const up=e=>{ptr.delete(e.pointerId);if(ptr.size<2)pinch=0;wrap.style.cursor='grab'};
+wrap.addEventListener('pointerup',up);wrap.addEventListener('pointercancel',up);wrap.addEventListener('contextmenu',e=>e.preventDefault());
+wrap.addEventListener('wheel',e=>{e.preventDefault();sph.r=Math.max(20,Math.min(900,sph.r*Math.exp(e.deltaY*0.001)));applyCam()},{passive:false});
+
+// ---------- controls ----------
+function seg(id,items,get,set){const el=document.getElementById(id);el.innerHTML=items.map(([k,l])=>`<button type="button" data-k="${k}">${esc(l)}</button>`).join('');
+ const sync=()=>el.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(get(b.dataset.k)))) ;el.onclick=e=>{const b=e.target.closest('button');if(!b)return;set(b.dataset.k);syncAll()};return sync}
+let syncs=[];function syncAll(){syncs.forEach(s=>s())}
+function presetSeg(){return seg('g-preset',SCH[S.scheme].presets.map((p,i)=>[i,p.name]),k=>+k===S.preset,k=>{S.preset=+k;build()})}
+syncs.push(seg('g-scheme',Object.entries(SCH).map(([k,v])=>[k,v.short]),k=>k===S.scheme,k=>{S.scheme=k;S.preset=0;syncs[1]=presetSeg();build()}));
+syncs.push(presetSeg());
+syncs.push(seg('g-doors',[['closed','Closed'],['ghost','See-through'],['off','Removed']],k=>k===S.doors,k=>{S.doors=k;build()}));
+syncs.push(seg('g-finish',Object.entries(FIN).map(([k,v])=>[k,v.n]),k=>k===S.finish,k=>{S.finish=k;build()}));
+syncs.push(seg('g-tog',[['clothes','Clothes'],['soffit','Soffit to ceiling']],k=>S[k],k=>{S[k]=!S[k];build()}));
+syncs.push(seg('g-view',Object.entries(VIEWS).map(([k,v])=>[k,v.n]),k=>k===S.view,k=>setView(k)));
+if(!SCH[S.scheme])S.scheme='A';build();resize();setView(VIEWS[S.view]?S.view:'overview');syncAll();
+window.__closet={S,build,setView,ren,scene,cam,render:()=>ren.render(scene,cam)};
+}
+</script>
+</body></html>
